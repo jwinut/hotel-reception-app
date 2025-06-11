@@ -31,8 +31,8 @@ function Navigation({ isAdminMode, onReserved, onCurrentBookings, onAddUser, onV
               ลูกค้าใหม่ ยังไม่ได้จอง
             </button>
             <button 
-              onClick={() => handleNavigation(null, onReserved)}
-              className="nav-button primary"
+              onClick={() => navigate('/existing-guest')}
+              className={`nav-button primary ${isActive('/existing-guest') ? 'active' : ''}`}
             >
               ลูกค้าจองมาแล้ว
             </button>

@@ -1,0 +1,380 @@
+/* src/components/GuestLookup.css */
+
+.guest-lookup {
+  background: var(--c-surface);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--c-border);
+  margin-bottom: 2rem;
+}
+
+/* Section Titles */
+.section-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--c-text);
+  margin: 0 0 1rem 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--c-primary);
+  display: inline-block;
+}
+
+/* Search Section */
+.search-section {
+  margin-bottom: 2rem;
+}
+
+.search-input-container {
+  position: relative;
+}
+
+.search-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-icon {
+  position: absolute;
+  left: 1rem;
+  z-index: 2;
+  opacity: 0.6;
+}
+
+.search-input {
+  width: 100%;
+  padding: 1rem 3rem 1rem 3rem;
+  border: 2px solid var(--c-border);
+  border-radius: var(--radius-lg);
+  font-size: 1rem;
+  background: var(--c-background);
+  transition: all 0.2s ease;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--c-primary);
+  box-shadow: 0 0 0 4px var(--c-primary-light);
+}
+
+.clear-search-button {
+  position: absolute;
+  right: 1rem;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--c-text-secondary);
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  z-index: 2;
+}
+
+.clear-search-button:hover {
+  background: var(--c-danger);
+  color: white;
+}
+
+/* Search Suggestions */
+.search-suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-top: none;
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  z-index: 10;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.suggestion-loading {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  color: var(--c-text-secondary);
+}
+
+.loading-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--c-border);
+  border-top: 2px solid var(--c-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.suggestions-list {
+  max-height: 350px;
+  overflow-y: auto;
+}
+
+.suggestion-item {
+  padding: 1rem;
+  border-bottom: 1px solid var(--c-border);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.suggestion-item:hover {
+  background: var(--c-primary-light);
+}
+
+.suggestion-item:last-child {
+  border-bottom: none;
+}
+
+.suggestion-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.guest-name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--c-text);
+}
+
+.booking-status {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-full);
+  font-weight: 500;
+}
+
+.booking-status.confirmed {
+  background: var(--c-primary-light);
+  color: var(--c-primary);
+}
+
+.booking-status.arriving {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.suggestion-details {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 0.25rem;
+  flex-wrap: wrap;
+}
+
+.booking-id,
+.room-number,
+.phone {
+  font-size: 0.875rem;
+  color: var(--c-text-secondary);
+}
+
+.booking-id {
+  font-family: 'Courier New', monospace;
+  font-weight: 600;
+}
+
+.suggestion-dates {
+  font-size: 0.75rem;
+  color: var(--c-text-secondary);
+}
+
+.no-results {
+  padding: 2rem;
+  text-align: center;
+  color: var(--c-text-secondary);
+}
+
+.no-results-icon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.no-results-hint {
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+  opacity: 0.8;
+}
+
+/* Today's Arrivals */
+.today-arrivals {
+  margin-bottom: 2rem;
+}
+
+.arrivals-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+.arrival-card {
+  background: linear-gradient(135deg, var(--c-background) 0%, #fef3c7 100%);
+  border: 1px solid #f59e0b;
+  border-radius: var(--radius-lg);
+  padding: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.arrival-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: #d97706;
+}
+
+.arrival-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.guest-name-card {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--c-text);
+}
+
+.room-number-card {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #d97706;
+}
+
+.arrival-details {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.booking-id-card {
+  font-size: 0.875rem;
+  color: var(--c-text-secondary);
+  font-family: 'Courier New', monospace;
+  font-weight: 600;
+}
+
+.phone-card {
+  font-size: 0.875rem;
+  color: var(--c-text-secondary);
+}
+
+.arrival-info {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.guests-count,
+.nights-count {
+  font-size: 0.875rem;
+  color: var(--c-text-secondary);
+}
+
+.arrival-status {
+  text-align: center;
+  padding: 0.5rem;
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  font-weight: 600;
+  background: #f59e0b;
+  color: white;
+}
+
+/* Help Text */
+.help-text {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  background: var(--c-background);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  margin-top: 1rem;
+}
+
+.help-icon {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.help-content {
+  font-size: 0.875rem;
+  color: var(--c-text-secondary);
+  line-height: 1.5;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .guest-lookup {
+    padding: 1rem;
+  }
+
+  .search-input {
+    padding: 0.875rem 2.5rem 0.875rem 2.5rem;
+  }
+
+  .suggestion-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+
+  .suggestion-details {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .arrivals-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .arrival-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+
+  .arrival-details {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .help-text {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .search-input {
+    font-size: 0.875rem;
+    padding: 0.75rem 2.25rem 0.75rem 2.25rem;
+  }
+
+  .search-icon {
+    left: 0.75rem;
+    width: 18px;
+    height: 18px;
+  }
+
+  .clear-search-button {
+    right: 0.75rem;
+    font-size: 1.25rem;
+  }
+
+  .arrival-card {
+    padding: 0.75rem;
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
