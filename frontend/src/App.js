@@ -8,13 +8,14 @@ import NewBookingPage from './NewBookingPage';
 import CurrentBookingsPage from './CurrentBookingsPage';
 import ExistingGuestPage from './ExistingGuestPage';
 import Navigation from './Navigation';
+import ErrorBoundary from './components/ErrorBoundary';
 
 function App() {
   // State and logic are "lifted up" to the parent component
   const [isAdminMode, setIsAdminMode] = useState(false);
 
-  // IMPORTANT: In a real app, this should be an environment variable.
-  const ADMIN_SECRET_CODE = 'banana';
+  // Admin password from environment variable for security
+  const ADMIN_SECRET_CODE = process.env.REACT_APP_ADMIN_CODE || 'default-dev-code';
 
   const handleAdminIconClick = () => {
     if (isAdminMode) {
@@ -36,36 +37,40 @@ function App() {
   const handleViewUsers = () => alert("ฟังก์ชัน 'ดูรายชื่อผู้ใช้งาน' จะถูกพัฒนาในลำดับถัดไป");
 
   return (
-    <Router>
-      <div className="App">
-        <header className="App-header">
-          <h1>ระบบจัดการโรงแรม</h1>
-          {/* New SVG Icon Button for Admin Access */}
-          <button className="header-admin-button" onClick={handleAdminIconClick} title="Admin Panel">
-            <svg xmlns="http://www.w3.org/2000/svg" height="28px" viewBox="0 0 24 24" width="28px" fill="#FFFFFF">
-              <path d="M0 0h24v24H0V0z" fill="none"/>
-              <path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69-.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61.22l2 3.46c.13.22.07.49.12.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/>
-            </svg>
-          </button>
-        </header>
-        <Navigation 
-          isAdminMode={isAdminMode}
-          onReserved={handleReserved}
-          onCurrentBookings={handleCurrentBookings}
-          onAddUser={handleAddUser}
-          onViewUsers={handleViewUsers}
-        />
-        <main>
-          <Routes>
-            <Route path="/" element={<MainPage key="main" isAdminMode={isAdminMode} />} />
-            <Route path="/walk-in-options" element={<WalkInOptionsPage key="walk-in" />} />
-            <Route path="/new-booking" element={<NewBookingPage key="new-booking" />} />
-            <Route path="/current-bookings" element={<CurrentBookingsPage key="current-bookings" />} />
-            <Route path="/existing-guest" element={<ExistingGuestPage key="existing-guest" />} />
-          </Routes>
-        </main>
-      </div>
-    </Router>
+    <ErrorBoundary>
+      <Router>
+        <div className="App">
+          <header className="App-header">
+            <h1>ระบบจัดการโรงแรม</h1>
+            {/* New SVG Icon Button for Admin Access */}
+            <button className="header-admin-button" onClick={handleAdminIconClick} title="Admin Panel">
+              <svg xmlns="http://www.w3.org/2000/svg" height="28px" viewBox="0 0 24 24" width="28px" fill="#FFFFFF">
+                <path d="M0 0h24v24H0V0z" fill="none"/>
+                <path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69-.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61.22l2 3.46c.13.22.07.49.12.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/>
+              </svg>
+            </button>
+          </header>
+          <Navigation 
+            isAdminMode={isAdminMode}
+            onReserved={handleReserved}
+            onCurrentBookings={handleCurrentBookings}
+            onAddUser={handleAddUser}
+            onViewUsers={handleViewUsers}
+          />
+          <main>
+            <ErrorBoundary>
+              <Routes>
+                <Route path="/" element={<MainPage key="main" isAdminMode={isAdminMode} />} />
+                <Route path="/walk-in-options" element={<WalkInOptionsPage key="walk-in" />} />
+                <Route path="/new-booking" element={<NewBookingPage key="new-booking" />} />
+                <Route path="/current-bookings" element={<CurrentBookingsPage key="current-bookings" />} />
+                <Route path="/existing-guest" element={<ExistingGuestPage key="existing-guest" />} />
+              </Routes>
+            </ErrorBoundary>
+          </main>
+        </div>
+      </Router>
+    </ErrorBoundary>
   );
 }
 
