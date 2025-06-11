@@ -5,6 +5,7 @@ import './App.css';
 import MainPage from './MainPage';
 import WalkInOptionsPage from './WalkInOptionsPage';
 import NewBookingPage from './NewBookingPage';
+import CurrentBookingsPage from './CurrentBookingsPage';
 import Navigation from './Navigation';
 
 function App() {
@@ -58,6 +59,7 @@ function App() {
             <Route path="/" element={<MainPage isAdminMode={isAdminMode} />} />
             <Route path="/walk-in-options" element={<WalkInOptionsPage />} />
             <Route path="/new-booking" element={<NewBookingPage />} />
+            <Route path="/current-bookings" element={<CurrentBookingsPage />} />
           </Routes>
         </main>
       </div>

@@ -50,8 +50,8 @@ function Navigation({ isAdminMode, onReserved, onCurrentBookings, onAddUser, onV
               จองห้องใหม่
             </button>
             <button 
-              onClick={() => handleNavigation(null, onCurrentBookings)}
-              className="nav-button booking"
+              onClick={() => navigate('/current-bookings')}
+              className={`nav-button booking ${isActive('/current-bookings') ? 'active' : ''}`}
             >
               รายการจองปัจจุบัน
             </button>
