@@ -1,6 +1,7 @@
 // src/components/GuestLookup.js
 import React, { useState, useEffect, useMemo } from 'react';
 import './GuestLookup.css';
+import { sanitizeInput } from '../utils/validation';
 
 function GuestLookup({ bookings, onBookingSelect, isLoading }) {
   const [searchTerm, setSearchTerm] = useState('');
@@ -16,9 +17,10 @@ function GuestLookup({ bookings, onBookingSelect, isLoading }) {
 
   // Search logic
   const filteredBookings = useMemo(() => {
-    if (!searchTerm.trim()) return [];
+    const sanitizedTerm = sanitizeInput(searchTerm);
+    if (!sanitizedTerm.trim()) return [];
 
-    const term = searchTerm.toLowerCase();
+    const term = sanitizedTerm.toLowerCase();
     return availableBookings.filter(booking =>
       booking.guestName.toLowerCase().includes(term) ||
       booking.phone.includes(term) ||

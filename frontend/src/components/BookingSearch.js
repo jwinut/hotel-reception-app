@@ -1,6 +1,7 @@
 // src/components/BookingSearch.js
 import React, { useState, useEffect } from 'react';
 import './BookingSearch.css';
+import { sanitizeInput } from '../utils/validation';
 
 function BookingSearch({ onSearchFilter }) {
   const [searchTerm, setSearchTerm] = useState('');
@@ -9,7 +10,9 @@ function BookingSearch({ onSearchFilter }) {
 
   // Call parent filter function whenever search criteria changes
   useEffect(() => {
-    onSearchFilter(searchTerm, statusFilter, dateFilter);
+    // Sanitize search term before filtering
+    const sanitizedTerm = sanitizeInput(searchTerm);
+    onSearchFilter(sanitizedTerm, statusFilter, dateFilter);
   }, [searchTerm, statusFilter, dateFilter, onSearchFilter]);
 
   const clearFilters = () => {

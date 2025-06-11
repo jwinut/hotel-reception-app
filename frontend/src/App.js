@@ -9,6 +9,7 @@ import CurrentBookingsPage from './CurrentBookingsPage';
 import ExistingGuestPage from './ExistingGuestPage';
 import Navigation from './Navigation';
 import ErrorBoundary from './components/ErrorBoundary';
+import { adminAuthRateLimit, sanitizeInput } from './utils/validation';
 
 function App() {
   // State and logic are "lifted up" to the parent component
@@ -22,10 +23,28 @@ function App() {
       setIsAdminMode(false);
       return;
     }
+    
+    // Check rate limiting
+    const clientId = 'admin-auth'; // In production, use IP or user identifier
+    if (!adminAuthRateLimit.isAllowed(clientId)) {
+      const remainingTime = adminAuthRateLimit.getRemainingTime(clientId);
+      alert(`คุณพยายามเข้าสู่ระบบมากเกินไป กรุณารออีก ${remainingTime} วินาที`);
+      return;
+    }
+    
     const enteredCode = window.prompt("กรุณาใส่รหัสผ่านผู้ดูแลระบบ:");
-    if (enteredCode === ADMIN_SECRET_CODE) {
+    
+    if (enteredCode === null) {
+      // User cancelled
+      return;
+    }
+    
+    // Sanitize input
+    const sanitizedCode = sanitizeInput(enteredCode);
+    
+    if (sanitizedCode === ADMIN_SECRET_CODE) {
       setIsAdminMode(true);
-    } else if (enteredCode !== null && enteredCode !== "") {
+    } else if (sanitizedCode !== "") {
       alert("รหัสผ่านไม่ถูกต้อง");
     }
   };

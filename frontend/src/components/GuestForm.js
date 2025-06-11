@@ -1,6 +1,7 @@
 // src/components/GuestForm.js
 import React, { useState } from 'react';
 import './GuestForm.css';
+import { validateGuestForm } from '../utils/validation';
 
 function GuestForm({ initialData, onComplete, onCancel }) {
   const [formData, setFormData] = useState({
@@ -18,40 +19,9 @@ function GuestForm({ initialData, onComplete, onCancel }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const validateForm = () => {
-    const newErrors = {};
-
-    // Required fields
-    if (!formData.firstName.trim()) {
-      newErrors.firstName = 'กรุณากรอกชื่อ';
-    }
-    if (!formData.lastName.trim()) {
-      newErrors.lastName = 'กรุณากรอกนามสกุล';
-    }
-    if (!formData.phone.trim()) {
-      newErrors.phone = 'กรุณากรอกเบอร์โทรศัพท์';
-    } else if (!/^[0-9\-\s\+\(\)]{8,15}$/.test(formData.phone.trim())) {
-      newErrors.phone = 'รูปแบบเบอร์โทรศัพท์ไม่ถูกต้อง';
-    }
-
-    // Email validation (optional but if provided must be valid)
-    if (formData.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
-      newErrors.email = 'รูปแบบอีเมลไม่ถูกต้อง';
-    }
-
-    // ID Number validation
-    if (!formData.idNumber.trim()) {
-      newErrors.idNumber = 'กรุณากรอกเลขบัตรประชาชน/หนังสือเดินทาง';
-    } else if (formData.idNumber.trim().length < 8) {
-      newErrors.idNumber = 'เลขบัตรประชาชน/หนังสือเดินทางต้องมีอย่างน้อย 8 หลัก';
-    }
-
-    // Number of guests
-    if (formData.numGuests < 1 || formData.numGuests > 10) {
-      newErrors.numGuests = 'จำนวนผู้เข้าพักต้องอยู่ระหว่าง 1-10 คน';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    const validation = validateGuestForm(formData);
+    setErrors(validation.errors);
+    return validation.isValid;
   };
 
   const handleInputChange = (field, value) => {
@@ -82,9 +52,12 @@ function GuestForm({ initialData, onComplete, onCancel }) {
       // Simulate API call delay
       await new Promise(resolve => setTimeout(resolve, 500));
       
-      onComplete(formData);
+      // Get sanitized data from validation
+      const validation = validateGuestForm(formData);
+      onComplete(validation.sanitizedData);
     } catch (error) {
       console.error('Error submitting guest form:', error);
+      alert('เกิดข้อผิดพลาดในการบันทึกข้อมูล กรุณาลองใหม่อีกครั้ง');
     } finally {
       setIsSubmitting(false);
     }
