@@ -1,11 +1,22 @@
 // Input validation and sanitization utilities
+import type { Guest, FormErrors, ValidationResult } from '../types';
+
+interface IdValidationResult {
+  isValid: boolean;
+  type: 'thai_id' | 'passport' | null;
+  message: string;
+}
+
+interface GuestFormValidationResult {
+  isValid: boolean;
+  errors: FormErrors;
+  sanitizedData: Guest;
+}
 
 /**
  * Sanitizes text input by removing potentially harmful characters
- * @param {string} input - The input string to sanitize
- * @returns {string} - Sanitized string
  */
-export const sanitizeInput = (input) => {
+export const sanitizeInput = (input: string): string => {
   if (typeof input !== 'string') return '';
   
   // Remove HTML tags and script tags
@@ -17,31 +28,25 @@ export const sanitizeInput = (input) => {
 
 /**
  * Validates email format
- * @param {string} email - Email to validate
- * @returns {boolean} - True if valid email format
  */
-export const isValidEmail = (email) => {
+export const isValidEmail = (email: string): boolean => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email);
 };
 
 /**
  * Validates Thai phone number
- * @param {string} phone - Phone number to validate
- * @returns {boolean} - True if valid phone format
  */
-export const isValidThaiPhone = (phone) => {
+export const isValidThaiPhone = (phone: string): boolean => {
   // Allow Thai phone numbers: 08X-XXX-XXXX, 02-XXX-XXXX, etc.
-  const phoneRegex = /^[0-9\-\s\+\(\)]{8,15}$/;
+  const phoneRegex = /^[0-9\-\s+()]{8,15}$/;
   return phoneRegex.test(phone.trim());
 };
 
 /**
  * Validates Thai ID card number (13 digits)
- * @param {string} idNumber - ID number to validate
- * @returns {boolean} - True if valid Thai ID format
  */
-export const isValidThaiId = (idNumber) => {
+export const isValidThaiId = (idNumber: string): boolean => {
   // Remove all non-digit characters
   const digits = idNumber.replace(/\D/g, '');
   
@@ -51,21 +56,24 @@ export const isValidThaiId = (idNumber) => {
   // Validate checksum using Thai ID algorithm
   let sum = 0;
   for (let i = 0; i < 12; i++) {
-    sum += parseInt(digits[i]) * (13 - i);
+    const digit = digits[i];
+    if (digit === undefined) return false;
+    sum += parseInt(digit, 10) * (13 - i);
   }
   
   const remainder = sum % 11;
   const checkDigit = remainder < 2 ? remainder : 11 - remainder;
   
-  return checkDigit === parseInt(digits[12]);
+  const lastDigit = digits[12];
+  if (lastDigit === undefined) return false;
+  
+  return checkDigit === parseInt(lastDigit, 10);
 };
 
 /**
  * Validates passport number (basic format check)
- * @param {string} passport - Passport number to validate
- * @returns {boolean} - True if valid passport format
  */
-export const isValidPassport = (passport) => {
+export const isValidPassport = (passport: string): boolean => {
   // Basic passport validation: 6-12 alphanumeric characters
   const passportRegex = /^[A-Z0-9]{6,12}$/i;
   return passportRegex.test(passport.trim());
@@ -73,14 +81,16 @@ export const isValidPassport = (passport) => {
 
 /**
  * Validates ID number (Thai ID or Passport)
- * @param {string} idNumber - ID number to validate
- * @returns {object} - Validation result with isValid and type
  */
-export const validateIdNumber = (idNumber) => {
+export const validateIdNumber = (idNumber: string): IdValidationResult => {
   const cleanId = idNumber.trim();
   
   if (cleanId.length === 0) {
-    return { isValid: false, type: null, message: 'กรุณากรอกเลขบัตรประชาชน/หนังสือเดินทาง' };
+    return { 
+      isValid: false, 
+      type: null, 
+      message: 'กรุณากรอกเลขบัตรประชาชน/หนังสือเดินทาง' 
+    };
   }
   
   // Check if it's a Thai ID
@@ -104,13 +114,13 @@ export const validateIdNumber = (idNumber) => {
 
 /**
  * Validates required text field
- * @param {string} value - Value to validate
- * @param {string} fieldName - Name of the field for error message
- * @param {number} minLength - Minimum length (default: 1)
- * @param {number} maxLength - Maximum length (default: 255)
- * @returns {object} - Validation result
  */
-export const validateRequired = (value, fieldName, minLength = 1, maxLength = 255) => {
+export const validateRequired = (
+  value: string, 
+  fieldName: string, 
+  minLength: number = 1, 
+  maxLength: number = 255
+): ValidationResult => {
   const cleanValue = sanitizeInput(value);
   
   if (cleanValue.length === 0) {
@@ -118,11 +128,17 @@ export const validateRequired = (value, fieldName, minLength = 1, maxLength = 25
   }
   
   if (cleanValue.length < minLength) {
-    return { isValid: false, message: `${fieldName}ต้องมีอย่างน้อย ${minLength} ตัวอักษร` };
+    return { 
+      isValid: false, 
+      message: `${fieldName}ต้องมีอย่างน้อย ${minLength} ตัวอักษร` 
+    };
   }
   
   if (cleanValue.length > maxLength) {
-    return { isValid: false, message: `${fieldName}ต้องไม่เกิน ${maxLength} ตัวอักษร` };
+    return { 
+      isValid: false, 
+      message: `${fieldName}ต้องไม่เกิน ${maxLength} ตัวอักษร` 
+    };
   }
   
   return { isValid: true, message: '', value: cleanValue };
@@ -130,21 +146,24 @@ export const validateRequired = (value, fieldName, minLength = 1, maxLength = 25
 
 /**
  * Validates number input
- * @param {any} value - Value to validate
- * @param {string} fieldName - Name of the field for error message
- * @param {number} min - Minimum value
- * @param {number} max - Maximum value
- * @returns {object} - Validation result
  */
-export const validateNumber = (value, fieldName, min, max) => {
-  const numValue = parseInt(value);
+export const validateNumber = (
+  value: any, 
+  fieldName: string, 
+  min: number, 
+  max: number
+): ValidationResult => {
+  const numValue = parseInt(value, 10);
   
   if (isNaN(numValue)) {
     return { isValid: false, message: `${fieldName}ต้องเป็นตัวเลข` };
   }
   
   if (numValue < min || numValue > max) {
-    return { isValid: false, message: `${fieldName}ต้องอยู่ระหว่าง ${min}-${max}` };
+    return { 
+      isValid: false, 
+      message: `${fieldName}ต้องอยู่ระหว่าง ${min}-${max}` 
+    };
   }
   
   return { isValid: true, message: '', value: numValue };
@@ -152,12 +171,12 @@ export const validateNumber = (value, fieldName, min, max) => {
 
 /**
  * Validates date input
- * @param {string} dateString - Date string to validate
- * @param {string} fieldName - Name of the field for error message
- * @param {boolean} allowPast - Whether to allow past dates (default: false)
- * @returns {object} - Validation result
  */
-export const validateDate = (dateString, fieldName, allowPast = false) => {
+export const validateDate = (
+  dateString: string, 
+  fieldName: string, 
+  allowPast: boolean = false
+): ValidationResult => {
   if (!dateString) {
     return { isValid: false, message: `กรุณาเลือก${fieldName}` };
   }
@@ -171,7 +190,10 @@ export const validateDate = (dateString, fieldName, allowPast = false) => {
   }
   
   if (!allowPast && date < today) {
-    return { isValid: false, message: `${fieldName}ต้องไม่เป็นวันที่ผ่านมาแล้ว` };
+    return { 
+      isValid: false, 
+      message: `${fieldName}ต้องไม่เป็นวันที่ผ่านมาแล้ว` 
+    };
   }
   
   return { isValid: true, message: '', value: date };
@@ -179,11 +201,9 @@ export const validateDate = (dateString, fieldName, allowPast = false) => {
 
 /**
  * Validates guest form data
- * @param {object} formData - Form data to validate
- * @returns {object} - Validation result with errors object
  */
-export const validateGuestForm = (formData) => {
-  const errors = {};
+export const validateGuestForm = (formData: any): GuestFormValidationResult => {
+  const errors: FormErrors = {};
   
   // First name validation
   const firstNameResult = validateRequired(formData.firstName, 'ชื่อ', 1, 50);
@@ -231,11 +251,11 @@ export const validateGuestForm = (formData) => {
       firstName: sanitizeInput(formData.firstName),
       lastName: sanitizeInput(formData.lastName),
       phone: sanitizeInput(formData.phone),
-      email: sanitizeInput(formData.email),
+      email: sanitizeInput(formData.email || ''),
       idNumber: sanitizeInput(formData.idNumber),
       nationality: sanitizeInput(formData.nationality),
-      numGuests: parseInt(formData.numGuests),
-      specialRequests: sanitizeInput(formData.specialRequests)
+      numGuests: parseInt(formData.numGuests, 10),
+      specialRequests: sanitizeInput(formData.specialRequests || '')
     }
   };
 };
@@ -244,13 +264,17 @@ export const validateGuestForm = (formData) => {
  * Rate limiting utility for preventing spam
  */
 export class RateLimit {
-  constructor(maxAttempts = 5, windowMs = 60000) {
+  private attempts: Map<string, number[]>;
+  private readonly maxAttempts: number;
+  private readonly windowMs: number;
+
+  constructor(maxAttempts: number = 5, windowMs: number = 60000) {
     this.attempts = new Map();
     this.maxAttempts = maxAttempts;
     this.windowMs = windowMs;
   }
   
-  isAllowed(key) {
+  isAllowed(key: string): boolean {
     const now = Date.now();
     const attempts = this.attempts.get(key) || [];
     
@@ -268,7 +292,7 @@ export class RateLimit {
     return true;
   }
   
-  getRemainingTime(key) {
+  getRemainingTime(key: string): number {
     const attempts = this.attempts.get(key) || [];
     if (attempts.length === 0) return 0;
     

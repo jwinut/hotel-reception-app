@@ -41,6 +41,10 @@
     ]
   },
   "devDependencies": {
-    "react-scripts": "^5.0.1"
+    "@types/node": "^24.0.0",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "react-scripts": "^5.0.1",
+    "typescript": "^5.8.3"
   }
 }

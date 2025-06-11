@@ -1,18 +1,32 @@
-import React from 'react';
+import React, { Component, ErrorInfo, ReactNode } from 'react';
 import './ErrorBoundary.css';
 
-class ErrorBoundary extends React.Component {
-  constructor(props) {
+interface Props {
+  children: ReactNode;
+}
+
+interface State {
+  hasError: boolean;
+  error: Error | null;
+  errorInfo: ErrorInfo | null;
+}
+
+class ErrorBoundary extends Component<Props, State> {
+  constructor(props: Props) {
     super(props);
-    this.state = { hasError: false, error: null, errorInfo: null };
+    this.state = { 
+      hasError: false, 
+      error: null, 
+      errorInfo: null 
+    };
   }
 
-  static getDerivedStateFromError(error) {
+  static getDerivedStateFromError(error: Error): Partial<State> {
     // Update state so the next render will show the fallback UI
     return { hasError: true };
   }
 
-  componentDidCatch(error, errorInfo) {
+  componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
     // Log error for debugging
     console.error('ErrorBoundary caught an error:', error, errorInfo);
     
@@ -28,18 +42,22 @@ class ErrorBoundary extends React.Component {
     }
   }
 
-  handleReload = () => {
+  handleReload = (): void => {
     // Reset error state and reload the component
     this.setState({ hasError: false, error: null, errorInfo: null });
     window.location.reload();
   };
 
-  render() {
+  handleGoHome = (): void => {
+    window.location.href = '/';
+  };
+
+  render(): ReactNode {
     if (this.state.hasError) {
       return (
         <div className="error-boundary">
           <div className="error-boundary-content">
-            <div className="error-icon">⚠️</div>
+            <div className="error-icon" role="img" aria-label="Warning">⚠️</div>
             <h2>เกิดข้อผิดพลาดในระบบ</h2>
             <p>ขออภัยในความไม่สะดวก ระบบเกิดข้อผิดพลาดที่ไม่คาดคิด</p>
             
@@ -47,12 +65,14 @@ class ErrorBoundary extends React.Component {
               <button 
                 className="error-button primary" 
                 onClick={this.handleReload}
+                type="button"
               >
                 โหลดหน้าใหม่
               </button>
               <button 
                 className="error-button secondary" 
-                onClick={() => window.location.href = '/'}
+                onClick={this.handleGoHome}
+                type="button"
               >
                 กลับหน้าหลัก
               </button>
