@@ -1,6 +1,6 @@
 // src/CurrentBookingsPage.js
 import React, { useState, useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import BookingSearch from './components/BookingSearch';
 import BookingCard from './components/BookingCard';
 import BookingDetails from './components/BookingDetails';
@@ -107,6 +107,7 @@ const generateMockBookings = () => {
 
 function CurrentBookingsPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [bookings, setBookings] = useState([]);
   const [filteredBookings, setFilteredBookings] = useState([]);
   const [selectedBooking, setSelectedBooking] = useState(null);
@@ -122,12 +123,24 @@ function CurrentBookingsPage() {
     return () => clearInterval(timerId);
   }, []);
 
-  // Close modal when component unmounts or page changes
+  // Close modal when route changes (fix for navigation issue)
   useEffect(() => {
-    return () => {
-      setSelectedBooking(null);
+    setSelectedBooking(null);
+  }, [location.pathname]);
+
+  // Add escape key handler for modal dismissal
+  useEffect(() => {
+    const handleEscapeKey = (event) => {
+      if (event.key === 'Escape' && selectedBooking) {
+        setSelectedBooking(null);
+      }
     };
-  }, []);
+
+    document.addEventListener('keydown', handleEscapeKey);
+    return () => {
+      document.removeEventListener('keydown', handleEscapeKey);
+    };
+  }, [selectedBooking]);
 
   // Load bookings data
   useEffect(() => {

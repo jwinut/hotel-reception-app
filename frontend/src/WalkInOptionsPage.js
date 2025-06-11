@@ -1,10 +1,11 @@
 // src/WalkInOptionsPage.js
 import React, { useState, useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import './WalkInOptionsPage.css';
 
 function WalkInOptionsPage() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [selectedOptionId, setSelectedOptionId] = useState(null);
   const [selectedRoomType, setSelectedRoomType] = useState('All');
@@ -29,12 +30,24 @@ function WalkInOptionsPage() {
     return () => clearInterval(timerId);
   }, []);
 
-  // Reset selected room when component unmounts
+  // Close modal when route changes (fix for navigation issue)
   useEffect(() => {
-    return () => {
-      setSelectedRoom(null);
+    setSelectedRoom(null);
+  }, [location.pathname]);
+
+  // Add escape key handler for modal dismissal
+  useEffect(() => {
+    const handleEscapeKey = (event) => {
+      if (event.key === 'Escape' && selectedRoom) {
+        setSelectedRoom(null);
+      }
     };
-  }, []);
+
+    document.addEventListener('keydown', handleEscapeKey);
+    return () => {
+      document.removeEventListener('keydown', handleEscapeKey);
+    };
+  }, [selectedRoom]);
 
   // --- Data Loading Effect ---
   useEffect(() => {

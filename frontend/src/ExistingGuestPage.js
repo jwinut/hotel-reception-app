@@ -1,6 +1,6 @@
 // src/ExistingGuestPage.js
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import GuestLookup from './components/GuestLookup';
 import CheckInProcess from './components/CheckInProcess';
 import './ExistingGuestPage.css';
@@ -76,6 +76,7 @@ const generateMockBookings = () => {
 
 function ExistingGuestPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [currentDateTime, setCurrentDateTime] = useState(new Date());
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [bookings, setBookings] = useState([]);
@@ -90,12 +91,24 @@ function ExistingGuestPage() {
     return () => clearInterval(timerId);
   }, []);
 
-  // Close any open modals when component unmounts or page changes
+  // Close any open states when route changes (fix for navigation issue)
   useEffect(() => {
-    return () => {
-      setSelectedBooking(null);
+    setSelectedBooking(null);
+  }, [location.pathname]);
+
+  // Add escape key handler for dismissing check-in process
+  useEffect(() => {
+    const handleEscapeKey = (event) => {
+      if (event.key === 'Escape' && selectedBooking) {
+        setSelectedBooking(null);
+      }
     };
-  }, []);
+
+    document.addEventListener('keydown', handleEscapeKey);
+    return () => {
+      document.removeEventListener('keydown', handleEscapeKey);
+    };
+  }, [selectedBooking]);
 
   // Load bookings data
   useEffect(() => {
