@@ -90,6 +90,13 @@ function ExistingGuestPage() {
     return () => clearInterval(timerId);
   }, []);
 
+  // Close any open modals when component unmounts or page changes
+  useEffect(() => {
+    return () => {
+      setSelectedBooking(null);
+    };
+  }, []);
+
   // Load bookings data
   useEffect(() => {
     const loadBookings = async () => {

@@ -122,6 +122,13 @@ function CurrentBookingsPage() {
     return () => clearInterval(timerId);
   }, []);
 
+  // Close modal when component unmounts or page changes
+  useEffect(() => {
+    return () => {
+      setSelectedBooking(null);
+    };
+  }, []);
+
   // Load bookings data
   useEffect(() => {
     const loadBookings = async () => {
