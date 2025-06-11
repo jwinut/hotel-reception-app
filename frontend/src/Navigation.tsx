@@ -1,5 +1,5 @@
 // src/Navigation.tsx
-import React from 'react';
+import React, { memo, useCallback, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import './Navigation.css';
 
@@ -11,7 +11,7 @@ interface NavigationProps {
   onViewUsers: () => void;
 }
 
-const Navigation: React.FC<NavigationProps> = ({ 
+const Navigation: React.FC<NavigationProps> = memo(({ 
   isAdminMode, 
   onReserved, 
   onCurrentBookings, 
@@ -21,15 +21,26 @@ const Navigation: React.FC<NavigationProps> = ({
   const navigate = useNavigate();
   const location = useLocation();
 
-  const handleNavigation = (path: string | null, action?: () => void): void => {
+  // Memoized navigation handler
+  const handleNavigation = useCallback((path: string | null, action?: () => void): void => {
     if (action) {
       action();
     } else if (path) {
       navigate(path);
     }
-  };
+  }, [navigate]);
 
-  const isActive = (path: string): boolean => location.pathname === path;
+  // Memoized active path checker
+  const isActive = useCallback((path: string): boolean => location.pathname === path, [location.pathname]);
+
+  // Memoized navigation buttons to prevent recreation on every render
+  const navigationButtons = useMemo(() => ({
+    walkInOptions: () => navigate('/walk-in-options'),
+    existingGuest: () => navigate('/existing-guest'),
+    newBooking: () => navigate('/new-booking'),
+    currentBookings: () => navigate('/current-bookings'),
+    home: () => navigate('/'),
+  }), [navigate]);
 
   return (
     <nav className="main-navigation">
@@ -39,14 +50,14 @@ const Navigation: React.FC<NavigationProps> = ({
           <h3 className="nav-section-title">เช็คอินลูกค้า</h3>
           <div className="nav-buttons">
             <button 
-              onClick={() => navigate('/walk-in-options')}
+              onClick={navigationButtons.walkInOptions}
               className={`nav-button primary ${isActive('/walk-in-options') ? 'active' : ''}`}
               type="button"
             >
               ลูกค้าใหม่ ยังไม่ได้จอง
             </button>
             <button 
-              onClick={() => navigate('/existing-guest')}
+              onClick={navigationButtons.existingGuest}
               className={`nav-button primary ${isActive('/existing-guest') ? 'active' : ''}`}
               type="button"
             >
@@ -60,14 +71,14 @@ const Navigation: React.FC<NavigationProps> = ({
           <h3 className="nav-section-title">จองห้อง</h3>
           <div className="nav-buttons">
             <button 
-              onClick={() => navigate('/new-booking')}
+              onClick={navigationButtons.newBooking}
               className={`nav-button booking ${isActive('/new-booking') ? 'active' : ''}`}
               type="button"
             >
               จองห้องใหม่
             </button>
             <button 
-              onClick={() => navigate('/current-bookings')}
+              onClick={navigationButtons.currentBookings}
               className={`nav-button booking ${isActive('/current-bookings') ? 'active' : ''}`}
               type="button"
             >
@@ -81,7 +92,7 @@ const Navigation: React.FC<NavigationProps> = ({
           <h3 className="nav-section-title">เมนูหลัก</h3>
           <div className="nav-buttons">
             <button 
-              onClick={() => handleNavigation('/')}
+              onClick={navigationButtons.home}
               className={`nav-button secondary ${isActive('/') ? 'active' : ''}`}
               type="button"
             >
@@ -115,6 +126,6 @@ const Navigation: React.FC<NavigationProps> = ({
       </div>
     </nav>
   );
-};
+});
 
 export default Navigation;
