@@ -1,5 +1,5 @@
 // src/CurrentBookingsPage.js
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import BookingSearch from './components/BookingSearch';
 import BookingCard from './components/BookingCard';
@@ -125,7 +125,6 @@ function CurrentBookingsPage() {
 
   // Close modal when route changes (fix for navigation issue)
   useEffect(() => {
-    console.log('Route changed to:', location.pathname);
     setSelectedBooking(null);
   }, [location.pathname]);
 
@@ -190,8 +189,8 @@ function CurrentBookingsPage() {
     };
   }, [bookings]);
 
-  // Handle search and filter
-  const handleSearchFilter = (searchTerm, statusFilter, dateFilter) => {
+  // Handle search and filter - wrapped with useCallback to prevent infinite re-renders
+  const handleSearchFilter = useCallback((searchTerm, statusFilter, dateFilter) => {
     let filtered = [...bookings];
 
     // Search by name, phone, or booking ID
@@ -219,7 +218,7 @@ function CurrentBookingsPage() {
     }
 
     setFilteredBookings(filtered);
-  };
+  }, [bookings]);
 
   // Handle booking actions
   const handleCheckIn = (bookingId) => {
