@@ -1,145 +1,369 @@
 /* src/WalkInOptionsPage.css */
-/* ... (previous styles for .walk-in-options-container, h2, .options-button-group, .option-button, .active, .back-button remain mostly the same) ... */
 
+.date-time-header {
+  font-weight: 600;
+  font-size: 1.4em;
+  background: linear-gradient(135deg, var(--c-primary) 0%, var(--c-purple) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-align: center;
+  margin-bottom: 2.5rem;
+  padding: 1rem;
+  border-radius: var(--radius-lg);
+  position: relative;
+}
+.date-time-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.05) 0%, rgba(124, 58, 237, 0.05) 100%);
+  border-radius: var(--radius-lg);
+  z-index: -1;
+}
+
+.action-group {
+  background: linear-gradient(135deg, var(--c-surface) 0%, #fefefe 100%);
+  padding: 2.5rem 3rem;
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 2rem;
+}
+.action-group::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--c-primary) 0%, var(--c-green) 50%, var(--c-purple) 100%);
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+}
+.action-group:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.group-title {
+  margin-top: 0;
+  margin-bottom: 2rem;
+  font-size: 1.35em;
+  font-weight: 600;
+  color: var(--c-text);
+  position: relative;
+  padding-bottom: 0.5rem;
+}
+.group-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--c-primary) 0%, var(--c-green) 100%);
+  border-radius: 2px;
+}
+
+/* --- Container and General Styles --- */
 .walk-in-options-container {
-    padding: 20px;
-    max-width: 95%; /* Allow more width for horizontal groups */
-    margin: 20px auto;
-    background-color: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    text-align: center;
+  padding: 2rem;
+  max-width: 95%;
+  margin: 2rem auto;
+  background: linear-gradient(135deg, var(--c-surface) 0%, #fefefe 100%);
+  border-radius: var(--radius-xl);
+  text-align: center;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--c-border);
+}
+.walk-in-options-container hr {
+  border: 0;
+  border-top: 1px solid var(--c-border-light);
+  margin: 2rem 0;
+}
+.walk-in-options-container h2,
+.walk-in-options-container h3 {
+  color: var(--c-text);
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+}
+.error-text {
+  color: #dc2626;
+  font-weight: 600;
+  padding: 1rem;
+  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+  border-radius: var(--radius-md);
+  border: 1px solid #fecaca;
+}
+.back-button {
+  background: linear-gradient(135deg, var(--c-secondary) 0%, #475569 100%);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  margin-top: 2rem;
+  font-size: 1.1em;
+  font-weight: 500;
+  box-shadow: var(--shadow-md);
+}
+.back-button:hover {
+  background: linear-gradient(135deg, #475569 0%, var(--c-secondary) 100%);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* --- Booking Option Buttons --- */
+.options-button-group {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+.option-button {
+  background: linear-gradient(135deg, var(--c-green) 0%, var(--c-green-hover) 100%);
+  color: white;
+  border: 2px solid transparent;
+  padding: 1rem 1.5rem;
+  font-size: 1.1em;
+  font-weight: 500;
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: var(--shadow-md);
+  position: relative;
+  overflow: hidden;
+}
+.option-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s;
+}
+.option-button:hover::before {
+  left: 100%;
+}
+.option-button:hover {
+  background: linear-gradient(135deg, var(--c-green-hover) 0%, var(--c-green) 100%);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: var(--shadow-lg);
+}
+.option-button.active {
+  background: linear-gradient(135deg, var(--c-primary) 0%, var(--c-primary-hover) 100%);
+  border-color: var(--c-primary);
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: var(--shadow-xl);
+}
+
+/* --- Room Type Filter Buttons --- */
+.room-type-filters {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+}
+.filter-button {
+  background: linear-gradient(135deg, var(--c-border-light) 0%, #f1f5f9 100%);
+  color: var(--c-text);
+  border: 2px solid var(--c-border);
+  padding: 0.75rem 1.25rem;
+  font-size: 0.95em;
+  font-weight: 500;
+  border-radius: var(--radius-xl);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: var(--shadow-sm);
+}
+.filter-button:hover {
+  background: linear-gradient(135deg, var(--c-border) 0%, var(--c-border-light) 100%);
+  color: var(--c-text);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+.filter-button.active {
+  background: linear-gradient(135deg, var(--c-primary) 0%, var(--c-primary-hover) 100%);
+  color: white;
+  border-color: var(--c-primary);
+  font-weight: 600;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* --- Room Grid Layout Styles --- */
+.room-grid-container {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  padding: 2rem;
+  border-radius: var(--radius-xl);
+  overflow-x: auto;
+  box-shadow: inset 0 2px 4px 0 rgb(0 0 0 / 0.06);
+  border: 1px solid #bae6fd;
+}
+
+.floor-container {
+  margin-bottom: 15px; /* Space between floors */
+}
+.floor-container:last-child {
+  margin-bottom: 0;
+}
+
+.room-grid-row {
+  display: flex;
+  justify-content: center;
+  gap: 5px; /* Small gap between cells */
+  margin-bottom: 5px;
+}
+.room-grid-row:last-child {
+  margin-bottom: 0;
+}
+
+.room-cell {
+  border: 2px solid #93c5fd;
+  border-radius: var(--radius-md);
+  width: 100px;
+  height: 70px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  cursor: pointer;
+  font-family: var(--font-sans);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Cell for empty space */
+.room-cell.empty {
+  background-color: transparent;
+  border-color: transparent;
+  cursor: default;
+  box-shadow: none;
+}
+/* Cell for rooms not in roomData.json */
+.room-cell.unknown {
+  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+  border-color: #fca5a5;
+  color: #dc2626;
+  font-size: 0.85em;
+  cursor: not-allowed;
+  box-shadow: var(--shadow-sm);
+}
+
+/* Selectable/Enabled Room Style */
+.room-cell.enabled {
+  background: linear-gradient(135deg, var(--c-surface) 0%, #f8fafc 100%);
+}
+.room-cell.enabled:hover {
+  border-color: var(--c-primary);
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: var(--shadow-lg);
+  background: linear-gradient(135deg, #f0f9ff 0%, var(--c-surface) 100%);
+}
+
+/* Disabled/Grayed-out Room Style */
+.room-cell.disabled {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-color: var(--c-border);
+  color: var(--c-text-light);
+  cursor: not-allowed;
+  opacity: 0.6;
+  box-shadow: none;
+}
+
+.room-number {
+  font-size: 1.2em;
+  font-weight: 600;
+  margin-bottom: 0.125rem;
+}
+
+.room-type {
+  font-size: 0.75em;
+  color: var(--c-text-light);
+  font-weight: 500;
+}
+
+.room-cell.disabled .room-type {
+  color: #94a3b8;
+}
+
+.room-cell.enabled .room-number {
+  color: var(--c-text);
+}
+
+.room-cell.enabled:hover .room-number {
+  color: var(--c-primary);
+}
+
+/* --- Responsive Design --- */
+@media (max-width: 768px) {
+  .walk-in-options-container {
+    padding: 1.5rem 1rem;
+    margin: 1rem auto;
   }
   
-  .walk-in-options-container h2,
-  .walk-in-options-container h3 {
-    color: #34495e;
-    margin-bottom: 25px;
+  .action-group {
+    padding: 2rem 1.5rem;
+    margin-bottom: 1.5rem;
   }
   
   .options-button-group {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 15px;
-    margin-bottom: 30px;
+    flex-direction: column;
+    align-items: center;
   }
   
   .option-button {
-    background-color: #1abc9c;
-    color: white;
-    border: 2px solid transparent;
-    padding: 15px 20px;
-    text-align: center;
-    font-size: 1em;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease, border-color 0.3s ease;
+    width: 100%;
+    max-width: 280px;
   }
   
-  .option-button:hover {
-    background-color: #16a085;
+  .room-type-filters {
+    gap: 0.5rem;
   }
   
-  .option-button.active {
-    background-color: #16a085;
-    border-color: #117a65;
-    box-shadow: 0 0 10px rgba(22, 160, 133, 0.5);
+  .filter-button {
+    padding: 0.5rem 1rem;
+    font-size: 0.9em;
+  }
+  
+  .room-grid-container {
+    padding: 1.5rem 1rem;
+    overflow-x: auto;
+  }
+  
+  .room-cell {
+    width: 85px;
+    height: 65px;
+  }
+  
+  .room-number {
+    font-size: 1.1em;
+  }
+  
+  .room-type {
+    font-size: 0.7em;
+  }
+  
+  .date-time-header {
+    font-size: 1.2em;
+    padding: 0.75rem;
+    margin-bottom: 2rem;
   }
   
   .back-button {
-    background-color: #7f8c8d;
-    color: white;
-    border: none;
-    padding: 12px 25px;
-    text-align: center;
+    padding: 0.875rem 1.5rem;
     font-size: 1em;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    margin-top: 30px;
   }
-  
-  .back-button:hover {
-    background-color: #6c7a7b;
-  }
-  
-  /* Room Selection Area Styles */
-  .room-selection-area {
-    margin-top: 30px;
-    padding-top: 20px;
-    border-top: 1px solid #ecf0f1;
-  }
-  
-  .loading-text, .error-text {
-    font-style: italic;
-    color: #7f8c8d;
-    padding: 10px;
-  }
-  
-  .error-text {
-    color: #e74c3c;
-    font-weight: bold;
-  }
-  
-  /* NEW Styles for Room Groups and Room Buttons */
-  .room-groups-container {
-    display: flex;
-    flex-direction: row; /* Arrange groups horizontally */
-    overflow-x: auto;   /* Allow horizontal scrolling if groups overflow */
-    padding: 10px 0;    /* Add some padding for scrollbar space */
-    gap: 20px;          /* Space between room groups */
-    justify-content: flex-start; /* Align groups to the start */
-    align-items: flex-start; /* Align groups to the top */
-    min-height: 200px; /* Ensure container has some height */
-  }
-  
-  .room-group {
-    background-color: #f8f9fa;
-    border: 1px solid #dee2e6;
-    border-radius: 6px;
-    padding: 15px;
-    min-width: 200px; /* Minimum width for a group */
-    max-width: 300px; /* Maximum width for a group */
-    display: flex;
-    flex-direction: column;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-  }
-  
-  .room-group-label {
-    font-size: 1.1em;
-    color: #343a40;
-    margin-top: 0;
-    margin-bottom: 15px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #e9ecef;
-    text-align: left; /* Align label to the left */
-  }
-  
-  .room-buttons-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); /* Grid for room buttons */
-    gap: 10px; /* Space between room buttons */
-  }
-  
-  .room-button {
-    background-color: #5dade2;
-    color: white;
-    border: none;
-    padding: 10px 8px; /* Adjust padding as needed */
-    font-size: 0.9em;
-    font-weight: bold;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.2s ease-in-out, transform 0.1s ease;
-    text-align: center;
-  }
-  
-  .room-button:hover {
-    background-color: #3498db;
-    transform: translateY(-1px); /* Slight lift on hover */
-  }
-  
-  .room-button:active {
-    background-color: #2874a6;
-    transform: translateY(0px);
-  }
+}
