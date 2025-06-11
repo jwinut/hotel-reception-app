@@ -4,15 +4,19 @@ A modern, professional hotel reception system built for Thai hotels. This system
 
 ## 🏨 Features
 
-### Current (Version 1.0)
+### Current (Version 1.1)
 - **Walk-in Guest Check-in**: Visual room selection with real-time availability
+- **🆕 Complete Booking System**: Multi-step wizard for advance reservations
+- **🆕 Guest Management**: Comprehensive guest information with validation
+- **🆕 Room Availability**: Visual room selection with pricing integration
+- **🆕 Booking Confirmation**: Professional receipts with payment options
 - **Price Management**: Dynamic pricing for different room types and meal options  
 - **Modern Navigation**: Professional interface with admin controls
 - **Responsive Design**: Optimized for tablets and desktop use
 - **Thai Language Support**: Full Thai language interface
 
 ### Coming Soon
-- **Advance Booking Management**: Create and manage reservations
+- **Booking Management Dashboard**: View and edit existing reservations
 - **Guest Profile System**: Track guest history and preferences
 - **Room Status Management**: Real-time room availability tracking
 - **Reporting & Analytics**: Occupancy and revenue insights
@@ -140,7 +144,14 @@ For questions about configuration, features, or technical issues:
 
 ## 🔄 Version History
 
-### Version 1.0 (Current)
+### Version 1.1 (Current)
+- **Major Feature**: Complete booking creation system
+- Multi-step booking wizard with guest information, dates, and room selection
+- Booking confirmation with payment options and receipt printing
+- Professional UI with responsive design for all devices
+- Integration with existing navigation and configuration systems
+
+### Version 1.0
 - Modern UI with professional hotel aesthetic
 - Walk-in guest check-in with visual room selection
 - Price management system
@@ -148,7 +159,7 @@ For questions about configuration, features, or technical issues:
 - Comprehensive documentation
 
 ### Planned Version 2.0
-- Complete booking management system
+- Booking management dashboard
 - Guest profile tracking
 - Room status management
 - Basic reporting features
