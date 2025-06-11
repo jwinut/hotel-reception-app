@@ -1,9 +1,10 @@
 // src/App.js
-import React, { useState } from 'react'; // Import useState
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
 import MainPage from './MainPage';
 import WalkInOptionsPage from './WalkInOptionsPage';
+import Navigation from './Navigation';
 
 function App() {
   // State and logic are "lifted up" to the parent component
@@ -25,6 +26,13 @@ function App() {
     }
   };
 
+  // Navigation handlers
+  const handleReserved = () => alert("ฟังก์ชันสำหรับ 'ลูกค้าจองมาแล้ว' จะถูกพัฒนาในลำดับถัดไป");
+  const handleNewBooking = () => alert("ฟังก์ชัน 'จองห้องใหม่' จะถูกพัฒนาในลำดับถัดไป");
+  const handleCurrentBookings = () => alert("ฟังก์ชัน 'รายการจองปัจจุบัน' จะถูกพัฒนาในลำดับถัดไป");
+  const handleAddUser = () => alert("ฟังก์ชัน 'เพิ่มผู้ใช้งานใหม่' จะถูกพัฒนาในลำดับถัดไป");
+  const handleViewUsers = () => alert("ฟังก์ชัน 'ดูรายชื่อผู้ใช้งาน' จะถูกพัฒนาในลำดับถัดไป");
+
   return (
     <Router>
       <div className="App">
@@ -38,9 +46,16 @@ function App() {
             </svg>
           </button>
         </header>
+        <Navigation 
+          isAdminMode={isAdminMode}
+          onReserved={handleReserved}
+          onNewBooking={handleNewBooking}
+          onCurrentBookings={handleCurrentBookings}
+          onAddUser={handleAddUser}
+          onViewUsers={handleViewUsers}
+        />
         <main>
           <Routes>
-            {/* Pass isAdminMode down to MainPage as a prop */}
             <Route path="/" element={<MainPage isAdminMode={isAdminMode} />} />
             <Route path="/walk-in-options" element={<WalkInOptionsPage />} />
           </Routes>

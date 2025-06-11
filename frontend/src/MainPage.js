@@ -30,32 +30,13 @@ function MainPage({ isAdminMode }) {
   };
 
 
-  // --- Placeholder Handlers for other buttons ---
-  const handleWalkIn = () => navigate('/walk-in-options');
-  const handleReserved = () => alert("ฟังก์ชันสำหรับ 'ลูกค้าจองมาแล้ว' จะถูกพัฒนาในลำดับถัดไป");
-  const handleNewBooking = () => alert("ฟังก์ชัน 'จองห้องใหม่' จะถูกพัฒนาในลำดับถัดไป");
-  const handleCurrentBookings = () => alert("ฟังก์ชัน 'รายการจองปัจจุบัน' จะถูกพัฒนาในลำดับถัดไป");
-  const handleAddUser = () => alert("ฟังก์ชัน 'เพิ่มผู้ใช้งานใหม่' จะถูกพัฒนาในลำดับถัดไป");
-  const handleViewUsers = () => alert("ฟังก์ชัน 'ดูรายชื่อผู้ใช้งาน' จะถูกพัฒนาในลำดับถัดไป");
 
 
   return (
     <div className="main-page-container">
-      {/* --- Group 1 & 2 (Unchanged) --- */}
-      <div className="action-group">
-        <h2 className="group-title">เช็คอินลูกค้า กรุณาเลือกประเภทผู้เข้าพัก</h2>
-        <div className="button-container">
-          <button onClick={handleWalkIn} className="main-button">ลูกค้าไม่ได้จองมาก่อน</button>
-          <button onClick={handleReserved} className="main-button">ลูกค้าจองมาแล้ว</button>
-        </div>
-      </div>
-
-      <div className="action-group">
-        <h2 className="group-title">จองห้องให้ลูกค้า</h2>
-        <div className="button-container">
-          <button onClick={handleNewBooking} className="main-button booking-button">จองห้องใหม่</button>
-          <button onClick={handleCurrentBookings} className="main-button booking-button">รายการจองปัจจุบัน</button>
-        </div>
+      <div className="welcome-section">
+        <h1 className="welcome-title">ยินดีต้อนรับสู่ระบบจัดการโรงแรม</h1>
+        <p className="welcome-text">เลือกเมนูที่ต้องการจากแถบนำทางด้านบน หรือจัดการราคาห้องพักด้านล่าง</p>
       </div>
       
 
@@ -106,16 +87,6 @@ function MainPage({ isAdminMode }) {
         )}
       </div>
 
-      {/* --- Admin Section (Unchanged) --- */}
-      {isAdminMode && (
-        <div className="action-group admin-panel">
-          <h2 className="group-title">จัดการผู้ใช้งาน (Admin)</h2>
-          <div className="button-container">
-            <button onClick={handleAddUser} className="main-button admin-button">เพิ่มผู้ใช้งานใหม่</button>
-            <button onClick={handleViewUsers} className="main-button admin-button">ดูรายชื่อผู้ใช้งาน</button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

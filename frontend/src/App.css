@@ -56,7 +56,49 @@
   padding: 0 1rem;
   display: flex;
   flex-direction: column;
-  gap: 2rem; /* Creates space between action groups */
+  gap: 2rem;
+}
+
+/* --- Welcome Section --- */
+.welcome-section {
+  text-align: center;
+  padding: 3rem 2rem;
+  background: linear-gradient(135deg, var(--c-surface) 0%, #fefefe 100%);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--c-border);
+  position: relative;
+  overflow: hidden;
+}
+
+.welcome-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--c-primary) 0%, var(--c-green) 50%, var(--c-purple) 100%);
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+}
+
+.welcome-title {
+  font-size: 2.5em;
+  font-weight: 600;
+  margin: 0 0 1rem 0;
+  background: linear-gradient(135deg, var(--c-primary) 0%, var(--c-purple) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.welcome-text {
+  font-size: 1.2em;
+  color: var(--c-text-light);
+  margin: 0;
+  line-height: 1.6;
+  max-width: 600px;
+  margin: 0 auto;
 }
 
 .action-group {
@@ -292,6 +334,15 @@
   .price-table-container {
     margin: 0 -1.5rem;
     border-radius: 0;
+  }
+  .welcome-section {
+    padding: 2rem 1.5rem;
+  }
+  .welcome-title {
+    font-size: 2em;
+  }
+  .welcome-text {
+    font-size: 1.1em;
   }
 }
 

@@ -112,7 +112,10 @@ function WalkInOptionsPage() {
 
   return (
     <div className="walk-in-options-container">
-      <h2 className="date-time-header">{formattedDate} | เวลา {formattedTime}</h2>
+      <div className="page-header">
+        <h1 className="page-title">เช็คอินลูกค้าใหม่ ยังไม่ได้จอง</h1>
+        <h2 className="date-time-header">{formattedDate} | เวลา {formattedTime}</h2>
+      </div>
       
       <div className="action-group">
         <h2 className="group-title">เลือกประเภทการจอง (Walk-in):</h2>
