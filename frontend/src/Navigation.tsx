@@ -1,21 +1,35 @@
-// src/Navigation.js
+// src/Navigation.tsx
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import './Navigation.css';
 
-function Navigation({ isAdminMode, onReserved, onCurrentBookings, onAddUser, onViewUsers }) {
+interface NavigationProps {
+  isAdminMode: boolean;
+  onReserved: () => void;
+  onCurrentBookings: () => void;
+  onAddUser: () => void;
+  onViewUsers: () => void;
+}
+
+const Navigation: React.FC<NavigationProps> = ({ 
+  isAdminMode, 
+  onReserved, 
+  onCurrentBookings, 
+  onAddUser, 
+  onViewUsers 
+}) => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const handleNavigation = (path, action) => {
+  const handleNavigation = (path: string | null, action?: () => void): void => {
     if (action) {
       action();
-    } else {
+    } else if (path) {
       navigate(path);
     }
   };
 
-  const isActive = (path) => location.pathname === path;
+  const isActive = (path: string): boolean => location.pathname === path;
 
   return (
     <nav className="main-navigation">
@@ -27,12 +41,14 @@ function Navigation({ isAdminMode, onReserved, onCurrentBookings, onAddUser, onV
             <button 
               onClick={() => navigate('/walk-in-options')}
               className={`nav-button primary ${isActive('/walk-in-options') ? 'active' : ''}`}
+              type="button"
             >
               ลูกค้าใหม่ ยังไม่ได้จอง
             </button>
             <button 
               onClick={() => navigate('/existing-guest')}
               className={`nav-button primary ${isActive('/existing-guest') ? 'active' : ''}`}
+              type="button"
             >
               ลูกค้าจองมาแล้ว
             </button>
@@ -46,12 +62,14 @@ function Navigation({ isAdminMode, onReserved, onCurrentBookings, onAddUser, onV
             <button 
               onClick={() => navigate('/new-booking')}
               className={`nav-button booking ${isActive('/new-booking') ? 'active' : ''}`}
+              type="button"
             >
               จองห้องใหม่
             </button>
             <button 
               onClick={() => navigate('/current-bookings')}
               className={`nav-button booking ${isActive('/current-bookings') ? 'active' : ''}`}
+              type="button"
             >
               รายการจองปัจจุบัน
             </button>
@@ -65,6 +83,7 @@ function Navigation({ isAdminMode, onReserved, onCurrentBookings, onAddUser, onV
             <button 
               onClick={() => handleNavigation('/')}
               className={`nav-button secondary ${isActive('/') ? 'active' : ''}`}
+              type="button"
             >
               หน้าหลัก
             </button>
@@ -79,12 +98,14 @@ function Navigation({ isAdminMode, onReserved, onCurrentBookings, onAddUser, onV
               <button 
                 onClick={() => handleNavigation(null, onAddUser)}
                 className="nav-button admin"
+                type="button"
               >
                 เพิ่มผู้ใช้งาน
               </button>
               <button 
                 onClick={() => handleNavigation(null, onViewUsers)}
                 className="nav-button admin"
+                type="button"
               >
                 ดูรายชื่อผู้ใช้งาน
               </button>
@@ -94,6 +115,6 @@ function Navigation({ isAdminMode, onReserved, onCurrentBookings, onAddUser, onV
       </div>
     </nav>
   );
-}
+};
 
 export default Navigation;
