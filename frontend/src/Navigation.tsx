@@ -1,6 +1,7 @@
 // src/Navigation.tsx
 import React, { memo, useCallback, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { createBreadcrumbAriaProps, isEnterOrSpace } from './utils/accessibility';
 import './Navigation.css';
 
 interface NavigationProps {
@@ -43,16 +44,18 @@ const Navigation: React.FC<NavigationProps> = memo(({
   }), [navigate]);
 
   return (
-    <nav className="main-navigation">
+    <nav className="main-navigation" role="navigation" aria-label="เมนูหลัก">
       <div className="nav-container">
         {/* Primary Navigation */}
         <div className="nav-section">
-          <h3 className="nav-section-title">เช็คอินลูกค้า</h3>
-          <div className="nav-buttons">
+          <h3 className="nav-section-title" id="checkin-section">เช็คอินลูกค้า</h3>
+          <div className="nav-buttons" role="group" aria-labelledby="checkin-section">
             <button 
               onClick={navigationButtons.walkInOptions}
               className={`nav-button primary ${isActive('/walk-in-options') ? 'active' : ''}`}
               type="button"
+              aria-describedby="checkin-section"
+              {...createBreadcrumbAriaProps(isActive('/walk-in-options'))}
             >
               ลูกค้าใหม่ ยังไม่ได้จอง
             </button>
@@ -60,6 +63,8 @@ const Navigation: React.FC<NavigationProps> = memo(({
               onClick={navigationButtons.existingGuest}
               className={`nav-button primary ${isActive('/existing-guest') ? 'active' : ''}`}
               type="button"
+              aria-describedby="checkin-section"
+              {...createBreadcrumbAriaProps(isActive('/existing-guest'))}
             >
               ลูกค้าจองมาแล้ว
             </button>
@@ -68,12 +73,14 @@ const Navigation: React.FC<NavigationProps> = memo(({
 
         {/* Booking Management */}
         <div className="nav-section">
-          <h3 className="nav-section-title">จองห้อง</h3>
-          <div className="nav-buttons">
+          <h3 className="nav-section-title" id="booking-section">จองห้อง</h3>
+          <div className="nav-buttons" role="group" aria-labelledby="booking-section">
             <button 
               onClick={navigationButtons.newBooking}
               className={`nav-button booking ${isActive('/new-booking') ? 'active' : ''}`}
               type="button"
+              aria-describedby="booking-section"
+              {...createBreadcrumbAriaProps(isActive('/new-booking'))}
             >
               จองห้องใหม่
             </button>
@@ -81,6 +88,8 @@ const Navigation: React.FC<NavigationProps> = memo(({
               onClick={navigationButtons.currentBookings}
               className={`nav-button booking ${isActive('/current-bookings') ? 'active' : ''}`}
               type="button"
+              aria-describedby="booking-section"
+              {...createBreadcrumbAriaProps(isActive('/current-bookings'))}
             >
               รายการจองปัจจุบัน
             </button>
@@ -89,12 +98,14 @@ const Navigation: React.FC<NavigationProps> = memo(({
 
         {/* Quick Access */}
         <div className="nav-section">
-          <h3 className="nav-section-title">เมนูหลัก</h3>
-          <div className="nav-buttons">
+          <h3 className="nav-section-title" id="main-section">เมนูหลัก</h3>
+          <div className="nav-buttons" role="group" aria-labelledby="main-section">
             <button 
               onClick={navigationButtons.home}
               className={`nav-button secondary ${isActive('/') ? 'active' : ''}`}
               type="button"
+              aria-describedby="main-section"
+              {...createBreadcrumbAriaProps(isActive('/'))}
             >
               หน้าหลัก
             </button>
@@ -104,12 +115,13 @@ const Navigation: React.FC<NavigationProps> = memo(({
         {/* Admin Section */}
         {isAdminMode && (
           <div className="nav-section admin-section">
-            <h3 className="nav-section-title">จัดการผู้ใช้งาน</h3>
-            <div className="nav-buttons">
+            <h3 className="nav-section-title" id="admin-section">จัดการผู้ใช้งาน</h3>
+            <div className="nav-buttons" role="group" aria-labelledby="admin-section">
               <button 
                 onClick={() => handleNavigation(null, onAddUser)}
                 className="nav-button admin"
                 type="button"
+                aria-describedby="admin-section"
               >
                 เพิ่มผู้ใช้งาน
               </button>
@@ -117,6 +129,7 @@ const Navigation: React.FC<NavigationProps> = memo(({
                 onClick={() => handleNavigation(null, onViewUsers)}
                 className="nav-button admin"
                 type="button"
+                aria-describedby="admin-section"
               >
                 ดูรายชื่อผู้ใช้งาน
               </button>

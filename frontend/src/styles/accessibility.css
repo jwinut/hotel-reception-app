@@ -1,0 +1,353 @@
+/* src/styles/accessibility.css */
+/* WCAG 2.1 AA Accessibility Styles */
+
+/* Screen reader only content */
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+/* Screen reader only content that becomes visible on focus */
+.sr-only-focusable:focus {
+  position: static !important;
+  width: auto !important;
+  height: auto !important;
+  padding: inherit !important;
+  margin: inherit !important;
+  overflow: visible !important;
+  clip: auto !important;
+  white-space: normal !important;
+}
+
+/* Skip links */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  z-index: 1000;
+  padding: 8px 16px;
+  background: var(--primary-color);
+  color: white;
+  text-decoration: none;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 14px;
+  transition: top 0.3s ease;
+}
+
+.skip-link:focus {
+  top: 6px;
+}
+
+/* Focus management */
+.focus-trap {
+  position: relative;
+}
+
+/* Enhanced focus indicators */
+*:focus {
+  outline: 2px solid var(--focus-color, #005fcc) !important;
+  outline-offset: 2px !important;
+}
+
+/* Custom focus indicators for different elements */
+button:focus,
+[role="button"]:focus {
+  outline: 2px solid var(--focus-color, #005fcc) !important;
+  outline-offset: 2px !important;
+  box-shadow: 0 0 0 4px rgba(0, 95, 204, 0.25) !important;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: 2px solid var(--focus-color, #005fcc) !important;
+  outline-offset: 2px !important;
+  border-color: var(--focus-color, #005fcc) !important;
+}
+
+a:focus {
+  outline: 2px solid var(--focus-color, #005fcc) !important;
+  outline-offset: 2px !important;
+  text-decoration: underline !important;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .button,
+  .nav-button {
+    border: 2px solid currentColor;
+  }
+  
+  .form-input {
+    border: 2px solid currentColor;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Increased contrast for better readability */
+@media (prefers-contrast: more) {
+  :root {
+    --text-color: #000000;
+    --background-color: #ffffff;
+    --border-color: #000000;
+  }
+}
+
+/* Focus visible for keyboard navigation */
+.js-focus-visible :focus:not(.focus-visible) {
+  outline: none !important;
+}
+
+.js-focus-visible .focus-visible {
+  outline: 2px solid var(--focus-color, #005fcc) !important;
+  outline-offset: 2px !important;
+}
+
+/* Error states */
+.error,
+[aria-invalid="true"] {
+  border-color: #d32f2f !important;
+  color: #d32f2f;
+}
+
+.error:focus,
+[aria-invalid="true"]:focus {
+  outline-color: #d32f2f !important;
+  box-shadow: 0 0 0 4px rgba(211, 47, 47, 0.25) !important;
+}
+
+/* Success states */
+.success,
+[aria-invalid="false"] {
+  border-color: #2e7d32;
+}
+
+/* Loading states */
+[aria-busy="true"] {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+/* Disabled states */
+[aria-disabled="true"],
+:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Modal and dialog styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 8px;
+  padding: 24px;
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow: auto;
+  position: relative;
+}
+
+.modal-content:focus {
+  outline: none;
+}
+
+/* Live regions */
+.live-region {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+/* Navigation landmarks */
+[role="navigation"] {
+  border-bottom: 1px solid var(--border-color, #e0e0e0);
+}
+
+[role="main"] {
+  min-height: calc(100vh - 200px);
+}
+
+/* Table accessibility */
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th {
+  background-color: var(--table-header-bg, #f5f5f5);
+  font-weight: 600;
+  text-align: left;
+  padding: 12px;
+  border: 1px solid var(--border-color, #e0e0e0);
+}
+
+td {
+  padding: 12px;
+  border: 1px solid var(--border-color, #e0e0e0);
+}
+
+/* Form accessibility */
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 4px;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.form-input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 2px solid var(--border-color, #e0e0e0);
+  border-radius: 4px;
+  font-size: 16px;
+  background: white;
+}
+
+.form-error {
+  color: #d32f2f;
+  font-size: 14px;
+  margin-top: 4px;
+}
+
+.form-help {
+  color: var(--text-secondary, #666);
+  font-size: 14px;
+  margin-top: 4px;
+}
+
+/* Required field indicator */
+.required::after {
+  content: " *";
+  color: #d32f2f;
+  font-weight: bold;
+}
+
+/* Button accessibility */
+.button {
+  padding: 8px 16px;
+  border: 2px solid transparent;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 44px; /* Touch target size */
+  min-width: 44px;
+}
+
+.button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Touch targets */
+button,
+[role="button"],
+a,
+input,
+select,
+textarea {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Color accessibility */
+.text-primary {
+  color: var(--primary-color);
+}
+
+.text-secondary {
+  color: var(--text-secondary);
+}
+
+.text-error {
+  color: #d32f2f;
+}
+
+.text-success {
+  color: #2e7d32;
+}
+
+.text-warning {
+  color: #f57c00;
+}
+
+/* Ensure minimum color contrast ratios */
+:root {
+  --focus-color: #005fcc;
+  --error-color: #d32f2f;
+  --success-color: #2e7d32;
+  --warning-color: #f57c00;
+  --text-color: #212121;
+  --text-secondary: #666666;
+  --border-color: #e0e0e0;
+  --background-color: #ffffff;
+}
+
+/* Dark mode support with accessible colors */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --text-color: #ffffff;
+    --text-secondary: #b3b3b3;
+    --border-color: #404040;
+    --background-color: #121212;
+    --focus-color: #90caf9;
+  }
+}
+
+/* Animation preferences */
+@media (prefers-reduced-motion: no-preference) {
+  .transition {
+    transition: all 0.2s ease;
+  }
+}
+
+/* Print accessibility */
+@media print {
+  .skip-link,
+  .sr-only {
+    display: none !important;
+  }
+  
+  a[href^="http"]:after {
+    content: " (" attr(href) ")";
+  }
+}

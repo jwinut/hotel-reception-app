@@ -1,0 +1,372 @@
+/* src/components/AccessibleForm.css */
+/* Accessible Form Components Styles */
+
+/* Form Group */
+.form-group {
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.form-group:last-child {
+  margin-bottom: 0;
+}
+
+/* Form Labels */
+.form-label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text-color, #212121);
+  line-height: 1.4;
+}
+
+.form-label.required::after {
+  content: " *";
+  color: var(--error-color, #d32f2f);
+  font-weight: bold;
+  margin-left: 2px;
+}
+
+/* Form Inputs */
+.form-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid var(--border-color, #e0e0e0);
+  border-radius: 6px;
+  font-size: 16px;
+  font-family: inherit;
+  background-color: var(--input-bg, #ffffff);
+  color: var(--text-color, #212121);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  min-height: 44px; /* WCAG touch target minimum */
+  box-sizing: border-box;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--focus-color, #005fcc);
+  box-shadow: 0 0 0 3px rgba(0, 95, 204, 0.25);
+}
+
+.form-input:disabled {
+  background-color: var(--disabled-bg, #f5f5f5);
+  color: var(--disabled-text, #999999);
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.form-input.error {
+  border-color: var(--error-color, #d32f2f);
+  background-color: var(--error-bg, #fef7f7);
+}
+
+.form-input.error:focus {
+  border-color: var(--error-color, #d32f2f);
+  box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.25);
+}
+
+/* Textarea specific styles */
+.form-textarea {
+  min-height: 100px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+/* Select specific styles */
+.form-select {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 12px center;
+  background-repeat: no-repeat;
+  background-size: 16px;
+  padding-right: 40px;
+  cursor: pointer;
+}
+
+.form-select:disabled {
+  cursor: not-allowed;
+}
+
+/* Checkbox and Radio styles */
+.form-checkbox-container,
+.form-radio-container {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 8px;
+  position: relative;
+}
+
+.form-checkbox,
+.form-radio {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  cursor: pointer;
+  accent-color: var(--primary-color, #1976d2);
+  flex-shrink: 0;
+  margin-top: 2px; /* Align with first line of text */
+}
+
+.form-checkbox:focus,
+.form-radio:focus {
+  outline: 2px solid var(--focus-color, #005fcc);
+  outline-offset: 2px;
+}
+
+.form-checkbox.error,
+.form-radio.error {
+  accent-color: var(--error-color, #d32f2f);
+}
+
+.form-checkbox:disabled,
+.form-radio:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Radio Group */
+.form-fieldset {
+  border: none;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+
+.form-legend {
+  display: block;
+  width: 100%;
+  padding: 0;
+  margin-bottom: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text-color, #212121);
+  line-height: 1.4;
+}
+
+.form-legend.required::after {
+  content: " *";
+  color: var(--error-color, #d32f2f);
+  font-weight: bold;
+  margin-left: 2px;
+}
+
+.form-radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 0;
+}
+
+.form-radio-group.error {
+  padding: 8px;
+  border: 2px solid var(--error-color, #d32f2f);
+  border-radius: 6px;
+  background-color: var(--error-bg, #fef7f7);
+}
+
+.form-radio-label {
+  display: block;
+  font-size: 14px;
+  color: var(--text-color, #212121);
+  cursor: pointer;
+  line-height: 1.4;
+  flex: 1;
+}
+
+/* Help Text */
+.form-help {
+  font-size: 13px;
+  color: var(--text-secondary, #666666);
+  margin-top: 4px;
+  line-height: 1.4;
+}
+
+/* Error Messages */
+.form-error {
+  font-size: 13px;
+  color: var(--error-color, #d32f2f);
+  margin-top: 4px;
+  line-height: 1.4;
+  font-weight: 500;
+}
+
+/* Error Summary */
+.form-error-summary {
+  background-color: var(--error-bg, #fef7f7);
+  border: 2px solid var(--error-color, #d32f2f);
+  border-radius: 6px;
+  padding: 16px;
+  margin-bottom: 24px;
+}
+
+.form-error-summary-title {
+  margin: 0 0 12px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--error-color, #d32f2f);
+}
+
+.form-error-summary-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.form-error-summary-list li {
+  margin-bottom: 8px;
+}
+
+.form-error-summary-list li:last-child {
+  margin-bottom: 0;
+}
+
+.form-error-link {
+  color: var(--error-color, #d32f2f);
+  text-decoration: underline;
+  font-weight: 500;
+}
+
+.form-error-link:hover {
+  text-decoration: none;
+}
+
+.form-error-link:focus {
+  outline: 2px solid var(--focus-color, #005fcc);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .form-input,
+  .form-select,
+  .form-textarea {
+    border-width: 3px;
+  }
+
+  .form-checkbox,
+  .form-radio {
+    border: 2px solid currentColor;
+  }
+
+  .form-error-summary {
+    border-width: 3px;
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .form-input,
+  .form-select,
+  .form-textarea {
+    transition: none;
+  }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .form-input,
+  .form-select,
+  .form-textarea {
+    background-color: var(--input-bg-dark, #2a2a2a);
+    border-color: var(--border-color-dark, #404040);
+    color: var(--text-color-dark, #ffffff);
+  }
+
+  .form-input:disabled {
+    background-color: var(--disabled-bg-dark, #1a1a1a);
+    color: var(--disabled-text-dark, #666666);
+  }
+
+  .form-error-summary {
+    background-color: var(--error-bg-dark, #2a1a1a);
+  }
+
+  .form-help {
+    color: var(--text-secondary-dark, #b3b3b3);
+  }
+}
+
+/* Touch Improvements */
+@media (hover: none) and (pointer: coarse) {
+  .form-input,
+  .form-select,
+  .form-textarea {
+    min-height: 48px; /* Larger touch targets on mobile */
+    font-size: 16px; /* Prevent zoom on iOS */
+  }
+
+  .form-checkbox,
+  .form-radio {
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
+    min-height: 20px;
+  }
+
+  .form-checkbox-container,
+  .form-radio-container {
+    min-height: 44px;
+    align-items: center;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .form-input,
+  .form-select,
+  .form-textarea {
+    border: 1px solid black !important;
+    background: white !important;
+    color: black !important;
+  }
+
+  .form-error {
+    color: black !important;
+    font-weight: bold;
+  }
+
+  .form-error-summary {
+    border: 2px solid black !important;
+    background: white !important;
+  }
+}
+
+/* Focus Within for Better UX */
+.form-group:focus-within .form-label {
+  color: var(--focus-color, #005fcc);
+}
+
+/* Validation States */
+.form-input:valid:not(:placeholder-shown) {
+  border-color: var(--success-color, #2e7d32);
+}
+
+.form-input:invalid:not(:placeholder-shown):not(.error) {
+  border-color: var(--warning-color, #f57c00);
+}
+
+/* Floating Labels (if needed) */
+.form-group.floating-label {
+  position: relative;
+  margin-top: 16px;
+}
+
+.form-group.floating-label .form-label {
+  position: absolute;
+  top: 12px;
+  left: 16px;
+  background: var(--input-bg, #ffffff);
+  padding: 0 4px;
+  transition: all 0.2s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.form-group.floating-label .form-input:focus + .form-label,
+.form-group.floating-label .form-input:not(:placeholder-shown) + .form-label {
+  top: -8px;
+  font-size: 12px;
+  color: var(--focus-color, #005fcc);
+}

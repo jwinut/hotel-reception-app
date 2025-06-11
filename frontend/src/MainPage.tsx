@@ -1,5 +1,6 @@
 // src/MainPage.tsx
 import React, { useState, useEffect } from 'react';
+import { announceToScreenReader, createLoadingAriaProps, isEnterOrSpace } from './utils/accessibility';
 
 interface PriceData {
   roomType: string;
@@ -67,15 +68,21 @@ const MainPage: React.FC<MainPageProps> = ({ isAdminMode }) => {
       );
 
       if (hasInvalidPrices) {
-        alert("กรุณากรอกราคาให้ครบถ้วนและเป็นตัวเลข");
+        const errorMessage = "กรุณากรอกราคาให้ครบถ้วนและเป็นตัวเลข";
+        announceToScreenReader(errorMessage, 'assertive');
+        alert(errorMessage);
         return;
       }
 
       console.log("Saving all price data:", prices);
-      alert("บันทึกราคาทั้งหมดแล้ว (ตรวจสอบ Console Log สำหรับข้อมูล)");
+      const successMessage = "บันทึกราคาทั้งหมดแล้ว";
+      announceToScreenReader(successMessage, 'polite');
+      alert(`${successMessage} (ตรวจสอบ Console Log สำหรับข้อมูล)`);
     } catch (err) {
       console.error("Error saving prices:", err);
-      alert("เกิดข้อผิดพลาดในการบันทึกราคา");
+      const errorMessage = "เกิดข้อผิดพลาดในการบันทึกราคา";
+      announceToScreenReader(errorMessage, 'assertive');
+      alert(errorMessage);
     }
   };
 
@@ -86,21 +93,23 @@ const MainPage: React.FC<MainPageProps> = ({ isAdminMode }) => {
   return (
     <div className="main-page-container">
       <div className="welcome-section">
-        <h1 className="welcome-title">ยินดีต้อนรับสู่ระบบจัดการโรงแรม</h1>
-        <p className="welcome-text">
+        <h1 className="welcome-title" id="main-title">ยินดีต้อนรับสู่ระบบจัดการโรงแรม</h1>
+        <p className="welcome-text" role="region" aria-labelledby="main-title">
           เลือกเมนูที่ต้องการจากแถบนำทางด้านบน หรือจัดการราคาห้องพักด้านล่าง
         </p>
       </div>
       
       {/* Room Price Management (Toggleable) */}
-      <div className="action-group">
+      <div className="action-group" role="region" aria-label="จัดการราคาห้องพัก">
         <h2 
           className={`group-title toggleable ${isPriceManagerOpen ? 'open' : ''}`}
           onClick={togglePriceManager}
           role="button"
           tabIndex={0}
+          aria-expanded={isPriceManagerOpen}
+          aria-controls="price-manager-content"
           onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
+            if (isEnterOrSpace(e.nativeEvent)) {
               e.preventDefault();
               togglePriceManager();
             }
@@ -111,27 +120,31 @@ const MainPage: React.FC<MainPageProps> = ({ isAdminMode }) => {
         </h2>
 
         {isPriceManagerOpen && (
-          <div className="collapsible-content">
+          <div className="collapsible-content" id="price-manager-content">
             {isLoading ? (
-              <p>กำลังโหลดข้อมูลราคา...</p>
+              <p role="status" aria-busy={true} aria-live="polite" aria-label="กำลังโหลดข้อมูลราคา">
+                กำลังโหลดข้อมูลราคา...
+              </p>
             ) : error ? (
-              <p className="error-message">{error}</p>
+              <p className="error-message" role="alert" aria-live="assertive">
+                {error}
+              </p>
             ) : prices.length > 0 ? (
               <>
-                <div className="price-table-container">
-                  <table className="price-table">
+                <div className="price-table-container" role="region" aria-label="ตารางราคาห้องพัก">
+                  <table className="price-table" role="table" aria-label="ราคาห้องพัก">
                     <thead>
-                      <tr>
-                        <th scope="col">ประเภทห้องพัก</th>
-                        <th scope="col">ไม่รวมอาหารเช้า (บาท)</th>
-                        <th scope="col">รวมอาหารเช้า (บาท)</th>
+                      <tr role="row">
+                        <th scope="col" id="room-type-header">ประเภทห้องพัก</th>
+                        <th scope="col" id="no-breakfast-header">ไม่รวมอาหารเช้า (บาท)</th>
+                        <th scope="col" id="with-breakfast-header">รวมอาหารเช้า (บาท)</th>
                       </tr>
                     </thead>
                     <tbody>
                       {prices.map((item, index) => (
-                        <tr key={`${item.roomType}-${index}`}>
-                          <td>{item.roomType}</td>
-                          <td>
+                        <tr key={`${item.roomType}-${index}`} role="row">
+                          <td role="rowheader">{item.roomType}</td>
+                          <td role="gridcell">
                             <input 
                               type="number" 
                               className="price-table-input" 
@@ -139,9 +152,10 @@ const MainPage: React.FC<MainPageProps> = ({ isAdminMode }) => {
                               onChange={(e) => handlePriceChange(index, 'noBreakfast', e.target.value)} 
                               min="0"
                               aria-label={`ราคาไม่รวมอาหารเช้าสำหรับ ${item.roomType}`}
+                              aria-describedby="no-breakfast-header"
                             />
                           </td>
-                          <td>
+                          <td role="gridcell">
                             <input 
                               type="number" 
                               className="price-table-input" 
@@ -149,6 +163,7 @@ const MainPage: React.FC<MainPageProps> = ({ isAdminMode }) => {
                               onChange={(e) => handlePriceChange(index, 'withBreakfast', e.target.value)} 
                               min="0"
                               aria-label={`ราคารวมอาหารเช้าสำหรับ ${item.roomType}`}
+                              aria-describedby="with-breakfast-header"
                             />
                           </td>
                         </tr>
@@ -160,12 +175,13 @@ const MainPage: React.FC<MainPageProps> = ({ isAdminMode }) => {
                   className="main-button save-all-button" 
                   onClick={handleSaveAllPrices}
                   type="button"
+                  aria-describedby="price-manager-content"
                 >
                   บันทึกราคาทั้งหมด
                 </button>
               </>
             ) : (
-              <p>ไม่พบข้อมูลราคา</p>
+              <p role="status">ไม่พบข้อมูลราคา</p>
             )}
           </div>
         )}
