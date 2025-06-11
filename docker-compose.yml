@@ -1,0 +1,118 @@
+version: '3.8'
+
+services:
+  # Frontend React Application
+  hotel-frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: hotel-reception-frontend
+    ports:
+      - "80:80"
+      - "443:443"  # For future SSL setup
+    environment:
+      - NODE_ENV=production
+    volumes:
+      # Mount configuration directory for easy updates
+      - ./frontend/public/config:/usr/share/nginx/html/config:ro
+      # Mount logs for monitoring
+      - ./logs/nginx:/var/log/nginx
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    networks:
+      - hotel-network
+
+  # PostgreSQL Database (for future backend)
+  hotel-database:
+    image: postgres:15-alpine
+    container_name: hotel-reception-db
+    environment:
+      POSTGRES_DB: hotel_reception
+      POSTGRES_USER: hotel_admin
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-default_password_change_me}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - hotel_db_data:/var/lib/postgresql/data
+      - ./database/init:/docker-entrypoint-initdb.d:ro
+      - ./database/backups:/backups
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hotel_admin -d hotel_reception"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    networks:
+      - hotel-network
+    # Only start when backend is implemented
+    profiles:
+      - backend
+
+  # Redis for session management (for future backend)
+  hotel-cache:
+    image: redis:7-alpine
+    container_name: hotel-reception-cache
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-default_redis_password}
+    volumes:
+      - hotel_redis_data:/data
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - hotel-network
+    # Only start when backend is implemented
+    profiles:
+      - backend
+
+  # Backend API (placeholder for future implementation)
+  hotel-backend:
+    # build:
+    #   context: ./backend
+    #   dockerfile: Dockerfile
+    image: alpine:latest  # Placeholder
+    container_name: hotel-reception-backend
+    command: sleep infinity  # Placeholder command
+    environment:
+      - NODE_ENV=production
+      - DB_HOST=hotel-database
+      - DB_NAME=hotel_reception
+      - DB_USER=hotel_admin
+      - DB_PASSWORD=${DB_PASSWORD:-default_password_change_me}
+      - REDIS_HOST=hotel-cache
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-default_redis_password}
+      - JWT_SECRET=${JWT_SECRET:-change_me_in_production}
+    ports:
+      - "3001:3001"
+    depends_on:
+      hotel-database:
+        condition: service_healthy
+      hotel-cache:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - hotel-network
+    # Only start when backend is implemented
+    profiles:
+      - backend
+
+volumes:
+  hotel_db_data:
+    driver: local
+  hotel_redis_data:
+    driver: local
+
+networks:
+  hotel-network:
+    driver: bridge
