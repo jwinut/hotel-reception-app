@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
 import MainPage from './MainPage';
 import WalkInOptionsPage from './WalkInOptionsPage';
+import NewBookingPage from './NewBookingPage';
 import Navigation from './Navigation';
 
 function App() {
@@ -26,9 +27,8 @@ function App() {
     }
   };
 
-  // Navigation handlers
+  // Navigation handlers - now using navigate directly in Navigation component
   const handleReserved = () => alert("ฟังก์ชันสำหรับ 'ลูกค้าจองมาแล้ว' จะถูกพัฒนาในลำดับถัดไป");
-  const handleNewBooking = () => alert("ฟังก์ชัน 'จองห้องใหม่' จะถูกพัฒนาในลำดับถัดไป");
   const handleCurrentBookings = () => alert("ฟังก์ชัน 'รายการจองปัจจุบัน' จะถูกพัฒนาในลำดับถัดไป");
   const handleAddUser = () => alert("ฟังก์ชัน 'เพิ่มผู้ใช้งานใหม่' จะถูกพัฒนาในลำดับถัดไป");
   const handleViewUsers = () => alert("ฟังก์ชัน 'ดูรายชื่อผู้ใช้งาน' จะถูกพัฒนาในลำดับถัดไป");
@@ -49,7 +49,6 @@ function App() {
         <Navigation 
           isAdminMode={isAdminMode}
           onReserved={handleReserved}
-          onNewBooking={handleNewBooking}
           onCurrentBookings={handleCurrentBookings}
           onAddUser={handleAddUser}
           onViewUsers={handleViewUsers}
@@ -58,6 +57,7 @@ function App() {
           <Routes>
             <Route path="/" element={<MainPage isAdminMode={isAdminMode} />} />
             <Route path="/walk-in-options" element={<WalkInOptionsPage />} />
+            <Route path="/new-booking" element={<NewBookingPage />} />
           </Routes>
         </main>
       </div>

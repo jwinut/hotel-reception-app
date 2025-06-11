@@ -3,7 +3,7 @@ import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import './Navigation.css';
 
-function Navigation({ isAdminMode, onReserved, onNewBooking, onCurrentBookings, onAddUser, onViewUsers }) {
+function Navigation({ isAdminMode, onReserved, onCurrentBookings, onAddUser, onViewUsers }) {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -44,8 +44,8 @@ function Navigation({ isAdminMode, onReserved, onNewBooking, onCurrentBookings, 
           <h3 className="nav-section-title">จองห้อง</h3>
           <div className="nav-buttons">
             <button 
-              onClick={() => handleNavigation(null, onNewBooking)}
-              className="nav-button booking"
+              onClick={() => navigate('/new-booking')}
+              className={`nav-button booking ${isActive('/new-booking') ? 'active' : ''}`}
             >
               จองห้องใหม่
             </button>

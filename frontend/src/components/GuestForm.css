@@ -1,0 +1,229 @@
+/* src/components/GuestForm.css */
+
+.guest-form-container {
+  padding: 2.5rem 3rem;
+  background: var(--c-surface);
+}
+
+.form-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 2px solid var(--c-border-light);
+}
+
+.form-title {
+  font-size: 1.8em;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+  color: var(--c-text);
+}
+
+.form-subtitle {
+  font-size: 1.1em;
+  color: var(--c-text-light);
+  margin: 0;
+}
+
+.guest-form {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.form-row {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.form-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-label {
+  font-size: 1em;
+  font-weight: 500;
+  color: var(--c-text);
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.required {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+.form-input {
+  padding: 0.875rem 1rem;
+  border: 2px solid var(--c-border);
+  border-radius: var(--radius-md);
+  font-size: 1em;
+  font-family: inherit;
+  transition: all 0.3s ease;
+  background: var(--c-surface);
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--c-primary);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+  transform: scale(1.01);
+}
+
+.form-input:hover:not(:focus) {
+  border-color: var(--c-secondary);
+}
+
+.form-input.error {
+  border-color: #dc2626;
+  box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.1);
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.character-count {
+  font-size: 0.85em;
+  color: var(--c-text-light);
+  text-align: right;
+  margin-top: 0.25rem;
+}
+
+.error-message {
+  color: #dc2626;
+  font-size: 0.875em;
+  margin-top: 0.25rem;
+  font-weight: 500;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 2px solid var(--c-border-light);
+}
+
+.btn {
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: var(--radius-lg);
+  font-size: 1.1em;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  min-width: 150px;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s;
+}
+
+.btn:hover::before {
+  left: 100%;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn:disabled:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--c-green) 0%, var(--c-green-hover) 100%);
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, var(--c-green-hover) 0%, var(--c-green) 100%);
+}
+
+.btn-secondary {
+  background: linear-gradient(135deg, var(--c-secondary) 0%, #475569 100%);
+  color: white;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #475569 0%, var(--c-secondary) 100%);
+}
+
+/* Form Validation States */
+.form-input:valid:not(:placeholder-shown) {
+  border-color: var(--c-green);
+}
+
+.form-input:invalid:not(:placeholder-shown) {
+  border-color: #dc2626;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .guest-form-container {
+    padding: 2rem 1.5rem;
+  }
+  
+  .form-row {
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .form-actions {
+    flex-direction: column-reverse;
+    gap: 1rem;
+  }
+  
+  .btn {
+    width: 100%;
+    min-width: auto;
+  }
+  
+  .form-title {
+    font-size: 1.5em;
+  }
+  
+  .form-subtitle {
+    font-size: 1em;
+  }
+}
+
+@media (max-width: 480px) {
+  .guest-form-container {
+    padding: 1.5rem 1rem;
+  }
+  
+  .form-input {
+    padding: 0.75rem;
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+}

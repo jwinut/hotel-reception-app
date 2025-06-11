@@ -1,0 +1,57 @@
+/* src/NewBookingPage.css */
+
+.new-booking-container {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  background: linear-gradient(135deg, var(--c-surface) 0%, #fefefe 100%);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--c-border);
+}
+
+.page-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 2px solid var(--c-border-light);
+}
+
+.page-title {
+  font-size: 2.2em;
+  font-weight: 600;
+  margin: 0 0 1rem 0;
+  background: linear-gradient(135deg, var(--c-green) 0%, var(--c-primary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.date-time-header {
+  font-weight: 500;
+  font-size: 1.2em;
+  color: var(--c-text-light);
+  margin: 0;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, rgba(5, 150, 105, 0.05) 0%, rgba(37, 99, 235, 0.05) 100%);
+  border-radius: var(--radius-lg);
+  display: inline-block;
+  border: 1px solid var(--c-border-light);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .new-booking-container {
+    padding: 1.5rem 1rem;
+    margin: 1rem auto;
+  }
+  
+  .page-title {
+    font-size: 1.8em;
+  }
+  
+  .date-time-header {
+    font-size: 1.1em;
+    padding: 0.5rem 1rem;
+  }
+}
