@@ -4,11 +4,14 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import './App.css';
 import './styles/accessibility.css';
+import './i18n'; // Initialize i18n
 import Navigation from './Navigation';
 import ErrorBoundary from './components/ErrorBoundary';
+import LanguageSwitcher from './components/LanguageSwitcher';
 import { store } from './store';
 import { adminAuthRateLimit, sanitizeInput } from './utils/validation';
-import { createLoadingAriaProps, announceToScreenReader } from './utils/accessibility';
+import { announceToScreenReader } from './utils/accessibility';
+import { useTranslation } from './hooks/useTranslation';
 
 // Lazy load page components for code splitting
 const MainPage = lazy(() => import('./MainPage'));
@@ -44,6 +47,7 @@ interface AppProps {}
 const App: React.FC<AppProps> = () => {
   // State and logic are "lifted up" to the parent component
   const [isAdminMode, setIsAdminMode] = useState<boolean>(false);
+  const { t } = useTranslation();
 
   // Admin password from environment variable for security
   const ADMIN_SECRET_CODE: string = process.env.REACT_APP_ADMIN_CODE || 'default-dev-code';
@@ -52,7 +56,7 @@ const App: React.FC<AppProps> = () => {
   const handleAdminIconClick = useCallback((): void => {
     if (isAdminMode) {
       setIsAdminMode(false);
-      announceToScreenReader('ออกจากโหมดผู้ดูแลระบบแล้ว', 'polite');
+      announceToScreenReader(t('admin.modeExit'), 'polite');
       return;
     }
     
@@ -60,13 +64,13 @@ const App: React.FC<AppProps> = () => {
     const clientId = 'admin-auth'; // In production, use IP or user identifier
     if (!adminAuthRateLimit.isAllowed(clientId)) {
       const remainingTime = adminAuthRateLimit.getRemainingTime(clientId);
-      const message = `คุณพยายามเข้าสู่ระบบมากเกินไป กรุณารออีก ${remainingTime} วินาที`;
+      const message = t('admin.rateLimitError', { seconds: remainingTime });
       announceToScreenReader(message, 'assertive');
       alert(message);
       return;
     }
     
-    const enteredCode = window.prompt("กรุณาใส่รหัสผ่านผู้ดูแลระบบ:");
+    const enteredCode = window.prompt(t('admin.loginPrompt'));
     
     if (enteredCode === null) {
       // User cancelled
@@ -78,13 +82,13 @@ const App: React.FC<AppProps> = () => {
     
     if (sanitizedCode === ADMIN_SECRET_CODE) {
       setIsAdminMode(true);
-      announceToScreenReader('เข้าสู่โหมดผู้ดูแลระบบแล้ว', 'polite');
+      announceToScreenReader(t('admin.modeEnter'), 'polite');
     } else if (sanitizedCode !== "") {
-      const errorMessage = "รหัสผ่านไม่ถูกต้อง";
+      const errorMessage = t('admin.loginError');
       announceToScreenReader(errorMessage, 'assertive');
       alert(errorMessage);
     }
-  }, [isAdminMode, ADMIN_SECRET_CODE]);
+  }, [isAdminMode, ADMIN_SECRET_CODE, t]);
 
   // Navigation handlers - memoized to prevent unnecessary re-renders
   const handleReserved = useCallback((): void => alert("ฟังก์ชันสำหรับ 'ลูกค้าจองมาแล้ว' จะถูกพัฒนาในลำดับถัดไป"), []);
@@ -99,22 +103,25 @@ const App: React.FC<AppProps> = () => {
           <div className="App">
             {/* Skip Links for Accessibility */}
             <a className="skip-link" href="#main-content">
-              ข้ามไปยังเนื้อหาหลัก
+              {t('accessibility.skipToMain')}
             </a>
             <a className="skip-link" href="#navigation">
-              ข้ามไปยังเมนู
+              {t('accessibility.skipToNav')}
             </a>
             
             <header className="App-header" role="banner">
-              <h1 id="site-title">ระบบจัดการโรงแรม</h1>
-              {/* New SVG Icon Button for Admin Access */}
-              <button 
-                className="header-admin-button" 
-                onClick={handleAdminIconClick} 
-                aria-label={isAdminMode ? "ออกจากโหมดผู้ดูแลระบบ" : "เข้าสู่โหมดผู้ดูแลระบบ"}
-                type="button"
-                aria-describedby="site-title"
-              >
+              <div className="header-content">
+                <h1 id="site-title">{t('app.title')}</h1>
+                <div className="header-controls">
+                  <LanguageSwitcher variant="buttons" className="header-language-switcher" />
+                  {/* Admin Access Button */}
+                  <button 
+                    className="header-admin-button" 
+                    onClick={handleAdminIconClick} 
+                    aria-label={isAdminMode ? t('admin.buttonLabel.exit') : t('admin.buttonLabel.enter')}
+                    type="button"
+                    aria-describedby="site-title"
+                  >
                 <svg 
                   xmlns="http://www.w3.org/2000/svg" 
                   height="28px" 
@@ -127,9 +134,11 @@ const App: React.FC<AppProps> = () => {
                   <path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69-.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61.22l2 3.46c.13.22.07.49.12.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/>
                 </svg>
                 <span className="sr-only">
-                  {isAdminMode ? "ปัจจุบันอยู่ในโหมดผู้ดูแลระบบ คลิกเพื่อออก" : "คลิกเพื่อเข้าสู่โหมดผู้ดูแลระบบ"}
+                  {isAdminMode ? t('admin.buttonLabel.current') : t('admin.buttonLabel.idle')}
                 </span>
-              </button>
+                  </button>
+                </div>
+              </div>
             </header>
             
             <div id="navigation">

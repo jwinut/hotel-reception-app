@@ -1,6 +1,7 @@
 // src/components/AccessibleButton.tsx
 import React, { forwardRef, ButtonHTMLAttributes, ReactNode } from 'react';
 import { AriaStateProps, createButtonAriaProps, isEnterOrSpace } from '../utils/accessibility';
+import { useTranslation } from 'react-i18next';
 
 export interface AccessibleButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'danger' | 'ghost';
@@ -36,6 +37,7 @@ const AccessibleButton = forwardRef<HTMLButtonElement, AccessibleButtonProps>(
     },
     ref
   ) => {
+    const { t } = useTranslation();
     const ariaProps = createButtonAriaProps(isPressed, isExpanded, controls, describedBy);
 
     const handleKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>) => {
@@ -99,7 +101,7 @@ const AccessibleButton = forwardRef<HTMLButtonElement, AccessibleButtonProps>(
         className={buttonClasses}
         disabled={disabled || isLoading}
         aria-busy={isLoading}
-        aria-label={isLoading ? 'กำลังโหลด...' : undefined}
+        aria-label={isLoading ? t('accessibility.loading') : undefined}
         onKeyDown={handleKeyDown}
         onClick={handleClick}
         {...ariaProps}
@@ -160,7 +162,7 @@ const AccessibleButton = forwardRef<HTMLButtonElement, AccessibleButtonProps>(
         
         {/* Screen reader text for loading state */}
         {isLoading && (
-          <span className="sr-only">กำลังโหลด กรุณารอสักครู่</span>
+          <span className="sr-only">{t('accessibility.loading')}</span>
         )}
       </button>
     );

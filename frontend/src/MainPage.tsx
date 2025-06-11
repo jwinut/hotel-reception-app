@@ -1,6 +1,7 @@
 // src/MainPage.tsx
 import React, { useState, useEffect } from 'react';
-import { announceToScreenReader, createLoadingAriaProps, isEnterOrSpace } from './utils/accessibility';
+import { announceToScreenReader, isEnterOrSpace } from './utils/accessibility';
+import { useTranslation } from './hooks/useTranslation';
 
 interface PriceData {
   roomType: string;
@@ -13,7 +14,7 @@ interface MainPageProps {
 }
 
 const MainPage: React.FC<MainPageProps> = ({ isAdminMode }) => {
-
+  const { t } = useTranslation();
   const [prices, setPrices] = useState<PriceData[]>([]);
   const [isPriceManagerOpen, setIsPriceManagerOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -34,7 +35,7 @@ const MainPage: React.FC<MainPageProps> = ({ isAdminMode }) => {
         setError(null);
       } catch (err) {
         console.error("Failed to fetch price data:", err);
-        setError("ไม่สามารถโหลดข้อมูลราคาได้");
+        setError(t('mainPage.priceManager.noData'));
       } finally {
         setIsLoading(false);
       }
@@ -68,19 +69,19 @@ const MainPage: React.FC<MainPageProps> = ({ isAdminMode }) => {
       );
 
       if (hasInvalidPrices) {
-        const errorMessage = "กรุณากรอกราคาให้ครบถ้วนและเป็นตัวเลข";
+        const errorMessage = t('mainPage.priceManager.validationError');
         announceToScreenReader(errorMessage, 'assertive');
         alert(errorMessage);
         return;
       }
 
       console.log("Saving all price data:", prices);
-      const successMessage = "บันทึกราคาทั้งหมดแล้ว";
+      const successMessage = t('mainPage.priceManager.saveSuccess');
       announceToScreenReader(successMessage, 'polite');
       alert(`${successMessage} (ตรวจสอบ Console Log สำหรับข้อมูล)`);
     } catch (err) {
       console.error("Error saving prices:", err);
-      const errorMessage = "เกิดข้อผิดพลาดในการบันทึกราคา";
+      const errorMessage = t('mainPage.priceManager.saveError');
       announceToScreenReader(errorMessage, 'assertive');
       alert(errorMessage);
     }
@@ -93,14 +94,14 @@ const MainPage: React.FC<MainPageProps> = ({ isAdminMode }) => {
   return (
     <div className="main-page-container">
       <div className="welcome-section">
-        <h1 className="welcome-title" id="main-title">ยินดีต้อนรับสู่ระบบจัดการโรงแรม</h1>
+        <h1 className="welcome-title" id="main-title">{t('mainPage.welcome.title')}</h1>
         <p className="welcome-text" role="region" aria-labelledby="main-title">
-          เลือกเมนูที่ต้องการจากแถบนำทางด้านบน หรือจัดการราคาห้องพักด้านล่าง
+          {t('mainPage.welcome.description')}
         </p>
       </div>
       
       {/* Room Price Management (Toggleable) */}
-      <div className="action-group" role="region" aria-label="จัดการราคาห้องพัก">
+      <div className="action-group" role="region" aria-label={t('mainPage.priceManager.title')}>
         <h2 
           className={`group-title toggleable ${isPriceManagerOpen ? 'open' : ''}`}
           onClick={togglePriceManager}
@@ -115,15 +116,15 @@ const MainPage: React.FC<MainPageProps> = ({ isAdminMode }) => {
             }
           }}
         >
-          จัดการราคาห้องพัก
+          {t('mainPage.priceManager.title')}
           <span className="toggle-icon" aria-hidden="true">▲</span>
         </h2>
 
         {isPriceManagerOpen && (
           <div className="collapsible-content" id="price-manager-content">
             {isLoading ? (
-              <p role="status" aria-busy={true} aria-live="polite" aria-label="กำลังโหลดข้อมูลราคา">
-                กำลังโหลดข้อมูลราคา...
+              <p role="status" aria-busy={true} aria-live="polite" aria-label={t('mainPage.priceManager.loading')}>
+                {t('mainPage.priceManager.loading')}
               </p>
             ) : error ? (
               <p className="error-message" role="alert" aria-live="assertive">
@@ -131,13 +132,13 @@ const MainPage: React.FC<MainPageProps> = ({ isAdminMode }) => {
               </p>
             ) : prices.length > 0 ? (
               <>
-                <div className="price-table-container" role="region" aria-label="ตารางราคาห้องพัก">
-                  <table className="price-table" role="table" aria-label="ราคาห้องพัก">
+                <div className="price-table-container" role="region" aria-label={t('mainPage.priceManager.title')}>
+                  <table className="price-table" role="table" aria-label={t('mainPage.priceManager.title')}>
                     <thead>
                       <tr role="row">
-                        <th scope="col" id="room-type-header">ประเภทห้องพัก</th>
-                        <th scope="col" id="no-breakfast-header">ไม่รวมอาหารเช้า (บาท)</th>
-                        <th scope="col" id="with-breakfast-header">รวมอาหารเช้า (บาท)</th>
+                        <th scope="col" id="room-type-header">{t('mainPage.priceManager.roomType')}</th>
+                        <th scope="col" id="no-breakfast-header">{t('mainPage.priceManager.noBreakfast')}</th>
+                        <th scope="col" id="with-breakfast-header">{t('mainPage.priceManager.withBreakfast')}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -151,7 +152,7 @@ const MainPage: React.FC<MainPageProps> = ({ isAdminMode }) => {
                               value={item.noBreakfast} 
                               onChange={(e) => handlePriceChange(index, 'noBreakfast', e.target.value)} 
                               min="0"
-                              aria-label={`ราคาไม่รวมอาหารเช้าสำหรับ ${item.roomType}`}
+                              aria-label={`${t('mainPage.priceManager.noBreakfast')} ${item.roomType}`}
                               aria-describedby="no-breakfast-header"
                             />
                           </td>
@@ -162,7 +163,7 @@ const MainPage: React.FC<MainPageProps> = ({ isAdminMode }) => {
                               value={item.withBreakfast} 
                               onChange={(e) => handlePriceChange(index, 'withBreakfast', e.target.value)} 
                               min="0"
-                              aria-label={`ราคารวมอาหารเช้าสำหรับ ${item.roomType}`}
+                              aria-label={`${t('mainPage.priceManager.withBreakfast')} ${item.roomType}`}
                               aria-describedby="with-breakfast-header"
                             />
                           </td>
@@ -177,11 +178,11 @@ const MainPage: React.FC<MainPageProps> = ({ isAdminMode }) => {
                   type="button"
                   aria-describedby="price-manager-content"
                 >
-                  บันทึกราคาทั้งหมด
+                  {t('mainPage.priceManager.saveAll')}
                 </button>
               </>
             ) : (
-              <p role="status">ไม่พบข้อมูลราคา</p>
+              <p role="status">{t('mainPage.priceManager.noData')}</p>
             )}
           </div>
         )}

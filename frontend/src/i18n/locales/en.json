@@ -1,0 +1,106 @@
+{
+  "app": {
+    "title": "Hotel Management System",
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "success": "Success",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "save": "Save",
+    "edit": "Edit",
+    "delete": "Delete",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "search": "Search",
+    "filter": "Filter",
+    "clear": "Clear",
+    "close": "Close"
+  },
+  "navigation": {
+    "main": "Main Menu",
+    "checkin": {
+      "title": "Check-in Guests",
+      "walkIn": "New Walk-in Guest",
+      "existing": "Guest with Reservation"
+    },
+    "booking": {
+      "title": "Room Booking",
+      "new": "New Booking",
+      "current": "Current Bookings"
+    },
+    "admin": {
+      "title": "User Management",
+      "addUser": "Add User",
+      "viewUsers": "View Users"
+    },
+    "home": "Home"
+  },
+  "mainPage": {
+    "welcome": {
+      "title": "Welcome to Hotel Management System",
+      "description": "Choose from the navigation menu above or manage room pricing below"
+    },
+    "priceManager": {
+      "title": "Room Price Management",
+      "loading": "Loading price data...",
+      "noData": "No price data found",
+      "roomType": "Room Type",
+      "noBreakfast": "Without Breakfast (THB)",
+      "withBreakfast": "With Breakfast (THB)",
+      "saveAll": "Save All Prices",
+      "saveSuccess": "All prices saved successfully",
+      "saveError": "Error saving prices",
+      "validationError": "Please fill in all prices with valid numbers"
+    }
+  },
+  "admin": {
+    "loginPrompt": "Please enter admin password:",
+    "loginError": "Incorrect password",
+    "rateLimitError": "Too many login attempts. Please wait {{seconds}} seconds",
+    "modeEnter": "Entered admin mode",
+    "modeExit": "Exited admin mode",
+    "buttonLabel": {
+      "enter": "Enter admin mode",
+      "exit": "Exit admin mode",
+      "current": "Currently in admin mode. Click to exit",
+      "idle": "Click to enter admin mode"
+    }
+  },
+  "accessibility": {
+    "skipToMain": "Skip to main content",
+    "skipToNav": "Skip to navigation",
+    "loading": "Loading, please wait",
+    "required": "Required",
+    "invalid": "Invalid",
+    "error": "Error"
+  },
+  "language": {
+    "switch": "Switch Language",
+    "thai": "Thai",
+    "english": "English",
+    "current": "Current language: {{language}}"
+  },
+  "forms": {
+    "validation": {
+      "required": "This field is required",
+      "email": "Please enter a valid email address",
+      "phone": "Please enter a valid phone number",
+      "number": "Please enter a number",
+      "minLength": "Please enter at least {{min}} characters",
+      "maxLength": "Please enter no more than {{max}} characters"
+    },
+    "errorSummary": {
+      "title": "Please correct the following errors:"
+    }
+  },
+  "booking": {
+    "status": {
+      "pending": "Pending",
+      "confirmed": "Confirmed",
+      "checkedIn": "Checked In",
+      "checkedOut": "Checked Out",
+      "cancelled": "Cancelled"
+    }
+  }
+}

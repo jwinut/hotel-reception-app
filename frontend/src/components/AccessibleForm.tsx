@@ -1,6 +1,7 @@
 // src/components/AccessibleForm.tsx
 import React, { forwardRef, InputHTMLAttributes, TextareaHTMLAttributes, SelectHTMLAttributes, ReactNode } from 'react';
 import { generateId, createAriaDescription, createErrorAriaProps } from '../utils/accessibility';
+import { useTranslation } from 'react-i18next';
 
 // Form Group Component
 interface FormGroupProps {
@@ -30,13 +31,15 @@ export const FormLabel: React.FC<FormLabelProps> = ({
   children, 
   className = '' 
 }) => {
+  const { t } = useTranslation();
+  
   return (
     <label 
       htmlFor={htmlFor} 
       className={`form-label ${required ? 'required' : ''} ${className}`.trim()}
     >
       {children}
-      {required && <span className="sr-only">จำเป็น</span>}
+      {required && <span className="sr-only">{t('accessibility.required')}</span>}
     </label>
   );
 };
@@ -266,6 +269,7 @@ export const FormRadioGroup: React.FC<FormRadioGroupProps> = ({
   isRequired = false,
   className = ''
 }) => {
+  const { t } = useTranslation();
   const groupId = generateId('radio-group');
   const errorId = error ? generateId('error') : undefined;
   const helpId = helpText ? generateId('help') : undefined;
@@ -278,7 +282,7 @@ export const FormRadioGroup: React.FC<FormRadioGroupProps> = ({
         <fieldset className="form-fieldset">
           <legend className={`form-legend ${isRequired ? 'required' : ''}`}>
             {label}
-            {isRequired && <span className="sr-only">จำเป็น</span>}
+            {isRequired && <span className="sr-only">{t('accessibility.required')}</span>}
           </legend>
           <div 
             className={`form-radio-group ${error ? 'error' : ''} ${className}`.trim()}
@@ -331,14 +335,17 @@ interface FormErrorSummaryProps {
 
 export const FormErrorSummary: React.FC<FormErrorSummaryProps> = ({ 
   errors, 
-  title = 'กรุณาแก้ไขข้อผิดพลาดต่อไปนี้:' 
+  title 
 }) => {
+  const { t } = useTranslation();
+  const defaultTitle = title || t('forms.errorSummary.title');
+  
   if (errors.length === 0) return null;
 
   return (
     <div className="form-error-summary" role="alert" aria-labelledby="error-summary-title">
       <h3 id="error-summary-title" className="form-error-summary-title">
-        {title}
+        {defaultTitle}
       </h3>
       <ul className="form-error-summary-list">
         {errors.map((error, index) => (
