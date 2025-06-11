@@ -72,9 +72,16 @@ function BookingDetails({ booking, onClose, onCheckIn, onCheckOut, onModify, onC
   const breakfastPrice = booking.includeBreakfast ? booking.nights * booking.guests * 150 : 0; // Assuming 150 THB per person per night for breakfast
   const roomPrice = basePrice - breakfastPrice;
 
+  const handleOverlayClick = (e) => {
+    // Only close if clicking directly on the overlay, not on any child elements
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
   return (
-    <div className="booking-details-overlay" onClick={onClose}>
-      <div className="booking-details-modal" onClick={(e) => e.stopPropagation()}>
+    <div className="booking-details-overlay" onClick={handleOverlayClick}>
+      <div className="booking-details-modal">
         <div className="modal-header">
           <h2 className="modal-title">รายละเอียดการจอง</h2>
           <button className="close-button" onClick={onClose}>

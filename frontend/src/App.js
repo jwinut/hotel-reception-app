@@ -57,11 +57,11 @@ function App() {
         />
         <main>
           <Routes>
-            <Route path="/" element={<MainPage isAdminMode={isAdminMode} />} />
-            <Route path="/walk-in-options" element={<WalkInOptionsPage />} />
-            <Route path="/new-booking" element={<NewBookingPage />} />
-            <Route path="/current-bookings" element={<CurrentBookingsPage />} />
-            <Route path="/existing-guest" element={<ExistingGuestPage />} />
+            <Route path="/" element={<MainPage key="main" isAdminMode={isAdminMode} />} />
+            <Route path="/walk-in-options" element={<WalkInOptionsPage key="walk-in" />} />
+            <Route path="/new-booking" element={<NewBookingPage key="new-booking" />} />
+            <Route path="/current-bookings" element={<CurrentBookingsPage key="current-bookings" />} />
+            <Route path="/existing-guest" element={<ExistingGuestPage key="existing-guest" />} />
           </Routes>
         </main>
       </div>

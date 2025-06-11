@@ -25,7 +25,10 @@ function Navigation({ isAdminMode, onReserved, onCurrentBookings, onAddUser, onV
           <h3 className="nav-section-title">เช็คอินลูกค้า</h3>
           <div className="nav-buttons">
             <button 
-              onClick={() => navigate('/walk-in-options')}
+              onClick={() => {
+                console.log('Navigating to /walk-in-options');
+                navigate('/walk-in-options');
+              }}
               className={`nav-button primary ${isActive('/walk-in-options') ? 'active' : ''}`}
             >
               ลูกค้าใหม่ ยังไม่ได้จอง

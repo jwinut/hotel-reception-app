@@ -125,6 +125,7 @@ function CurrentBookingsPage() {
 
   // Close modal when route changes (fix for navigation issue)
   useEffect(() => {
+    console.log('Route changed to:', location.pathname);
     setSelectedBooking(null);
   }, [location.pathname]);
 
