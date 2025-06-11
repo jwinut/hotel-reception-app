@@ -2,6 +2,7 @@
 import React, { useState, Suspense, lazy, useCallback, memo } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Provider } from 'react-redux';
+import './design-system/tokens.css';
 import './App.css';
 import './styles/accessibility.css';
 import './i18n'; // Initialize i18n
