@@ -1,10 +1,28 @@
-// src/components/GuestForm.js
+// src/components/GuestForm.tsx
 import React, { useState } from 'react';
 import './GuestForm.css';
 import { validateGuestForm } from '../utils/validation';
+import type { Guest, FormErrors } from '../types';
 
-function GuestForm({ initialData, onComplete, onCancel }) {
-  const [formData, setFormData] = useState({
+interface GuestFormData {
+  firstName: string;
+  lastName: string;
+  phone: string;
+  email: string;
+  idNumber: string;
+  nationality: string;
+  numGuests: number;
+  specialRequests: string;
+}
+
+interface GuestFormProps {
+  initialData?: Partial<Guest>;
+  onComplete: (data: Guest) => void;
+  onCancel: () => void;
+}
+
+const GuestForm: React.FC<GuestFormProps> = ({ initialData, onComplete, onCancel }) => {
+  const [formData, setFormData] = useState<GuestFormData>({
     firstName: initialData?.firstName || '',
     lastName: initialData?.lastName || '',
     phone: initialData?.phone || '',
@@ -15,16 +33,16 @@ function GuestForm({ initialData, onComplete, onCancel }) {
     specialRequests: initialData?.specialRequests || ''
   });
 
-  const [errors, setErrors] = useState({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState<FormErrors>({});
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-  const validateForm = () => {
+  const validateForm = (): boolean => {
     const validation = validateGuestForm(formData);
     setErrors(validation.errors);
     return validation.isValid;
   };
 
-  const handleInputChange = (field, value) => {
+  const handleInputChange = (field: keyof GuestFormData, value: string | number): void => {
     setFormData(prev => ({
       ...prev,
       [field]: value
@@ -39,7 +57,7 @@ function GuestForm({ initialData, onComplete, onCancel }) {
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     
     if (!validateForm()) {
@@ -54,7 +72,9 @@ function GuestForm({ initialData, onComplete, onCancel }) {
       
       // Get sanitized data from validation
       const validation = validateGuestForm(formData);
-      onComplete(validation.sanitizedData);
+      if (validation.isValid) {
+        onComplete(validation.sanitizedData);
+      }
     } catch (error) {
       console.error('Error submitting guest form:', error);
       alert('เกิดข้อผิดพลาดในการบันทึกข้อมูล กรุณาลองใหม่อีกครั้ง');
@@ -62,6 +82,11 @@ function GuestForm({ initialData, onComplete, onCancel }) {
       setIsSubmitting(false);
     }
   };
+
+  const nationalities = [
+    'ไทย', 'อเมริกัน', 'อังกฤษ', 'ญี่ปุ่น', 'เกาหลี', 
+    'จีน', 'ฝรั่งเศส', 'เยอรมัน', 'อื่นๆ'
+  ];
 
   return (
     <div className="guest-form-container">
@@ -83,9 +108,15 @@ function GuestForm({ initialData, onComplete, onCancel }) {
               value={formData.firstName}
               onChange={(e) => handleInputChange('firstName', e.target.value)}
               placeholder="กรอกชื่อ"
-              maxLength="50"
+              maxLength={50}
+              required
+              aria-describedby={errors.firstName ? 'firstName-error' : undefined}
             />
-            {errors.firstName && <span className="error-message">{errors.firstName}</span>}
+            {errors.firstName && (
+              <span id="firstName-error" className="error-message" role="alert">
+                {errors.firstName}
+              </span>
+            )}
           </div>
 
           <div className="form-group">
@@ -99,9 +130,15 @@ function GuestForm({ initialData, onComplete, onCancel }) {
               value={formData.lastName}
               onChange={(e) => handleInputChange('lastName', e.target.value)}
               placeholder="กรอกนามสกุล"
-              maxLength="50"
+              maxLength={50}
+              required
+              aria-describedby={errors.lastName ? 'lastName-error' : undefined}
             />
-            {errors.lastName && <span className="error-message">{errors.lastName}</span>}
+            {errors.lastName && (
+              <span id="lastName-error" className="error-message" role="alert">
+                {errors.lastName}
+              </span>
+            )}
           </div>
         </div>
 
@@ -117,9 +154,15 @@ function GuestForm({ initialData, onComplete, onCancel }) {
               value={formData.phone}
               onChange={(e) => handleInputChange('phone', e.target.value)}
               placeholder="08X-XXX-XXXX"
-              maxLength="15"
+              maxLength={15}
+              required
+              aria-describedby={errors.phone ? 'phone-error' : undefined}
             />
-            {errors.phone && <span className="error-message">{errors.phone}</span>}
+            {errors.phone && (
+              <span id="phone-error" className="error-message" role="alert">
+                {errors.phone}
+              </span>
+            )}
           </div>
 
           <div className="form-group">
@@ -133,9 +176,14 @@ function GuestForm({ initialData, onComplete, onCancel }) {
               value={formData.email}
               onChange={(e) => handleInputChange('email', e.target.value)}
               placeholder="example@email.com"
-              maxLength="100"
+              maxLength={100}
+              aria-describedby={errors.email ? 'email-error' : undefined}
             />
-            {errors.email && <span className="error-message">{errors.email}</span>}
+            {errors.email && (
+              <span id="email-error" className="error-message" role="alert">
+                {errors.email}
+              </span>
+            )}
           </div>
         </div>
 
@@ -151,9 +199,15 @@ function GuestForm({ initialData, onComplete, onCancel }) {
               value={formData.idNumber}
               onChange={(e) => handleInputChange('idNumber', e.target.value)}
               placeholder="1-XXXX-XXXXX-XX-X"
-              maxLength="20"
+              maxLength={20}
+              required
+              aria-describedby={errors.idNumber ? 'idNumber-error' : undefined}
             />
-            {errors.idNumber && <span className="error-message">{errors.idNumber}</span>}
+            {errors.idNumber && (
+              <span id="idNumber-error" className="error-message" role="alert">
+                {errors.idNumber}
+              </span>
+            )}
           </div>
 
           <div className="form-group">
@@ -166,15 +220,11 @@ function GuestForm({ initialData, onComplete, onCancel }) {
               value={formData.nationality}
               onChange={(e) => handleInputChange('nationality', e.target.value)}
             >
-              <option value="ไทย">ไทย</option>
-              <option value="อเมริกัน">อเมริกัน</option>
-              <option value="อังกฤษ">อังกฤษ</option>
-              <option value="ญี่ปุ่น">ญี่ปุ่น</option>
-              <option value="เกาหลี">เกาหลี</option>
-              <option value="จีน">จีน</option>
-              <option value="ฝรั่งเศส">ฝรั่งเศส</option>
-              <option value="เยอรมัน">เยอรมัน</option>
-              <option value="อื่นๆ">อื่นๆ</option>
+              {nationalities.map(nationality => (
+                <option key={nationality} value={nationality}>
+                  {nationality}
+                </option>
+              ))}
             </select>
           </div>
         </div>
@@ -188,15 +238,21 @@ function GuestForm({ initialData, onComplete, onCancel }) {
               id="numGuests"
               className={`form-input ${errors.numGuests ? 'error' : ''}`}
               value={formData.numGuests}
-              onChange={(e) => handleInputChange('numGuests', parseInt(e.target.value))}
+              onChange={(e) => handleInputChange('numGuests', parseInt(e.target.value, 10))}
+              required
+              aria-describedby={errors.numGuests ? 'numGuests-error' : undefined}
             >
-              {[...Array(10)].map((_, i) => (
-                <option key={i + 1} value={i + 1}>
-                  {i + 1} คน
+              {Array.from({ length: 10 }, (_, i) => i + 1).map(num => (
+                <option key={num} value={num}>
+                  {num} คน
                 </option>
               ))}
             </select>
-            {errors.numGuests && <span className="error-message">{errors.numGuests}</span>}
+            {errors.numGuests && (
+              <span id="numGuests-error" className="error-message" role="alert">
+                {errors.numGuests}
+              </span>
+            )}
           </div>
         </div>
 
@@ -210,10 +266,10 @@ function GuestForm({ initialData, onComplete, onCancel }) {
             value={formData.specialRequests}
             onChange={(e) => handleInputChange('specialRequests', e.target.value)}
             placeholder="เช่น ต้องการห้องชั้นล่าง, ไม่รับผ้าปูที่นอนสีแดง, อื่นๆ"
-            rows="3"
-            maxLength="500"
+            rows={3}
+            maxLength={500}
           />
-          <div className="character-count">
+          <div className="character-count" aria-live="polite">
             {formData.specialRequests.length}/500
           </div>
         </div>
@@ -238,6 +294,6 @@ function GuestForm({ initialData, onComplete, onCancel }) {
       </form>
     </div>
   );
-}
+};
 
 export default GuestForm;
