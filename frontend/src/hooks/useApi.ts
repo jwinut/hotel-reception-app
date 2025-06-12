@@ -231,7 +231,7 @@ export const useMutation = <T, Args extends any[]>(
   mutationFunction: (...args: Args) => Promise<ApiResponse<T>>,
   options: UseApiOptions = {}
 ) => {
-  const apiHook = useApi(mutationFunction, { ...options, immediate: false });
+  const apiHook = useApi(mutationFunction as (...args: any[]) => Promise<ApiResponse<T>>, { ...options, immediate: false });
 
   const mutate = useCallback(async (...args: Args): Promise<T | null> => {
     return apiHook.execute(...args);

@@ -2,7 +2,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { configurationService } from '../../services';
 import type {
-  AppConfiguration,
   HotelConfiguration,
   RoomConfiguration,
   PricingConfiguration,
@@ -212,7 +211,7 @@ export const configSlice = createSlice({
       const roomIndex = state.rooms.findIndex(room => room.id === roomId);
       
       if (roomIndex !== -1 && state.rooms[roomIndex]) {
-        Object.assign(state.rooms[roomIndex], roomConfig);
+        Object.assign(state.rooms[roomIndex]!, roomConfig);
         state.isDirty = true;
         state.hasUnsavedChanges = true;
         
@@ -229,7 +228,7 @@ export const configSlice = createSlice({
       const pricingIndex = state.pricing.findIndex(pricing => pricing.roomType === roomType);
       
       if (pricingIndex !== -1 && state.pricing[pricingIndex]) {
-        Object.assign(state.pricing[pricingIndex], pricingConfig);
+        Object.assign(state.pricing[pricingIndex]!, pricingConfig);
         state.isDirty = true;
         state.hasUnsavedChanges = true;
       }

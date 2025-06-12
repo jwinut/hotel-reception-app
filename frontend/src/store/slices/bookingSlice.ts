@@ -245,7 +245,7 @@ export const bookingSlice = createSlice({
     updateBookingLocally: (state, action: PayloadAction<Partial<Booking> & { id: string }>) => {
       const index = state.bookings.findIndex(booking => booking.id === action.payload.id);
       if (index !== -1 && state.bookings[index]) {
-        Object.assign(state.bookings[index], action.payload);
+        Object.assign(state.bookings[index]!, action.payload);
       }
     },
     
