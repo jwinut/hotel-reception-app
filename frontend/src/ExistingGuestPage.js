@@ -1,6 +1,5 @@
 // src/ExistingGuestPage.js
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
 import GuestLookup from './components/GuestLookup';
 import CheckInProcess from './components/CheckInProcess';
 import './ExistingGuestPage.css';
@@ -75,8 +74,6 @@ const generateMockBookings = () => {
 };
 
 function ExistingGuestPage() {
-  const navigate = useNavigate();
-  const location = useLocation();
   const [currentDateTime, setCurrentDateTime] = useState(new Date());
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [bookings, setBookings] = useState([]);

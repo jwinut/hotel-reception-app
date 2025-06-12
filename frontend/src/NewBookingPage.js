@@ -1,12 +1,9 @@
 // src/NewBookingPage.js
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
 import BookingWizard from './components/BookingWizard';
 import './NewBookingPage.css';
 
 function NewBookingPage() {
-  const navigate = useNavigate();
-  const location = useLocation();
   const [currentDateTime, setCurrentDateTime] = useState(new Date());
 
   // Update time every second

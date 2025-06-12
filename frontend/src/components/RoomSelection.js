@@ -168,7 +168,7 @@ function RoomSelection({ initialData, guestData, datesData, onComplete, onBack, 
         ))}
       </div>
     ));
-  }, [hotelLayout, allRoomsData, selectedRoomType, selectedRoom, bookedRooms]);
+  }, [hotelLayout, allRoomsData, selectedRoomType, selectedRoom, bookedRooms, isRoomAvailable, handleRoomSelect]);
 
   if (isLoading) {
     return (

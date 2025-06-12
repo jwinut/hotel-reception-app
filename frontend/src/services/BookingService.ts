@@ -1,6 +1,6 @@
 // src/services/BookingService.ts
 import { apiClient, ApiResponse } from './apiClient';
-import type { Booking, BookingStatus, BookingFilters, Guest, Room } from '../types';
+import type { Booking, BookingStatus } from '../types';
 
 export interface BookingCreateRequest {
   guestName: string;

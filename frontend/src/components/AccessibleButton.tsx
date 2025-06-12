@@ -1,6 +1,6 @@
 // src/components/AccessibleButton.tsx
 import React, { forwardRef, ButtonHTMLAttributes, ReactNode } from 'react';
-import { AriaStateProps, createButtonAriaProps, isEnterOrSpace } from '../utils/accessibility';
+import { createButtonAriaProps, isEnterOrSpace } from '../utils/accessibility';
 import { useTranslation } from 'react-i18next';
 
 export interface AccessibleButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {

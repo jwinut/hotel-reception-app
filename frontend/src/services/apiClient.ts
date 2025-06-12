@@ -1,5 +1,4 @@
 // src/services/apiClient.ts
-import { Booking, BookingStatus } from '../types';
 
 interface ApiResponse<T> {
   data: T;

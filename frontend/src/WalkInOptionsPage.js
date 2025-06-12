@@ -1,11 +1,8 @@
 // src/WalkInOptionsPage.js
 import React, { useState, useEffect, useMemo } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
 import './WalkInOptionsPage.css';
 
 function WalkInOptionsPage() {
-  const navigate = useNavigate();
-  const location = useLocation();
 
   const [selectedOptionId, setSelectedOptionId] = useState(null);
   const [selectedRoomType, setSelectedRoomType] = useState('All');
@@ -33,7 +30,7 @@ function WalkInOptionsPage() {
   // Close modal when route changes (fix for navigation issue)
   useEffect(() => {
     setSelectedRoom(null);
-  }, [location.pathname]);
+  }, []);
 
   // Add escape key handler for modal dismissal
   useEffect(() => {
@@ -142,7 +139,7 @@ function WalkInOptionsPage() {
         ))}
       </div>
     ));
-  }, [hotelLayout, allRoomsData, selectedRoomType]);
+  }, [hotelLayout, allRoomsData, selectedRoomType, handleRoomSelect]);
 
   return (
     <div className="walk-in-options-container">

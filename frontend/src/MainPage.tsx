@@ -42,7 +42,7 @@ const MainPage: React.FC<MainPageProps> = ({ isAdminMode }) => {
     };
 
     fetchPriceData();
-  }, []);
+  }, [t]);
 
   const handlePriceChange = (
     index: number, 
