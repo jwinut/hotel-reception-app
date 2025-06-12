@@ -36,8 +36,8 @@ jest.mock('./hooks/useTranslation', () => ({
 }));
 
 jest.mock('./utils/accessibility', () => ({
-  createBreadcrumbAriaProps: (isActive: boolean) => ({
-    'aria-current': isActive ? 'page' : undefined
+  createBreadcrumbAriaProps: (isLast: boolean = false) => ({
+    'aria-current': isLast ? 'page' : undefined
   })
 }));
 
