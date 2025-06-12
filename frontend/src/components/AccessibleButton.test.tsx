@@ -1,7 +1,6 @@
 // src/components/AccessibleButton.test.tsx
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 import { I18nextProvider } from 'react-i18next';
 import i18n from 'i18next';
@@ -46,6 +45,15 @@ const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
 );
 
 describe('AccessibleButton Component', () => {
+  // OPTIMIZATION: Add fake timers for consistency
+  beforeAll(() => {
+    jest.useFakeTimers();
+  });
+
+  afterAll(() => {
+    jest.useRealTimers();
+  });
+
   beforeEach(() => {
     jest.clearAllMocks();
     
@@ -242,9 +250,8 @@ describe('AccessibleButton Component', () => {
       expect(button).toHaveClass('btn-disabled');
     });
 
-    it('does not trigger click when disabled', async () => {
+    it('does not trigger click when disabled', () => {
       const handleClick = jest.fn();
-      const user = userEvent.setup();
 
       render(
         <TestWrapper>
@@ -255,7 +262,7 @@ describe('AccessibleButton Component', () => {
       );
 
       const button = screen.getByRole('button');
-      await user.click(button);
+      fireEvent.click(button);
 
       expect(handleClick).not.toHaveBeenCalled();
     });
@@ -341,9 +348,8 @@ describe('AccessibleButton Component', () => {
   });
 
   describe('Event Handling', () => {
-    it('handles click events correctly', async () => {
+    it('handles click events correctly', () => {
       const handleClick = jest.fn();
-      const user = userEvent.setup();
 
       render(
         <TestWrapper>
@@ -352,14 +358,13 @@ describe('AccessibleButton Component', () => {
       );
 
       const button = screen.getByRole('button');
-      await user.click(button);
+      fireEvent.click(button);
 
       expect(handleClick).toHaveBeenCalledTimes(1);
     });
 
-    it('does not trigger click when loading', async () => {
+    it('does not trigger click when loading', () => {
       const handleClick = jest.fn();
-      const user = userEvent.setup();
 
       render(
         <TestWrapper>
@@ -370,7 +375,7 @@ describe('AccessibleButton Component', () => {
       );
 
       const button = screen.getByRole('button');
-      await user.click(button);
+      fireEvent.click(button);
 
       expect(handleClick).not.toHaveBeenCalled();
     });
