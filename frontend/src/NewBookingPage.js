@@ -5,6 +5,7 @@ import BookingWizard from './components/BookingWizard';
 import './NewBookingPage.css';
 
 function NewBookingPage() {
+  const navigate = useNavigate();
   const [currentDateTime, setCurrentDateTime] = useState(new Date());
 
   // Update time every second

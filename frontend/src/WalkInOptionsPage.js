@@ -1,5 +1,5 @@
 // src/WalkInOptionsPage.js
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import './WalkInOptionsPage.css';
 
 function WalkInOptionsPage() {
@@ -83,13 +83,13 @@ function WalkInOptionsPage() {
   }, []);
 
   // --- Handlers ---
-  const handleRoomSelect = (roomNumber) => {
+  const handleRoomSelect = useCallback((roomNumber) => {
     const roomDetails = allRoomsData[roomNumber];
     setSelectedRoom({
       ...roomDetails,
       bookingOption: bookingOptions.find(opt => opt.id === selectedOptionId)
     });
-  };
+  }, [allRoomsData, bookingOptions, selectedOptionId]);
 
   const handleConfirmBooking = () => {
     if (selectedRoom) {

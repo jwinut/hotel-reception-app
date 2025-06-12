@@ -1,5 +1,5 @@
 // src/components/RoomSelection.js
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import './RoomSelection.css';
 
 function RoomSelection({ initialData, guestData, datesData, onComplete, onBack, onCancel }) {
@@ -64,10 +64,10 @@ function RoomSelection({ initialData, guestData, datesData, onComplete, onBack, 
   }, []);
 
   // Check if room is available for selected dates
-  const isRoomAvailable = (roomNumber) => {
+  const isRoomAvailable = useCallback((roomNumber) => {
     // Mock availability check - in real app, this would check against booking database
     return !bookedRooms.has(roomNumber);
-  };
+  }, [bookedRooms]);
 
   // Get room pricing
   const getRoomPrice = (roomType) => {
@@ -88,12 +88,12 @@ function RoomSelection({ initialData, guestData, datesData, onComplete, onBack, 
   };
 
   // Handle room selection
-  const handleRoomSelect = (roomNumber) => {
+  const handleRoomSelect = useCallback((roomNumber) => {
     const roomDetails = allRoomsData[roomNumber];
     if (!roomDetails || !isRoomAvailable(roomNumber)) return;
 
     setSelectedRoom(roomNumber);
-  };
+  }, [allRoomsData, isRoomAvailable]);
 
   // Handle form submission
   const handleSubmit = () => {
@@ -168,7 +168,7 @@ function RoomSelection({ initialData, guestData, datesData, onComplete, onBack, 
         ))}
       </div>
     ));
-  }, [hotelLayout, allRoomsData, selectedRoomType, selectedRoom, bookedRooms, isRoomAvailable, handleRoomSelect]);
+  }, [hotelLayout, allRoomsData, selectedRoomType, selectedRoom, isRoomAvailable, handleRoomSelect]);
 
   if (isLoading) {
     return (
