@@ -4,24 +4,34 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import LanguageSwitcher from './LanguageSwitcher';
 
-// Mock i18next
+// Mock i18next with proper react-i18next structure
 const mockChangeLanguage = jest.fn();
-const mockT = jest.fn((key: string, options?: any) => {
-  const translations: { [key: string]: string } = {
-    'language.switch': 'Switch Language',
-    'language.thai': 'Thai',
-    'language.english': 'English',
-    'language.current': `Current language: ${options?.language || 'Thai'}`
-  };
-  return translations[key] || key;
+
+// Create a simple mock that just uses the translation keys directly
+const mockT = jest.fn();
+
+// Initialize with Thai language (matching the actual i18n files)
+const mockI18n = {
+  language: 'th',
+  changeLanguage: mockChangeLanguage
+};
+
+// Set up the mock translation function to return the values expected by tests
+beforeEach(() => {
+  mockT.mockImplementation((key: string, options?: any) => {
+    const translations: { [key: string]: string } = {
+      'language.switch': 'Switch Language',
+      'language.thai': 'Thai', 
+      'language.english': 'English',
+      'language.current': `Current language: ${options?.language || 'Thai'}`
+    };
+    return translations[key] || key;
+  });
 });
 
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({
-    i18n: {
-      language: 'th',
-      changeLanguage: mockChangeLanguage
-    },
+    i18n: mockI18n,
     t: mockT
   })
 }));
@@ -50,6 +60,8 @@ describe('LanguageSwitcher Component', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockLiveRegion.textContent = '';
+    // Reset language to Thai for each test
+    mockI18n.language = 'th';
   });
 
   describe('Button Variant (Default)', () => {
@@ -81,6 +93,24 @@ describe('LanguageSwitcher Component', () => {
       expect(enButton).toHaveAttribute('aria-pressed', 'false');
     });
 
+    it('shows English as active when current language is English', () => {
+      // Change the mock language to English
+      mockI18n.language = 'en';
+      
+      render(<LanguageSwitcher />);
+      
+      const thaiButton = screen.getByText('ไทย');
+      const enButton = screen.getByText('EN');
+      
+      expect(enButton).toHaveClass('primary');
+      expect(enButton).toHaveAttribute('aria-pressed', 'true');
+      expect(thaiButton).toHaveClass('ghost');
+      expect(thaiButton).toHaveAttribute('aria-pressed', 'false');
+      
+      // Reset to Thai for other tests
+      mockI18n.language = 'th';
+    });
+
     it('changes language when Thai button is clicked', async () => {
       const user = userEvent.setup();
       render(<LanguageSwitcher />);
@@ -107,7 +137,7 @@ describe('LanguageSwitcher Component', () => {
       render(<LanguageSwitcher variant="dropdown" />);
       
       expect(screen.getByRole('combobox')).toBeInTheDocument();
-      expect(screen.getByLabelText('Switch Language')).toBeInTheDocument();
+      expect(screen.getByRole('combobox')).toHaveAttribute('aria-label', 'Switch Language');
       expect(screen.getByRole('option', { name: 'Thai' })).toBeInTheDocument();
       expect(screen.getByRole('option', { name: 'English' })).toBeInTheDocument();
     });
@@ -157,8 +187,10 @@ describe('LanguageSwitcher Component', () => {
       const select = screen.getByRole('combobox');
       expect(select).toHaveAttribute('aria-label', 'Switch Language');
       
-      const label = screen.getByText('Switch Language');
-      expect(label).toHaveClass('sr-only');
+      // Check for hidden label - need to use a more specific query since the text is in a hidden element
+      const label = document.querySelector('label.sr-only');
+      expect(label).toBeInTheDocument();
+      expect(label).toHaveTextContent('Switch Language');
     });
   });
 });

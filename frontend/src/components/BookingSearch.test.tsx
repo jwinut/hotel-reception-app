@@ -6,8 +6,12 @@ import BookingSearch from './BookingSearch';
 
 // Mock validation utils
 jest.mock('../utils/validation', () => ({
-  sanitizeInput: jest.fn((input: string) => input.trim())
+  sanitizeInput: jest.fn((input: string) => input ? input.trim() : '')
 }));
+
+// Mock Date to fix toISOString issues
+jest.useFakeTimers();
+jest.setSystemTime(new Date('2024-12-15T10:00:00.000Z'));
 
 describe('BookingSearch Component', () => {
   const mockOnSearchFilter = jest.fn();
@@ -29,10 +33,11 @@ describe('BookingSearch Component', () => {
     it('renders quick filter buttons', () => {
       render(<BookingSearch onSearchFilter={mockOnSearchFilter} />);
       
-      expect(screen.getByText('เข้าพักวันนี้')).toBeInTheDocument();
-      expect(screen.getByText('ออกวันนี้')).toBeInTheDocument();
-      expect(screen.getByText('อยู่ในโรงแรม')).toBeInTheDocument();
-      expect(screen.getByText('วันนี้')).toBeInTheDocument();
+      // Use more specific queries to avoid conflicts with select options
+      expect(screen.getByRole('button', { name: 'เข้าพักวันนี้' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'ออกวันนี้' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'อยู่ในโรงแรม' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'วันนี้' })).toBeInTheDocument();
     });
 
     it('renders status filter options', () => {

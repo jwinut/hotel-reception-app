@@ -277,18 +277,28 @@ describe('DateSelection Component', () => {
         />
       );
 
-      // First create an error
+      // The submit button should be disabled when no dates are selected
       const submitButton = screen.getByText('ถัดไป: เลือกห้องพัก');
-      await userEvent.click(submitButton);
+      expect(submitButton).toBeDisabled();
 
-      expect(screen.getByText('กรุณาเลือกวันที่เข้าพัก')).toBeInTheDocument();
+      // Since the button is disabled, we need to simulate validation another way
+      // Let's manually trigger the validation by trying to submit the form
+      const form = submitButton.closest('form');
+      fireEvent.submit(form);
 
-      // Then fix the error
+      // Wait for error to appear
+      await waitFor(() => {
+        expect(screen.getByText('กรุณาเลือกวันที่เข้าพัก')).toBeInTheDocument();
+      });
+
+      // Then fix the error by typing a date
       const checkInInput = screen.getByLabelText(/วันที่เข้าพัก/);
       await userEvent.type(checkInInput, '2024-12-15');
 
-      // Error should be cleared
-      expect(screen.queryByText('กรุณาเลือกวันที่เข้าพัก')).not.toBeInTheDocument();
+      // Error should be cleared after typing
+      await waitFor(() => {
+        expect(screen.queryByText('กรุณาเลือกวันที่เข้าพัก')).not.toBeInTheDocument();
+      });
     });
   });
 
