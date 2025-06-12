@@ -182,7 +182,7 @@ export const usePaginatedApi = <T>(
       ...options,
       onSuccess: (data) => {
         setTotal(data.total);
-        if (page === 1) {
+        if (data.page === 1) {
           setAllData(data.items);
         } else {
           setAllData(prev => [...prev, ...data.items]);

@@ -55,7 +55,41 @@ const mockBookings: Booking[] = [
 ];
 
 // Helper function to create a test store
-const createTestStore = (bookingInitialState = {}) => {
+const createTestStore = (bookingOverrides = {}) => {
+  const defaultBookingState = {
+    bookings: mockBookings, // Default to having bookings to prevent auto-load
+    currentBooking: null,
+    selectedBooking: null,
+    filters: {
+      searchTerm: '',
+      statusFilter: 'all' as const,
+      dateFilter: '',
+    },
+    searchResults: [],
+    loading: {
+      isLoading: false,
+      error: null,
+    },
+    error: {
+      hasError: false,
+      message: null,
+    },
+    stats: {
+      totalBookings: mockBookings.length,
+      todayArrivals: 0,
+      todayDepartures: 0,
+      currentOccupancy: 0,
+      availableRooms: 0,
+    },
+    wizardData: {
+      step: 0,
+      guest: {},
+      dates: {},
+      room: {},
+      isComplete: false,
+    },
+  };
+
   return configureStore({
     reducer: {
       booking: bookingSlice.reducer,
@@ -65,36 +99,8 @@ const createTestStore = (bookingInitialState = {}) => {
     },
     preloadedState: {
       booking: {
-        bookings: mockBookings, // Default to having bookings to prevent auto-load
-        currentBooking: null,
-        selectedBooking: null,
-        filters: {
-          searchTerm: '',
-          statusFilter: 'all',
-          dateFilter: '',
-        },
-        searchResults: [],
-        loading: {
-          isLoading: false,
-        },
-        error: {
-          hasError: false,
-        },
-        stats: {
-          totalBookings: mockBookings.length,
-          todayArrivals: 0,
-          todayDepartures: 0,
-          currentOccupancy: 0,
-          availableRooms: 0,
-        },
-        wizardData: {
-          step: 0,
-          guest: {},
-          dates: {},
-          room: {},
-          isComplete: false,
-        },
-        ...bookingInitialState,
+        ...defaultBookingState,
+        ...bookingOverrides,
       },
       ui: { currentPage: 'dashboard' },
       auth: { isAuthenticated: false },

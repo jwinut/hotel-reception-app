@@ -555,7 +555,8 @@ describe('GuestLookup Component', () => {
       render(<GuestLookup {...defaultProps} />);
 
       const searchInput = screen.getByRole('textbox');
-      fireEvent.change(searchInput, { target: { value: 'SOMCHAI' } });
+      // Use uppercase version of the booking ID which should work with case-insensitive search
+      fireEvent.change(searchInput, { target: { value: 'BK240001' } });
       fireEvent.focus(searchInput);
       
       jest.runAllTimers();

@@ -12,30 +12,40 @@ import {
   useRecentSearches
 } from './useLocalStorage';
 
-// Mock localStorage
-const localStorageMock = (() => {
-  let store: Record<string, string> = {};
+// Mock localStorage with a simpler approach
+class LocalStorageMock {
+  private store: Record<string, string> = {};
 
-  return {
-    getItem: jest.fn((key: string) => store[key] || null),
-    setItem: jest.fn((key: string, value: string) => {
-      store[key] = value;
-    }),
-    removeItem: jest.fn((key: string) => {
-      delete store[key];
-    }),
-    clear: jest.fn(() => {
-      store = {};
-    }),
-    get length() {
-      return Object.keys(store).length;
-    },
-    key: jest.fn((index: number) => Object.keys(store)[index] || null),
-  };
-})();
+  getItem = jest.fn((key: string): string | null => {
+    return this.store[key] || null;
+  });
+
+  setItem = jest.fn((key: string, value: string): void => {
+    this.store[key] = value;
+  });
+
+  removeItem = jest.fn((key: string): void => {
+    delete this.store[key];
+  });
+
+  clear = jest.fn((): void => {
+    this.store = {};
+  });
+
+  get length(): number {
+    return Object.keys(this.store).length;
+  }
+
+  key = jest.fn((index: number): string | null => {
+    return Object.keys(this.store)[index] || null;
+  });
+}
+
+const localStorageMock = new LocalStorageMock();
 
 Object.defineProperty(window, 'localStorage', {
   value: localStorageMock,
+  writable: true,
 });
 
 // Mock console.error to avoid noise in tests
@@ -54,6 +64,9 @@ describe('useLocalStorage Hooks', () => {
 
   describe('useLocalStorage', () => {
     it('initializes with initial value when localStorage is empty', async () => {
+      // Ensure localStorage is empty for this test
+      localStorageMock.removeItem('test-key');
+      
       const { result } = renderHook(() => useLocalStorage('test-key', 'initial'));
 
       // Wait for loading to complete
@@ -67,7 +80,9 @@ describe('useLocalStorage Hooks', () => {
 
     it('loads existing value from localStorage', async () => {
       const existingValue = { name: 'John', age: 30 };
-      localStorageMock.setItem('test-key', JSON.stringify(existingValue));
+      
+      // Set up the mock BEFORE clearing to ensure it works
+      (localStorageMock.getItem as jest.Mock).mockReturnValueOnce(JSON.stringify(existingValue));
 
       const { result } = renderHook(() => useLocalStorage('test-key', { name: '', age: 0 }));
 
@@ -75,9 +90,8 @@ describe('useLocalStorage Hooks', () => {
         expect(result.current.isLoading).toBe(false);
       });
 
-      await waitFor(() => {
-        expect(result.current.value).toEqual(existingValue);
-      });
+      expect(result.current.value).toEqual(existingValue);
+      expect(localStorageMock.getItem).toHaveBeenCalledWith('test-key');
     });
 
     it('sets value in localStorage and state', async () => {
@@ -113,7 +127,8 @@ describe('useLocalStorage Hooks', () => {
     });
 
     it('removes value from localStorage and resets to initial', async () => {
-      localStorageMock.setItem('test-key', JSON.stringify('stored'));
+      // Mock localStorage to return stored value initially
+      (localStorageMock.getItem as jest.Mock).mockReturnValueOnce(JSON.stringify('stored'));
       
       const { result } = renderHook(() => useLocalStorage('test-key', 'initial'));
 
@@ -121,9 +136,7 @@ describe('useLocalStorage Hooks', () => {
         expect(result.current.isLoading).toBe(false);
       });
 
-      await waitFor(() => {
-        expect(result.current.value).toBe('stored');
-      });
+      expect(result.current.value).toBe('stored');
 
       act(() => {
         result.current.removeValue();
@@ -134,7 +147,8 @@ describe('useLocalStorage Hooks', () => {
     });
 
     it('handles JSON parse errors gracefully', async () => {
-      localStorageMock.setItem('test-key', 'invalid-json');
+      // Mock localStorage to return invalid JSON
+      (localStorageMock.getItem as jest.Mock).mockReturnValueOnce('invalid-json');
 
       const { result } = renderHook(() => useLocalStorage('test-key', 'initial'));
 
@@ -144,12 +158,18 @@ describe('useLocalStorage Hooks', () => {
 
       expect(result.current.value).toBe('initial');
       await waitFor(() => {
-        expect(result.current.error).toContain('Failed to read from localStorage');
+        expect(result.current.error).toBeTruthy();
+        expect(result.current.error).toContain('Unexpected token');
       });
-      expect(consoleErrorSpy).toHaveBeenCalled();
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Error reading localStorage key "test-key":'),
+        expect.any(Error)
+      );
     });
 
     it('handles localStorage setItem errors', async () => {
+      localStorageMock.clear();
+      
       const { result } = renderHook(() => useLocalStorage('test-key', 'initial'));
 
       await waitFor(() => {
@@ -168,10 +188,15 @@ describe('useLocalStorage Hooks', () => {
       await waitFor(() => {
         expect(result.current.error).toBe(setItemError.message);
       });
-      expect(consoleErrorSpy).toHaveBeenCalled();
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Error setting localStorage key "test-key":'),
+        setItemError
+      );
     });
 
     it('handles localStorage removeItem errors', async () => {
+      localStorageMock.clear();
+      
       const { result } = renderHook(() => useLocalStorage('test-key', 'initial'));
 
       await waitFor(() => {
@@ -190,7 +215,10 @@ describe('useLocalStorage Hooks', () => {
       await waitFor(() => {
         expect(result.current.error).toBe(removeError.message);
       });
-      expect(consoleErrorSpy).toHaveBeenCalled();
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Error removing localStorage key "test-key":'),
+        removeError
+      );
     });
 
     it('works with different data types', async () => {

@@ -550,15 +550,23 @@ describe('useApi Hook', () => {
       });
     });
 
-    it('cleans up abort controller on unmount', () => {
-      const mockApiFunction = jest.fn();
+    it('cleans up abort controller on unmount', async () => {
+      const mockApiFunction = jest.fn().mockImplementation(() => 
+        new Promise(resolve => setTimeout(() => resolve(createMockApiResponse({ test: true })), 100))
+      );
       const abortSpy = jest.spyOn(AbortController.prototype, 'abort');
       
-      const { unmount } = renderHook(() => useApi(mockApiFunction));
+      const { result, unmount } = renderHook(() => useApi(mockApiFunction));
 
+      // Start an API call to create an abort controller
+      act(() => {
+        result.current.execute();
+      });
+
+      // Unmount while request is in progress
       unmount();
 
-      // Note: We can't easily test this directly, but the test ensures no errors occur
+      // The abort controller should have been called during cleanup
       expect(abortSpy).toHaveBeenCalled();
       
       abortSpy.mockRestore();

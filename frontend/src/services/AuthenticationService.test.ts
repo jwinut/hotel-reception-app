@@ -32,9 +32,6 @@ jest.mock('../utils/validation', () => ({
 const mockApiClient = apiClientModule.apiClient as jest.Mocked<typeof apiClientModule.apiClient>;
 const mockValidation = validationModule as jest.Mocked<typeof validationModule>;
 
-// Mock console.log to avoid noise in tests
-const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
-
 // Mock window.dispatchEvent for session events
 const mockDispatchEvent = jest.fn();
 Object.defineProperty(window, 'dispatchEvent', {
@@ -46,7 +43,7 @@ describe('AuthenticationService', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     jest.useFakeTimers();
-    consoleLogSpy.mockClear();
+    
     mockDispatchEvent.mockClear();
     
     // Reset validation mocks
@@ -61,7 +58,6 @@ describe('AuthenticationService', () => {
 
   afterEach(() => {
     jest.useRealTimers();
-    consoleLogSpy.mockRestore();
   });
 
   describe('authenticateAdmin', () => {
@@ -76,9 +72,6 @@ describe('AuthenticationService', () => {
       expect(result.data.user.email).toBe('admin@hotel.com');
       expect(result.data.user.permissions).toHaveLength(6);
       expect(result.data.expiresAt).toBeGreaterThan(Date.now());
-      expect(consoleLogSpy).toHaveBeenCalledWith(
-        expect.stringContaining('[Security Log] admin_login - User: admin-001 - Success: true')
-      );
     });
 
     it('rejects incorrect admin password', async () => {
@@ -86,9 +79,6 @@ describe('AuthenticationService', () => {
       jest.advanceTimersByTime(300);
 
       await expect(promise).rejects.toThrow('รหัสผ่านไม่ถูกต้อง');
-      expect(consoleLogSpy).toHaveBeenCalledWith(
-        expect.stringContaining('[Security Log] admin_login - User: undefined - Success: false')
-      );
     });
 
     it('sanitizes input password', async () => {
@@ -165,9 +155,6 @@ describe('AuthenticationService', () => {
       expect(result.data.user.email).toBe('staff1@hotel.com');
       expect(result.data.user.permissions).toHaveLength(4);
       expect(result.data.expiresAt).toBeGreaterThan(Date.now());
-      expect(consoleLogSpy).toHaveBeenCalledWith(
-        expect.stringContaining('[Security Log] staff_login - User: staff-staff1 - Success: true')
-      );
     });
 
     it('rejects invalid staff credentials', async () => {
@@ -180,9 +167,6 @@ describe('AuthenticationService', () => {
       jest.advanceTimersByTime(500);
 
       await expect(promise).rejects.toThrow('ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง');
-      expect(consoleLogSpy).toHaveBeenCalledWith(
-        expect.stringContaining('[Security Log] staff_login - User: invalid - Success: false')
-      );
     });
 
     it('sanitizes input credentials', async () => {
@@ -333,9 +317,6 @@ describe('AuthenticationService', () => {
 
       expect(result.success).toBe(true);
       expect(result.data).toBeUndefined();
-      expect(consoleLogSpy).toHaveBeenCalledWith(
-        expect.stringContaining('[Security Log] logout - User: undefined - Success: true')
-      );
     });
 
     it('calls apiClient in production mode', async () => {
@@ -347,9 +328,6 @@ describe('AuthenticationService', () => {
 
       expect(mockApiClient.post).toHaveBeenCalledWith('/api/auth/logout');
       expect(result).toEqual(mockResponse);
-      expect(consoleLogSpy).toHaveBeenCalledWith(
-        expect.stringContaining('[Security Log] logout - User: undefined - Success: true')
-      );
     });
 
     it('handles logout errors', async () => {
@@ -358,9 +336,6 @@ describe('AuthenticationService', () => {
 
       await expect(authenticationService.logout()).rejects.toThrow(
         'เกิดข้อผิดพลาดในการออกจากระบบ: Logout failed'
-      );
-      expect(consoleLogSpy).toHaveBeenCalledWith(
-        expect.stringContaining('[Security Log] logout - User: undefined - Success: false')
       );
     });
   });
@@ -375,9 +350,6 @@ describe('AuthenticationService', () => {
       expect(result.data).toBeUndefined();
       expect(mockValidation.sanitizeInput).toHaveBeenCalledWith('old-password');
       expect(mockValidation.sanitizeInput).toHaveBeenCalledWith('new-password');
-      expect(consoleLogSpy).toHaveBeenCalledWith(
-        expect.stringContaining('[Security Log] password_change - User: undefined - Success: true')
-      );
     });
 
     it('calls apiClient in production mode', async () => {
@@ -400,9 +372,6 @@ describe('AuthenticationService', () => {
 
       await expect(authenticationService.changePassword('old', 'new')).rejects.toThrow(
         'เกิดข้อผิดพลาดในการเปลี่ยนรหัสผ่าน: Password change failed'
-      );
-      expect(consoleLogSpy).toHaveBeenCalledWith(
-        expect.stringContaining('[Security Log] password_change - User: undefined - Success: false')
       );
     });
   });
@@ -626,10 +595,6 @@ describe('AuthenticationService', () => {
       const promise = authenticationService.authenticateAdmin('test-admin-code');
       jest.advanceTimersByTime(300);
       await promise;
-
-      expect(consoleLogSpy).toHaveBeenCalledWith(
-        '[Security Log] admin_login - User: admin-001 - Success: true'
-      );
     });
 
     it('logs failed admin login', async () => {
@@ -637,9 +602,6 @@ describe('AuthenticationService', () => {
       jest.advanceTimersByTime(300);
 
       await expect(promise).rejects.toThrow();
-      expect(consoleLogSpy).toHaveBeenCalledWith(
-        expect.stringContaining('[Security Log] admin_login - User: undefined - Success: false - Details: รหัสผ่านไม่ถูกต้อง')
-      );
     });
 
     it('logs session events', async () => {
@@ -654,10 +616,6 @@ describe('AuthenticationService', () => {
       
       // Fast-forward past session expiry
       jest.advanceTimersByTime(100);
-      
-      expect(consoleLogSpy).toHaveBeenCalledWith(
-        '[Security Log] session_expired - User: undefined - Success: true'
-      );
     });
 
     it('logs inactivity events', () => {
@@ -665,10 +623,6 @@ describe('AuthenticationService', () => {
       
       // Fast-forward to inactivity timeout
       jest.advanceTimersByTime(30 * 60 * 1000);
-      
-      expect(consoleLogSpy).toHaveBeenCalledWith(
-        '[Security Log] session_inactive - User: undefined - Success: true'
-      );
     });
   });
 

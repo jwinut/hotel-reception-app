@@ -178,7 +178,8 @@ describe('useTranslation Hook', () => {
 
         // Note: The exact format depends on the browser's Intl implementation
         expect(typeof formatted).toBe('string');
-        expect(formatted).toContain('2024');
+        // Thai locale uses Buddhist Era calendar (2024 CE = 2567 BE)
+        expect(formatted).toContain('2567');
       });
 
       it('formats date with English locale when language is en', () => {
@@ -244,7 +245,8 @@ describe('useTranslation Hook', () => {
         const formatted = result.current.formatDateTime(testDate);
 
         expect(typeof formatted).toBe('string');
-        expect(formatted).toContain('2024');
+        // Thai locale uses Buddhist Era calendar (2024 CE = 2567 BE)
+        expect(formatted).toContain('2567');
         expect(formatted).toContain('10');
       });
 
