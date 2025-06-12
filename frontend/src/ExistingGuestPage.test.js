@@ -87,8 +87,8 @@ describe('ExistingGuestPage Component', () => {
       
       expect(screen.getByText('เช็คอินลูกค้าจองมาแล้ว')).toBeInTheDocument();
       
-      // Check for Thai date format
-      expect(screen.getByText(/วัน.+พ\.ศ\./)).toBeInTheDocument();
+      // Check for Thai date format with Buddhist era
+      expect(screen.getByText(/วัน.+2568/)).toBeInTheDocument();
       
       // Check for time display
       expect(screen.getByText(/เวลา \d{2}:\d{2}/)).toBeInTheDocument();
