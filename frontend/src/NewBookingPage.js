@@ -1,5 +1,6 @@
 // src/NewBookingPage.js
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import BookingWizard from './components/BookingWizard';
 import './NewBookingPage.css';
 
