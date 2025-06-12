@@ -100,8 +100,9 @@ const MainPage: React.FC<MainPageProps> = ({ isAdminMode }) => {
         </p>
       </div>
       
-      {/* Room Price Management (Toggleable) */}
-      <div className="action-group" role="region" aria-label={t('mainPage.priceManager.title')}>
+      {/* Room Price Management (Toggleable) - Admin Only */}
+      {isAdminMode && (
+        <div className="action-group" role="region" aria-label={t('mainPage.priceManager.title')}>
         <h2 
           className={`group-title toggleable ${isPriceManagerOpen ? 'open' : ''}`}
           onClick={togglePriceManager}
@@ -186,7 +187,8 @@ const MainPage: React.FC<MainPageProps> = ({ isAdminMode }) => {
             )}
           </div>
         )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };
