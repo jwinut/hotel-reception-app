@@ -107,8 +107,8 @@ echo "🐳 Checking Docker (optional for deployment)..."
 if command -v docker &> /dev/null; then
     echo "✅ Docker $(docker --version | cut -d' ' -f3 | tr -d ',') is installed"
     
-    if command -v docker-compose &> /dev/null; then
-        echo "✅ Docker Compose $(docker-compose --version | cut -d' ' -f4 | tr -d ',') is installed"
+    if command -v docker &> /dev/null && docker compose version &> /dev/null; then
+        echo "✅ Docker Compose V2 is installed with Docker"
     else
         echo "⚠️ Docker Compose is not installed (optional for deployment)"
     fi
@@ -126,6 +126,6 @@ echo "3. Edit configuration files in frontend/public/config/"
 echo ""
 echo "For deployment:"
 echo "1. Edit .env file with your settings"
-echo "2. docker-compose up -d         # Start production environment"
+echo "2. docker compose up -d         # Start production environment"
 echo ""
 echo "📚 See docs/ folder for detailed documentation"

@@ -1359,7 +1359,7 @@ CMD ["npm", "start"]
 
 #### 14.2 Docker Compose
 ```yaml
-# docker-compose.yml
+# docker compose configuration
 version: '3.8'
 
 services:
@@ -1402,7 +1402,7 @@ volumes:
 #### 15.1 Complete Walk-in Flow Test
 ```bash
 # Start all services
-docker-compose up -d
+docker compose up -d
 
 # Run through complete flow:
 # 1. View available rooms

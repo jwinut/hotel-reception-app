@@ -138,7 +138,7 @@ sudo apt install certbot
 # Obtain SSL certificate
 sudo certbot certonly --standalone -d yourdomain.com
 
-# Update docker-compose.yml to mount certificates
+# Update docker compose configuration to mount certificates
 # Add to hotel-frontend service volumes:
 # - /etc/letsencrypt:/etc/letsencrypt:ro
 ```
@@ -189,7 +189,7 @@ sudo systemctl restart docker
 ```
 
 ### Resource Limits
-Update `docker-compose.yml` with resource constraints:
+Update `docker compose` configuration with resource constraints:
 
 ```yaml
 services:
@@ -211,7 +211,7 @@ services:
 #### Application Won't Start
 ```bash
 # Check logs
-docker-compose logs hotel-frontend
+docker compose logs hotel-frontend
 
 # Check disk space
 df -h
@@ -229,20 +229,20 @@ ls -la frontend/public/config/
 cat frontend/public/config/roomData.json | jq .
 
 # Restart with fresh container
-docker-compose down
-docker-compose up -d
+docker compose down
+docker compose up -d
 ```
 
 #### Database Connection Issues (Future)
 ```bash
 # Check database status
-docker-compose exec hotel-database pg_isready -U hotel_admin
+docker compose exec hotel-database pg_isready -U hotel_admin
 
 # Check network connectivity
-docker-compose exec hotel-backend ping hotel-database
+docker compose exec hotel-backend ping hotel-database
 
 # Review environment variables
-docker-compose exec hotel-backend env | grep DB_
+docker compose exec hotel-backend env | grep DB_
 ```
 
 ## Security Considerations
@@ -259,8 +259,8 @@ sudo ufw enable
 ### Regular Updates
 ```bash
 # Update Docker images
-docker-compose pull
-docker-compose up -d
+docker compose pull
+docker compose up -d
 
 # Update system packages
 sudo apt update && sudo apt upgrade
@@ -272,7 +272,7 @@ sudo apt update && sudo apt upgrade
 cat > /opt/hotel-backup.sh << 'EOF'
 #!/bin/bash
 DATE=$(date +%Y%m%d_%H%M%S)
-docker-compose exec -T hotel-database pg_dump -U hotel_admin hotel_reception > /backups/hotel_$DATE.sql
+docker compose exec -T hotel-database pg_dump -U hotel_admin hotel_reception > /backups/hotel_$DATE.sql
 find /backups -name "hotel_*.sql" -mtime +30 -delete
 EOF
 
