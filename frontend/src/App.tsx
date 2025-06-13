@@ -15,12 +15,13 @@ import { announceToScreenReader } from './utils/accessibility';
 import { useTranslation } from './hooks/useTranslation';
 
 // Lazy load page components for code splitting
-const MainPage = lazy(() => import('./MainPage'));
 const WalkInOptionsPage = lazy(() => import('./WalkInOptionsPage'));
 const WalkInDashboardPage = lazy(() => import('./pages/WalkInDashboardPage'));
 const NewBookingPage = lazy(() => import('./NewBookingPage'));
 const CurrentBookingsPage = lazy(() => import('./CurrentBookingsPage'));
 const ExistingGuestPage = lazy(() => import('./ExistingGuestPage'));
+const RoomPricingPage = lazy(() => import('./pages/RoomPricingPage'));
+const UserManagementPage = lazy(() => import('./pages/UserManagementPage'));
 
 // Loading component for Suspense fallback
 const LoadingSpinner = memo(() => (
@@ -157,12 +158,14 @@ const App: React.FC<AppProps> = () => {
               <ErrorBoundary>
                 <Suspense fallback={<LoadingSpinner />}>
                   <Routes>
-                    <Route path="/" element={<MainPage key="main" isAdminMode={isAdminMode} />} />
+                    <Route path="/" element={<WalkInDashboardPage key="walk-in-dashboard" />} />
                     <Route path="/walk-in-options" element={<WalkInOptionsPage key="walk-in" />} />
                     <Route path="/walk-in-dashboard" element={<WalkInDashboardPage key="walk-in-dashboard" />} />
                     <Route path="/new-booking" element={<NewBookingPage key="new-booking" />} />
                     <Route path="/current-bookings" element={<CurrentBookingsPage key="current-bookings" />} />
                     <Route path="/existing-guest" element={<ExistingGuestPage key="existing-guest" />} />
+                    <Route path="/room-pricing" element={<RoomPricingPage key="room-pricing" />} />
+                    <Route path="/user-management" element={<UserManagementPage key="user-management" />} />
                   </Routes>
                 </Suspense>
               </ErrorBoundary>

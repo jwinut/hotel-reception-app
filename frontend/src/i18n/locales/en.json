@@ -52,7 +52,9 @@
       }
     },
     "admin": {
-      "title": "User Management",
+      "title": "Administration",
+      "roomPricing": "Room Pricing",
+      "userManagement": "User Management",
       "addUser": "Add User",
       "viewUsers": "View Users"
     },
@@ -96,6 +98,60 @@
     "required": "Required",
     "invalid": "Invalid",
     "error": "Error"
+  },
+  "pricing": {
+    "title": "Room Pricing Management",
+    "loading": "Loading pricing data...",
+    "fetchError": "Error loading pricing data",
+    "roomType": "Room Type",
+    "basePrice": "Base Price (THB)",
+    "breakfastPrice": "Breakfast Price (THB)",
+    "totalWithBreakfast": "Total with Breakfast",
+    "saveAll": "Save All Prices",
+    "saving": "Saving...",
+    "saveSuccess": "Prices saved successfully",
+    "saveError": "Error saving prices",
+    "validationError": "Please enter valid prices for all room types",
+    "notes": {
+      "title": "Pricing Notes",
+      "basePrice": "Base price is for room only, without breakfast",
+      "breakfast": "Breakfast price is added to base price for total",
+      "immediate": "Price changes take effect immediately"
+    }
+  },
+  "users": {
+    "title": "User Management",
+    "loading": "Loading users...",
+    "addNew": "Add New User",
+    "cancel": "Cancel",
+    "save": "Save User",
+    "username": "Username",
+    "fullName": "Full Name",
+    "email": "Email",
+    "password": "Password",
+    "role": "Role",
+    "status": "Status",
+    "actions": "Actions",
+    "active": "Active",
+    "inactive": "Inactive",
+    "activate": "Activate",
+    "deactivate": "Deactivate",
+    "delete": "Delete",
+    "confirmDelete": "Are you sure you want to delete this user?",
+    "addSuccess": "User added successfully",
+    "deleteSuccess": "User deleted successfully",
+    "usernamePlaceholder": "Enter username",
+    "fullNamePlaceholder": "Enter full name",
+    "emailPlaceholder": "Enter email address",
+    "passwordPlaceholder": "Enter password",
+    "validation": {
+      "required": "Please fill in all required fields"
+    },
+    "roles": {
+      "admin": "Administrator",
+      "manager": "Manager",
+      "staff": "Staff"
+    }
   },
   "language": {
     "switch": "Switch Language",

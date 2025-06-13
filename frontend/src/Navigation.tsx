@@ -43,7 +43,8 @@ const Navigation: React.FC<NavigationProps> = memo(({
     existingGuest: () => navigate('/existing-guest'),
     newBooking: () => navigate('/new-booking'),
     currentBookings: () => navigate('/current-bookings'),
-    home: () => navigate('/'),
+    roomPricing: () => navigate('/room-pricing'),
+    userManagement: () => navigate('/user-management'),
   }), [navigate]);
 
   return (
@@ -108,42 +109,28 @@ const Navigation: React.FC<NavigationProps> = memo(({
           </div>
         </div>
 
-        {/* Quick Access */}
-        <div className="nav-section">
-          <h3 className="nav-section-title" id="main-section">{t('navigation.main')}</h3>
-          <div className="nav-buttons" role="group" aria-labelledby="main-section">
-            <button 
-              onClick={navigationButtons.home}
-              className={`nav-button secondary ${isActive('/') ? 'active' : ''}`}
-              type="button"
-              aria-describedby="main-section"
-              {...createBreadcrumbAriaProps(isActive('/'))}
-            >
-              {t('navigation.home')}
-            </button>
-          </div>
-        </div>
-
         {/* Admin Section */}
         {isAdminMode && (
           <div className="nav-section admin-section">
             <h3 className="nav-section-title" id="admin-section">{t('navigation.admin.title')}</h3>
             <div className="nav-buttons" role="group" aria-labelledby="admin-section">
               <button 
-                onClick={() => handleNavigation(null, onAddUser)}
-                className="nav-button admin"
+                onClick={navigationButtons.roomPricing}
+                className={`nav-button admin ${isActive('/room-pricing') ? 'active' : ''}`}
                 type="button"
                 aria-describedby="admin-section"
+                {...createBreadcrumbAriaProps(isActive('/room-pricing'))}
               >
-                {t('navigation.admin.addUser')}
+                {t('navigation.admin.roomPricing')}
               </button>
               <button 
-                onClick={() => handleNavigation(null, onViewUsers)}
-                className="nav-button admin"
+                onClick={navigationButtons.userManagement}
+                className={`nav-button admin ${isActive('/user-management') ? 'active' : ''}`}
                 type="button"
                 aria-describedby="admin-section"
+                {...createBreadcrumbAriaProps(isActive('/user-management'))}
               >
-                {t('navigation.admin.viewUsers')}
+                {t('navigation.admin.userManagement')}
               </button>
             </div>
           </div>
