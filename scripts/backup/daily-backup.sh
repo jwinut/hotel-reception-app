@@ -149,8 +149,8 @@ generate_report() {
     
     local total_backups=$(find "$BACKUP_DIR" -name "hotel_backup_*.sql.gz" | wc -l)
     local total_size=$(du -sh "$BACKUP_DIR" 2>/dev/null | cut -f1 || echo "0")
-    local oldest_backup=$(find "$BACKUP_DIR" -name "hotel_backup_*.sql.gz" -printf '%T@ %p\n' 2>/dev/null | sort -n | head -1 | cut -d' ' -f2- | xargs basename 2>/dev/null || echo "None")
-    local newest_backup=$(find "$BACKUP_DIR" -name "hotel_backup_*.sql.gz" -printf '%T@ %p\n' 2>/dev/null | sort -n | tail -1 | cut -d' ' -f2- | xargs basename 2>/dev/null || echo "None")
+    local oldest_backup=$(find "$BACKUP_DIR" -name "hotel_backup_*.sql.gz" 2>/dev/null | xargs ls -1t 2>/dev/null | tail -1 | xargs basename 2>/dev/null || echo "None")
+    local newest_backup=$(find "$BACKUP_DIR" -name "hotel_backup_*.sql.gz" 2>/dev/null | xargs ls -1t 2>/dev/null | head -1 | xargs basename 2>/dev/null || echo "None")
     
     # Generate console report
     log "INFO" "=== Backup Report ==="
@@ -242,11 +242,11 @@ EOF
 " >> "$temp_report"
     
     # List recent backups
-    find "$BACKUP_DIR" -name "hotel_backup_*.sql.gz" -printf '%T@ %p\n' 2>/dev/null | \
-        sort -nr | head -10 | while read -r timestamp filepath; do
+    find "$BACKUP_DIR" -name "hotel_backup_*.sql.gz" 2>/dev/null | \
+        xargs ls -1t 2>/dev/null | head -10 | while read -r filepath; do
         local filename=$(basename "$filepath")
         local size=$(du -h "$filepath" 2>/dev/null | cut -f1 || echo "N/A")
-        local date_created=$(date -d "@$timestamp" "+%Y-%m-%d %H:%M" 2>/dev/null || echo "N/A")
+        local date_created=$(stat -f "%Sm" -t "%Y-%m-%d %H:%M" "$filepath" 2>/dev/null || echo "N/A")
         echo "| $date_created | $filename | $size | ✅ Success |" >> "$temp_report"
     done
     
