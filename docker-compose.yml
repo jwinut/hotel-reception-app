@@ -1,6 +1,5 @@
 # Complete Production Stack Docker Compose for Hotel Reception App
 # Includes Frontend, Backend, and Database
-version: '3.8'
 
 services:
   # PostgreSQL Database

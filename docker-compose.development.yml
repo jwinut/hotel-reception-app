@@ -1,6 +1,5 @@
 # Development Docker Compose for Hotel Reception App
 # Includes hot-reload for frontend and backend
-version: '3.8'
 
 services:
   # PostgreSQL Database
