@@ -1,8 +1,20 @@
 {
-    "walkInOptions": [
-      { "id": "walkin_bf", "label": "ราคาปกติ รับอาหารเช้า" },
-      { "id": "walkin_nobf", "label": "ราคาปกติ ไม่รับอาหารเช้า" },
-      { "id": "walkin_reporter", "label": "ลูกค้านักข่าว" },
-      { "id": "walkin_special", "label": "ราคาพิเศษ" }
-    ]
-  }
+  "walkInOptions": [
+    {
+      "id": "walkin_bf",
+      "label": "ราคาปกติ รับอาหารเช้า"
+    },
+    {
+      "id": "walkin_nobf",
+      "label": "ราคาปกติ ไม่รับอาหารเช้า"
+    },
+    {
+      "id": "walkin_reporter",
+      "label": "ลูกค้านักข่าว"
+    },
+    {
+      "id": "walkin_special",
+      "label": "ราคาพิเศษ"
+    }
+  ]
+}

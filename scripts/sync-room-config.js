@@ -14,6 +14,8 @@ const path = require('path');
 const MASTER_CONFIG = path.join(__dirname, '../config/master/hotel-rooms.json');
 const FRONTEND_ROOM_DATA = path.join(__dirname, '../frontend/public/config/roomData.json');
 const FRONTEND_HOTEL_LAYOUT = path.join(__dirname, '../frontend/public/config/hotelLayout.json');
+const FRONTEND_PRICE_DATA = path.join(__dirname, '../frontend/public/config/priceData.json');
+const FRONTEND_BOOKING_OPTIONS = path.join(__dirname, '../frontend/public/config/bookingOptions.json');
 const BACKEND_ROOM_CONFIG = path.join(__dirname, '../backend/src/config/rooms.json');
 
 function loadMasterConfig() {
@@ -60,6 +62,31 @@ function syncFrontendLayout(masterConfig) {
   ensureDirectoryExists(FRONTEND_HOTEL_LAYOUT);
   fs.writeFileSync(FRONTEND_HOTEL_LAYOUT, JSON.stringify(frontendLayout, null, 2));
   console.log(`✅ Synced frontend layout: ${FRONTEND_HOTEL_LAYOUT}`);
+}
+
+function syncFrontendPricing(masterConfig) {
+  // Generate pricing data with breakfast surcharge
+  const breakfastSurcharge = masterConfig.pricing.breakfastSurcharge;
+  const frontendPricing = {
+    prices: Object.entries(masterConfig.roomTypes).map(([typeKey, typeConfig]) => ({
+      roomType: typeConfig.name,
+      noBreakfast: typeConfig.basePrice,
+      withBreakfast: typeConfig.basePrice + breakfastSurcharge
+    }))
+  };
+
+  ensureDirectoryExists(FRONTEND_PRICE_DATA);
+  fs.writeFileSync(FRONTEND_PRICE_DATA, JSON.stringify(frontendPricing, null, 2));
+  console.log(`✅ Synced frontend pricing: ${FRONTEND_PRICE_DATA}`);
+}
+
+function syncFrontendBookingOptions(masterConfig) {
+  // Copy booking options directly
+  const frontendBookingOptions = masterConfig.bookingOptions;
+
+  ensureDirectoryExists(FRONTEND_BOOKING_OPTIONS);
+  fs.writeFileSync(FRONTEND_BOOKING_OPTIONS, JSON.stringify(frontendBookingOptions, null, 2));
+  console.log(`✅ Synced frontend booking options: ${FRONTEND_BOOKING_OPTIONS}`);
 }
 
 function syncBackendConfig(masterConfig) {
@@ -157,6 +184,8 @@ function main() {
   console.log('\n🔄 Syncing configuration...');
   syncFrontendRoomData(masterConfig);
   syncFrontendLayout(masterConfig);
+  syncFrontendPricing(masterConfig);
+  syncFrontendBookingOptions(masterConfig);
   syncBackendConfig(masterConfig);
 
   // Generate summary
@@ -177,6 +206,8 @@ module.exports = {
   loadMasterConfig,
   syncFrontendRoomData,
   syncFrontendLayout,
+  syncFrontendPricing,
+  syncFrontendBookingOptions,
   syncBackendConfig,
   validateRoomNumbers
 };

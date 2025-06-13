@@ -4,6 +4,17 @@
     "floors": [3, 4, 5],
     "totalRooms": 41
   },
+  "pricing": {
+    "breakfastSurcharge": 250
+  },
+  "bookingOptions": {
+    "walkInOptions": [
+      { "id": "walkin_bf", "label": "ราคาปกติ รับอาหารเช้า" },
+      { "id": "walkin_nobf", "label": "ราคาปกติ ไม่รับอาหารเช้า" },
+      { "id": "walkin_reporter", "label": "ลูกค้านักข่าว" },
+      { "id": "walkin_special", "label": "ราคาพิเศษ" }
+    ]
+  },
   "roomTypes": {
     "STANDARD": {
       "name": "Standard",
