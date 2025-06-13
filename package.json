@@ -1,0 +1,34 @@
+{
+  "name": "hotel-reception-app",
+  "version": "2.0.0",
+  "description": "Hotel Reception Management System - Complete walk-in booking solution",
+  "scripts": {
+    "sync-rooms": "node scripts/sync-room-config.js",
+    "dev:frontend": "cd frontend && npm start",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:db": "docker compose up hotel-database -d",
+    "dev": "npm run dev:db && concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "build": "cd frontend && npm run build && cd ../backend && npm run build",
+    "start": "docker compose up -d",
+    "stop": "docker compose down",
+    "restart": "npm run stop && npm run start",
+    "seed": "docker compose exec hotel-backend npm run prisma:seed",
+    "migrate": "docker compose exec hotel-backend npm run prisma:deploy",
+    "studio": "docker compose exec hotel-backend npm run prisma:studio"
+  },
+  "keywords": [
+    "hotel",
+    "reception",
+    "booking",
+    "walk-in",
+    "typescript",
+    "react",
+    "nodejs",
+    "postgresql"
+  ],
+  "author": "Hotel Reception System",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

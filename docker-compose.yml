@@ -45,6 +45,7 @@ services:
     restart: unless-stopped
     volumes:
       - ./backend/prisma:/app/prisma:ro
+      - ./backend/src/config:/app/src/config:ro
     networks:
       - hotel-network
     healthcheck:

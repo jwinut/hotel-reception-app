@@ -46,6 +46,7 @@ services:
     volumes:
       - ./backend:/app
       - /app/node_modules
+      - ./backend/src/config:/app/src/config:ro
     networks:
       - hotel-dev-network
     healthcheck:
