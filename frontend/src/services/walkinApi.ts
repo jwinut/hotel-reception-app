@@ -46,6 +46,43 @@ export class WalkInApiError extends Error {
   }
 }
 
+export interface CreateBookingRequest {
+  roomId: string;
+  guest: {
+    firstName: string;
+    lastName: string;
+    phone: string;
+    idType: 'PASSPORT' | 'NATIONAL_ID';
+    idNumber: string;
+  };
+  checkOutDate: string;
+  breakfastIncluded: boolean;
+}
+
+export interface BookingResponse {
+  success: boolean;
+  booking: {
+    id: string;
+    reference: string;
+    guest: string;
+    room: {
+      number: string;
+      type: string;
+      floor: number;
+    };
+    checkIn: string;
+    checkOut: string;
+    nights: number;
+    pricing: {
+      roomTotal: number;
+      breakfastTotal: number;
+      totalAmount: number;
+    };
+    breakfastIncluded: boolean;
+    status: string;
+  };
+}
+
 export const walkinApi = {
   /**
    * Get all currently available rooms with summary by type
@@ -109,6 +146,60 @@ export const walkinApi = {
       }
       
       return result.data;
+    } catch (error) {
+      if (error instanceof WalkInApiError) {
+        throw error;
+      }
+      throw new WalkInApiError(0, `Network error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  },
+
+  /**
+   * Create a new walk-in booking
+   */
+  async createWalkInBooking(bookingData: CreateBookingRequest): Promise<BookingResponse> {
+    try {
+      const response = await fetch(`${API_URL}/walkin/checkin`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(bookingData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new WalkInApiError(
+          response.status,
+          errorData.error || `Failed to create booking: ${response.statusText}`
+        );
+      }
+
+      return await response.json();
+    } catch (error) {
+      if (error instanceof WalkInApiError) {
+        throw error;
+      }
+      throw new WalkInApiError(0, `Network error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  },
+
+  /**
+   * Get booking by reference number
+   */
+  async getBookingByReference(reference: string): Promise<any> {
+    try {
+      const response = await fetch(`${API_URL}/walkin/booking/${reference}`);
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new WalkInApiError(
+          response.status,
+          errorData.error || `Failed to fetch booking: ${response.statusText}`
+        );
+      }
+      
+      return await response.json();
     } catch (error) {
       if (error instanceof WalkInApiError) {
         throw error;

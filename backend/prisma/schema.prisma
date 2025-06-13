@@ -1,0 +1,83 @@
+// Prisma schema for hotel reception walk-in system
+// Milestone 2: Basic booking creation added
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Room {
+  id            String   @id @default(uuid())
+  roomNumber    String   @unique
+  roomType      RoomType
+  floor         Int
+  basePrice     Decimal  @db.Decimal(10, 2)
+  status        RoomStatus @default(CLEAN)
+  maxOccupancy  Int      @default(2)
+  features      Json?    // Store room features like wifi, balcony, etc.
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  // Relations
+  bookings      WalkInBooking[]
+  
+  @@index([roomType, status])
+  @@index([status])
+  @@map("rooms")
+}
+
+model WalkInBooking {
+  id                String   @id @default(uuid())
+  bookingReference  String   @unique @default(cuid())
+  roomId            String
+  guestFirstName    String
+  guestLastName     String
+  guestPhone        String
+  guestIdType       IdType
+  guestIdNumber     String
+  checkInDate       DateTime @default(now())
+  checkOutDate      DateTime
+  roomPrice         Decimal  @db.Decimal(10, 2)
+  breakfastIncluded Boolean  @default(false)
+  totalAmount       Decimal  @db.Decimal(10, 2)
+  status            BookingStatus @default(CHECKED_IN)
+  createdAt         DateTime @default(now())
+  
+  // Relations
+  room              Room     @relation(fields: [roomId], references: [id])
+  
+  @@index([bookingReference])
+  @@index([guestPhone])
+  @@map("walkin_bookings")
+}
+
+enum RoomType {
+  STANDARD
+  SUPERIOR
+  DELUXE
+  FAMILY
+  HOP_IN
+  ZENITH
+}
+
+enum RoomStatus {
+  CLEAN      // Available for booking
+  OCCUPIED   // Guest currently staying
+  DIRTY      // Needs housekeeping
+  MAINTENANCE // Under maintenance
+}
+
+enum IdType {
+  PASSPORT
+  NATIONAL_ID
+}
+
+enum BookingStatus {
+  CHECKED_IN
+  CHECKED_OUT
+  CANCELLED
+}

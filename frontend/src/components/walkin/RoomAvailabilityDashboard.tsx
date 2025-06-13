@@ -3,7 +3,11 @@ import { useTranslation } from 'react-i18next';
 import { walkinApi, RoomSummary, WalkInApiError } from '../../services/walkinApi';
 import './RoomAvailabilityDashboard.css';
 
-const RoomAvailabilityDashboard: React.FC = () => {
+interface Props {
+  onStartBooking?: () => void;
+}
+
+const RoomAvailabilityDashboard: React.FC<Props> = ({ onStartBooking }) => {
   const { t } = useTranslation();
   const [summary, setSummary] = useState<RoomSummary[]>([]);
   const [loading, setLoading] = useState(true);
@@ -35,10 +39,13 @@ const RoomAvailabilityDashboard: React.FC = () => {
   }, [fetchRooms]);
 
   const handleRoomSelect = useCallback((roomType: string) => {
-    // TODO: Navigate to booking form with selected room type
-    console.log('Selected room type:', roomType);
-    alert(`Selected ${roomType} room - booking form will be implemented in Milestone 2`);
-  }, []);
+    if (onStartBooking) {
+      onStartBooking();
+    } else {
+      console.log('Selected room type:', roomType);
+      alert(`Starting booking flow for ${roomType} room...`);
+    }
+  }, [onStartBooking]);
 
   useEffect(() => {
     fetchRooms();
