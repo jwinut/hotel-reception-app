@@ -16,28 +16,33 @@ The system is designed to:
 - Hotel managers
 - Administrative personnel
 
-## Current Features (Version 1.0)
-1. **Guest Check-in for Walk-in Customers**
-   - Multiple booking options (with/without breakfast, special rates)
-   - Visual room selection using hotel floor plan
-   - Room type filtering
-   - Real-time date and time display
+## Current Features (Version 2.0)
+1. **Complete Walk-in Booking System**
+   - Room availability display with real-time status
+   - Visual room selection with filtering by type and availability
+   - Guest information capture and validation
+   - Booking confirmation with receipt generation
+   - Multi-language support (Thai/English)
 
-2. **Price Management**
-   - Dynamic pricing for different room types
-   - Breakfast inclusion options
-   - Admin-controlled price updates
+2. **Backend Services**
+   - PostgreSQL database with Prisma ORM
+   - RESTful API endpoints for booking management
+   - Automated room status updates
+   - Database transactions for data consistency
 
-3. **Modern Navigation System**
-   - Quick access to all hotel functions
-   - Admin panel integration
-   - Responsive design for tablets and desktops
+3. **Professional UI/UX**
+   - Responsive design optimized for tablets and desktops
+   - Light mode interface with consistent styling
+   - Intuitive navigation and workflow
+   - Professional receipt generation
 
 ## Technical Architecture
-- **Frontend**: React.js with modern CSS and responsive design
-- **Configuration**: JSON-based configuration files
-- **Deployment**: Docker-ready setup
-- **Future Backend**: PostgreSQL database planned for analytics
+- **Frontend**: React 18 with TypeScript, Redux Toolkit for state management
+- **Backend**: Node.js with Express, TypeScript, and Prisma ORM
+- **Database**: PostgreSQL 15 with automated migrations
+- **Deployment**: Docker Compose with production and development configurations
+- **Testing**: Jest and React Testing Library with ~72% coverage
+- **Internationalization**: react-i18next for Thai/English support
 
 ## File Structure
 See [Project Structure](./project-structure.md) for detailed codebase organization.

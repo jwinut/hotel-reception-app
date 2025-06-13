@@ -4,26 +4,49 @@
 
 ```
 hotel-reception-app/
-├── docs/                           # Documentation folder
-├── frontend/                       # React application
-│   ├── public/                     # Static files and configuration
-│   │   ├── config/                 # Hotel configuration files
+├── backend/                        # Node.js API server
+│   ├── src/
+│   │   ├── controllers/            # Request handlers
+│   │   ├── services/               # Business logic (BookingService, etc.)
+│   │   ├── routes/                 # API route definitions
+│   │   ├── middleware/             # Express middleware
+│   │   └── server.ts               # Application entry point
+│   ├── prisma/                     # Database schema and migrations
+│   │   ├── schema.prisma           # Database schema definition
+│   │   ├── migrations/             # Database migration files
+│   │   └── seed.ts                 # Sample data seeding
+│   ├── Dockerfile                  # Backend container configuration
+│   └── package.json                # Backend dependencies
+├── frontend/                       # React TypeScript application
+│   ├── public/
+│   │   ├── config/                 # Runtime configuration files
 │   │   │   ├── bookingOptions.json # Walk-in booking types
 │   │   │   ├── hotelLayout.json    # Room layout by floor
 │   │   │   ├── priceData.json      # Room pricing information
 │   │   │   └── roomData.json       # Room details and types
 │   │   └── [other static files]    # Icons, manifests, etc.
-│   └── src/                        # React source code
-│       ├── App.js                  # Main application component
-│       ├── App.css                 # Global styling
-│       ├── MainPage.js             # Dashboard/welcome page
-│       ├── Navigation.js           # Top navigation component
-│       ├── Navigation.css          # Navigation styling
-│       ├── WalkInOptionsPage.js    # Walk-in guest check-in
-│       ├── WalkInOptionsPage.css   # Walk-in page styling
-│       ├── index.js                # App entry point
-│       └── index.css               # Global CSS variables and reset
-└── package.json                    # Project dependencies
+│   └── src/                        # React TypeScript source
+│       ├── components/             # Reusable UI components
+│       │   ├── walkin/             # Walk-in booking components
+│       │   │   ├── RoomAvailabilityDashboard.tsx
+│       │   │   ├── RoomSelection.tsx
+│       │   │   ├── QuickGuestForm.tsx
+│       │   │   └── BookingSuccess.tsx
+│       │   └── [other components]   # Shared UI components
+│       ├── pages/                  # Page-level components
+│       ├── services/               # API clients and external services
+│       ├── hooks/                  # Custom React hooks
+│       ├── store/                  # Redux state management
+│       ├── utils/                  # Utility functions
+│       ├── types/                  # TypeScript type definitions
+│       ├── i18n/                   # Internationalization (Thai/English)
+│       └── App.tsx                 # Main application component
+│   ├── Dockerfile                  # Frontend container configuration
+│   └── package.json                # Frontend dependencies
+├── docs/                           # Project documentation
+├── docker-compose.yml              # Production stack deployment
+├── docker-compose.development.yml  # Development with hot-reload
+└── README.md                       # Project overview and setup
 ```
 
 ## Configuration Files Explained
@@ -51,32 +74,34 @@ Defines walk-in booking types:
 - **Purpose**: Different pricing/service options for walk-in guests
 - **Options**: Normal rates, special rates, press rates
 - **Usage**: Displayed as buttons in walk-in check-in flow
+- **Integration**: Works with backend pricing calculations
 
-## Component Architecture
+## Architecture Overview
 
-### App.js - Main Application
-- **Role**: Root component and routing
-- **Responsibilities**: 
-  - Admin authentication
-  - Navigation state management
-  - Route configuration
-  - Global state (admin mode)
+### Backend Services
+- **BookingService**: Handles walk-in booking creation with database transactions
+- **API Endpoints**: RESTful endpoints for room availability and booking management
+- **Database**: PostgreSQL with Prisma ORM for type-safe queries
+- **Health Checks**: Automated service monitoring
 
-### Navigation.js - Navigation Bar
-- **Role**: Site-wide navigation
-- **Features**:
-  - Section-based organization (check-in, booking, admin)
-  - Active page highlighting
-  - Admin feature visibility control
-  - Responsive mobile design
+### Frontend Architecture
+- **App.tsx**: Main application with React Router and Redux integration
+- **Redux Store**: State management with slices for auth, booking, ui, and config
+- **Component Structure**: Organized by feature (walkin/, shared components)
+- **TypeScript**: Strict typing throughout the application
+- **Internationalization**: react-i18next for Thai/English support
 
-### MainPage.js - Dashboard
-- **Role**: Welcome page and price management
-- **Features**:
-  - Welcome section with hotel branding
-  - Price management (admin feature)
-  - Collapsible sections
-  - Professional layout
+### Walk-in Booking Flow
+1. **RoomAvailabilityDashboard**: Real-time room status display
+2. **RoomSelection**: Visual room picker with filtering
+3. **QuickGuestForm**: Guest information capture and validation
+4. **BookingSuccess**: Confirmation and receipt generation
+
+### Database Schema
+- **WalkInBooking**: Complete booking records with guest information
+- **Room**: Room definitions with availability status
+- **Pricing**: Dynamic pricing with breakfast options
+- **Migrations**: Automated database schema updates
 
 ### WalkInOptionsPage.js - Walk-in Check-in
 - **Role**: Guest check-in for non-reservation customers

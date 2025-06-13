@@ -6,7 +6,7 @@ A modern, full-stack hotel reception system built with React, Node.js, TypeScrip
 
 ### Prerequisites
 
-- [Docker](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/compose/install/)
+- [Docker](https://docs.docker.com/get-docker/) with Docker Compose V2
 - [Node.js 18+](https://nodejs.org/) (for local development)
 - [Git](https://git-scm.com/downloads)
 
@@ -22,13 +22,13 @@ git clone <repository-url>
 cd hotel-reception-app
 
 # Start all services (Frontend + Backend + Database)
-docker-compose -f docker-compose.full.yml up -d
+docker compose up -d
 
 # View logs
-docker-compose -f docker-compose.full.yml logs -f
+docker compose logs -f
 
 # Stop all services
-docker-compose -f docker-compose.full.yml down
+docker compose down
 ```
 
 **Services will be available at:**
@@ -42,13 +42,13 @@ For development with automatic code reloading:
 
 ```bash
 # Start development environment
-docker-compose -f docker-compose.development.yml up -d
+docker compose -f docker-compose.development.yml up -d
 
 # View logs
-docker-compose -f docker-compose.development.yml logs -f
+docker compose -f docker-compose.development.yml logs -f
 
 # Stop development environment
-docker-compose -f docker-compose.development.yml down
+docker compose -f docker-compose.development.yml down
 ```
 
 **Development features:**
@@ -63,7 +63,8 @@ docker-compose -f docker-compose.development.yml down
 
 1. **Start only the database:**
 ```bash
-docker-compose -f docker-compose.dev.yml up -d
+# Use development compose file with only database
+docker compose -f docker-compose.development.yml up hotel-database -d
 ```
 
 2. **Run backend locally:**
@@ -140,9 +141,8 @@ hotel-reception-app/
 │   ├── prisma/              # Database schema and migrations
 │   └── Dockerfile           # Backend container config
 ├── docs/                    # Documentation
-├── docker-compose.full.yml      # Production-like deployment
+├── docker-compose.yml            # Complete production stack
 ├── docker-compose.development.yml # Development with hot-reload
-├── docker-compose.dev.yml        # Database only
 └── README.md                # This file
 ```
 
@@ -209,7 +209,7 @@ npm run test:watch         # Watch mode
 ### Integration Testing
 ```bash
 # Start test environment
-docker-compose -f docker-compose.development.yml up -d
+docker compose -f docker-compose.development.yml up -d
 
 # Run end-to-end tests
 npm run test:e2e
@@ -260,20 +260,20 @@ kill -9 <PID>
 #### Docker Issues
 ```bash
 # Clean up Docker
-docker-compose down --volumes --remove-orphans
+docker compose down --volumes --remove-orphans
 docker system prune -a
 
 # Rebuild containers
-docker-compose -f docker-compose.full.yml up --build
+docker compose up --build
 ```
 
 #### Database Connection Issues
 ```bash
 # Check database status
-docker-compose -f docker-compose.dev.yml ps
+docker compose ps
 
 # View database logs
-docker-compose -f docker-compose.dev.yml logs hotel-database
+docker compose logs hotel-database
 ```
 
 #### Permission Issues (Linux/Mac)
@@ -309,12 +309,12 @@ All services include health check endpoints:
 
 ```bash
 # View all logs
-docker-compose -f docker-compose.full.yml logs -f
+docker compose logs -f
 
 # View specific service logs
-docker-compose -f docker-compose.full.yml logs -f hotel-backend
-docker-compose -f docker-compose.full.yml logs -f hotel-frontend
-docker-compose -f docker-compose.full.yml logs -f hotel-database
+docker compose logs -f hotel-backend
+docker compose logs -f hotel-frontend
+docker compose logs -f hotel-database
 ```
 
 ## 🚀 Deployment
@@ -329,17 +329,17 @@ export REACT_APP_API_URL=https://your-domain.com/api
 
 2. **Deploy with Docker:**
 ```bash
-docker-compose -f docker-compose.full.yml up -d
+docker compose up -d
 ```
 
 3. **Run database migrations:**
 ```bash
-docker-compose -f docker-compose.full.yml exec hotel-backend npm run prisma:deploy
+docker compose exec hotel-backend npm run prisma:deploy
 ```
 
 4. **Seed initial data:**
 ```bash
-docker-compose -f docker-compose.full.yml exec hotel-backend npm run prisma:seed
+docker compose exec hotel-backend npm run prisma:seed
 ```
 
 ### Scaling
@@ -347,10 +347,10 @@ docker-compose -f docker-compose.full.yml exec hotel-backend npm run prisma:seed
 To scale services:
 ```bash
 # Scale backend
-docker-compose -f docker-compose.full.yml up -d --scale hotel-backend=3
+docker compose up -d --scale hotel-backend=3
 
 # Scale frontend
-docker-compose -f docker-compose.full.yml up -d --scale hotel-frontend=2
+docker compose up -d --scale hotel-frontend=2
 ```
 
 ## 📚 Additional Resources

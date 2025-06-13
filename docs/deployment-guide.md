@@ -20,9 +20,10 @@ curl -fsSL https://get.docker.com -o get-docker.sh
 sudo sh get-docker.sh
 sudo usermod -aG docker $USER
 
-# Install Docker Compose
-sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-sudo chmod +x /usr/local/bin/docker-compose
+# Docker Compose V2 is included with Docker Desktop
+# For Linux servers, install Docker Compose plugin
+sudo apt-get update
+sudo apt-get install docker-compose-plugin
 ```
 
 ## Deployment Steps
@@ -53,23 +54,23 @@ nano .env
 - `JWT_SECRET`: Random 32+ character string
 - `HOTEL_NAME`: Your hotel's name
 
-### 3. Deploy Frontend Only (Current Version)
+### 3. Deploy Complete Stack (Production)
 ```bash
-# Build and start the frontend
-docker-compose up -d hotel-frontend
+# Build and start all services (Frontend + Backend + Database)
+docker compose up -d
 
 # Check status
-docker-compose ps
-docker-compose logs hotel-frontend
+docker compose ps
+docker compose logs
 ```
 
-### 4. Deploy Full Stack (Future Backend)
+### 4. Initialize Database
 ```bash
-# Start all services including database
-docker-compose --profile backend up -d
+# Run database migrations
+docker compose exec hotel-backend npm run prisma:deploy
 
-# Initialize database (when backend is ready)
-docker-compose exec hotel-database psql -U hotel_admin -d hotel_reception -f /docker-entrypoint-initdb.d/init.sql
+# Seed database with initial data
+docker compose exec hotel-backend npm run prisma:seed
 ```
 
 ## Configuration Management
@@ -92,7 +93,7 @@ frontend/public/config/
 nano frontend/public/config/roomData.json
 
 # Restart frontend to apply changes
-docker-compose restart hotel-frontend
+docker compose restart hotel-frontend
 ```
 
 ## Monitoring and Maintenance
@@ -103,10 +104,10 @@ docker-compose restart hotel-frontend
 curl http://localhost/health
 
 # Check all service status
-docker-compose ps
+docker compose ps
 
 # View service logs
-docker-compose logs -f hotel-frontend
+docker compose logs -f hotel-frontend
 ```
 
 ### Log Management
@@ -115,16 +116,16 @@ docker-compose logs -f hotel-frontend
 tail -f logs/nginx/access.log
 
 # View application logs
-docker-compose logs --tail=100 hotel-frontend
+docker compose logs --tail=100 hotel-frontend
 ```
 
-### Database Backup (When Backend is Ready)
+### Database Backup
 ```bash
 # Create backup
-docker-compose exec hotel-database pg_dump -U hotel_admin hotel_reception > database/backups/backup-$(date +%Y%m%d).sql
+docker compose exec hotel-database pg_dump -U hoteluser hoteldb > database/backups/backup-$(date +%Y%m%d).sql
 
 # Restore backup
-docker-compose exec -T hotel-database psql -U hotel_admin hotel_reception < database/backups/backup-20231201.sql
+docker compose exec -T hotel-database psql -U hoteluser hoteldb < database/backups/backup-20231201.sql
 ```
 
 ## SSL/HTTPS Setup
