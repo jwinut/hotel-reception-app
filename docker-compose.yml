@@ -1,29 +1,87 @@
-# Simplified Production Docker Compose for Hotel Reception App
-# Frontend-only deployment (backend implementation complete but separate)
+# Complete Production Stack Docker Compose for Hotel Reception App
+# Includes Frontend, Backend, and Database
 version: '3.8'
 
 services:
-  # Frontend React Application
+  # PostgreSQL Database
+  hotel-database:
+    image: postgres:15-alpine
+    container_name: hotel_postgres
+    environment:
+      POSTGRES_USER: hoteluser
+      POSTGRES_PASSWORD: hotelpass
+      POSTGRES_DB: hoteldb
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - hotel_postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hoteluser -d hoteldb"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    networks:
+      - hotel-network
+
+  # Backend API
+  hotel-backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: production
+    container_name: hotel_backend
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      DATABASE_URL: postgresql://hoteluser:hotelpass@hotel-database:5432/hoteldb
+      CORS_ORIGIN: http://localhost:3000
+    ports:
+      - "4000:4000"
+    depends_on:
+      hotel-database:
+        condition: service_healthy
+    restart: unless-stopped
+    volumes:
+      - ./backend/prisma:/app/prisma:ro
+    networks:
+      - hotel-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:4000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Frontend React App
   hotel-frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
       target: production
-    container_name: hotel_frontend_prod
-    ports:
-      - "3000:80"
+    container_name: hotel_frontend
     environment:
       REACT_APP_API_URL: http://localhost:4000/api
       REACT_APP_HOTEL_NAME: Grand Hotel Reception
       REACT_APP_ADMIN_CODE: admin123
+    ports:
+      - "3000:80"
+    depends_on:
+      hotel-backend:
+        condition: service_healthy
     restart: unless-stopped
+    networks:
+      - hotel-network
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80/health"]
       interval: 30s
       timeout: 10s
       retries: 3
-    networks:
-      - hotel-network
+
+volumes:
+  hotel_postgres_data:
+    driver: local
 
 networks:
   hotel-network:
