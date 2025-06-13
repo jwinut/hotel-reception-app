@@ -13,6 +13,12 @@
   border: 1px solid var(--border-color, #e0e0e0);
 }
 
+.language-switcher.text {
+  align-items: center;
+  gap: 8px;
+  user-select: none;
+}
+
 .language-switcher.dropdown {
   position: relative;
 }
@@ -41,6 +47,37 @@
   background-color: var(--primary-color, #1976d2) !important;
   color: white !important;
   border-color: var(--primary-color, #1976d2) !important;
+}
+
+.language-text {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary, #666666);
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.language-text:hover {
+  color: var(--text-color, #212121);
+  background-color: var(--hover-bg, #f0f0f0);
+}
+
+.language-text.active {
+  color: var(--primary-color, #1976d2);
+  font-weight: 600;
+}
+
+.language-text:focus {
+  box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.25);
+}
+
+.language-divider {
+  color: var(--text-secondary, #666666);
+  font-weight: 300;
+  user-select: none;
 }
 
 .language-select {

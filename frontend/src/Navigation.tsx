@@ -24,21 +24,11 @@ const Navigation: React.FC<NavigationProps> = memo(({
   const location = useLocation();
   const { t } = useTranslation();
 
-  // Memoized navigation handler
-  const handleNavigation = useCallback((path: string | null, action?: () => void): void => {
-    if (action) {
-      action();
-    } else if (path) {
-      navigate(path);
-    }
-  }, [navigate]);
-
   // Memoized active path checker
   const isActive = useCallback((path: string): boolean => location.pathname === path, [location.pathname]);
 
   // Memoized navigation buttons to prevent recreation on every render
   const navigationButtons = useMemo(() => ({
-    walkInOptions: () => navigate('/walk-in-options'),
     walkInDashboard: () => navigate('/walk-in-dashboard'),
     existingGuest: () => navigate('/existing-guest'),
     newBooking: () => navigate('/new-booking'),
@@ -62,15 +52,6 @@ const Navigation: React.FC<NavigationProps> = memo(({
               {...createBreadcrumbAriaProps(isActive('/walk-in-dashboard'))}
             >
               🏨 Walk-in
-            </button>
-            <button 
-              onClick={navigationButtons.walkInOptions}
-              className={`nav-button primary ${isActive('/walk-in-options') ? 'active' : ''}`}
-              type="button"
-              aria-describedby="checkin-section"
-              {...createBreadcrumbAriaProps(isActive('/walk-in-options'))}
-            >
-              {t('navigation.checkin.walkIn')}
             </button>
             <button 
               onClick={navigationButtons.existingGuest}

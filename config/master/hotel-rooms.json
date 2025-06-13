@@ -139,17 +139,17 @@
     { "roomNumber": "517", "roomType": "STANDARD", "floor": 5, "bedType": "queen" },
     { "roomNumber": "518", "roomType": "DELUXE", "floor": 5, "bedType": "king" },
     
-    { "roomNumber": "A 2-1", "roomType": "HOP_IN", "floor": 3, "bedType": "single" },
-    { "roomNumber": "A 2-3", "roomType": "HOP_IN", "floor": 3, "bedType": "single" },
-    { "roomNumber": "A 3-1", "roomType": "HOP_IN", "floor": 4, "bedType": "single" },
-    { "roomNumber": "A 3-2", "roomType": "HOP_IN", "floor": 4, "bedType": "single" },
-    { "roomNumber": "A 3-3", "roomType": "HOP_IN", "floor": 4, "bedType": "single" },
+    { "roomNumber": "A 2-1", "roomType": "HOP_IN", "floor": 2, "bedType": "single" },
+    { "roomNumber": "A 2-3", "roomType": "HOP_IN", "floor": 2, "bedType": "single" },
+    { "roomNumber": "A 3-1", "roomType": "HOP_IN", "floor": 3, "bedType": "single" },
+    { "roomNumber": "A 3-2", "roomType": "HOP_IN", "floor": 3, "bedType": "single" },
+    { "roomNumber": "A 3-3", "roomType": "HOP_IN", "floor": 3, "bedType": "single" },
     { "roomNumber": "A 4-1", "roomType": "HOP_IN", "floor": 4, "bedType": "single" },
     { "roomNumber": "A 4-2", "roomType": "HOP_IN", "floor": 4, "bedType": "single" },
     { "roomNumber": "A 4-3", "roomType": "HOP_IN", "floor": 4, "bedType": "single" },
-    { "roomNumber": "201", "roomType": "ZENITH", "floor": 3, "bedType": "king" }
+    { "roomNumber": "201", "roomType": "ZENITH", "floor": 2, "bedType": "king" }
   ],
-  "layout": [
+  "hfBuildingLayout": [
     {
       "floor": 5,
       "rows": [
@@ -160,15 +160,38 @@
     {
       "floor": 4,
       "rows": [
-        ["409", "410", "411", "412", "413", "414", "415", "416", "417", "418", null, null, "A 4-1", "A 4-2", "A 4-3"],
-        ["408", "407", null, "406", "405", "404", "403", "402", "401", null, null, null, "A 3-1", "A 3-2", "A 3-3"]
+        ["409", "410", "411", "412", "413", "414", "415", "416", "417", "418", null, null, null, null, null],
+        ["408", "407", null, "406", "405", "404", "403", "402", "401", null, null, null, null, null, null]
       ]
     },
     {
       "floor": 3,
       "rows": [
-        ["307", "308", "309", "310", "311", "312", "313", null, null, null, null, null, "201", "A 2-1", "A 2-3"],
+        ["307", "308", "309", "310", "311", "312", "313", null, null, null, null, null, null, null, null],
         ["306", "305", null, "304", "303", "302", "301", null, null, null, null, null, null, null, null]
+      ]
+    }
+  ],
+  "hopInBuildingLayout": [
+    {
+      "floor": 4,
+      "rows": [
+        ["A 4-1", "A 4-2", "A 4-3", null, null, null, null, null, null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
+      ]
+    },
+    {
+      "floor": 3,
+      "rows": [
+        ["A 3-1", "A 3-2", "A 3-3", null, null, null, null, null, null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
+      ]
+    },
+    {
+      "floor": 2,
+      "rows": [
+        ["201", "A 2-1", "A 2-3", null, null, null, null, null, null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
       ]
     }
   ]

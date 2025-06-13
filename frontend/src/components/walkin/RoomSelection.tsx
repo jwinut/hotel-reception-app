@@ -3,15 +3,13 @@ import { walkinApi, RoomAvailability } from '../../services/walkinApi';
 import './RoomSelection.css';
 
 interface Props {
-  onSelectRoom: (room: RoomAvailability & { includeBreakfast: boolean }) => void;
+  onSelectRoomType: (roomType: string) => void;
   onCancel: () => void;
 }
 
-const RoomSelection: React.FC<Props> = ({ onSelectRoom, onCancel }) => {
+const RoomSelection: React.FC<Props> = ({ onSelectRoomType, onCancel }) => {
   const [rooms, setRooms] = useState<RoomAvailability[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedType, setSelectedType] = useState<string>('ALL');
-  const [includeBreakfast, setIncludeBreakfast] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -31,40 +29,36 @@ const RoomSelection: React.FC<Props> = ({ onSelectRoom, onCancel }) => {
     }
   };
 
-  const filteredRooms = selectedType === 'ALL' 
-    ? rooms 
-    : rooms.filter(r => r.roomType === selectedType);
-
   const getRoomTypeDisplay = (type: string) => {
     const displays = {
-      STANDARD: { name: 'Standard', icon: '🏨', color: '#4f46e5' },
-      SUPERIOR: { name: 'Superior', icon: '⭐', color: '#059669' },
-      DELUXE: { name: 'Deluxe', icon: '💎', color: '#dc2626' },
-      FAMILY: { name: 'Family', icon: '👨‍👩‍👧‍👦', color: '#7c2d12' },
-      HOP_IN: { name: 'Hop In', icon: '🎒', color: '#ea580c' },
-      ZENITH: { name: 'Zenith', icon: '👑', color: '#7c3aed' }
+      STANDARD: { name: 'Standard', initial: 'ST', color: '#4f46e5' },
+      SUPERIOR: { name: 'Superior', initial: 'SU', color: '#059669' },
+      DELUXE: { name: 'Deluxe', initial: 'DX', color: '#dc2626' },
+      FAMILY: { name: 'Family', initial: 'FM', color: '#7c2d12' },
+      HOP_IN: { name: 'Hop In', initial: 'HI', color: '#ea580c' },
+      ZENITH: { name: 'Zenith', initial: 'ZN', color: '#7c3aed' }
     };
-    return displays[type as keyof typeof displays] || { name: type, icon: '🏨', color: '#6b7280' };
+    return displays[type as keyof typeof displays] || { name: type, initial: 'RM', color: '#6b7280' };
   };
 
-  const calculateBreakfastPrice = (roomType: string) => {
-    const breakfastPricing: Record<string, number> = {
-      'STANDARD': 250,
-      'SUPERIOR': 250,
-      'DELUXE': 250,
-      'FAMILY': 350,
-      'HOP_IN': 150,
-      'ZENITH': 350
-    };
-    return breakfastPricing[roomType] || 250;
-  };
+  // Group rooms by type and calculate stats
+  const roomTypeStats = rooms.reduce((acc, room) => {
+    if (!acc[room.roomType]) {
+      acc[room.roomType] = {
+        count: 0,
+        minPrice: room.basePrice,
+        maxPrice: room.basePrice,
+        floors: new Set<number>()
+      };
+    }
+    acc[room.roomType].count++;
+    acc[room.roomType].minPrice = Math.min(acc[room.roomType].minPrice, room.basePrice);
+    acc[room.roomType].maxPrice = Math.max(acc[room.roomType].maxPrice, room.basePrice);
+    acc[room.roomType].floors.add(room.floor);
+    return acc;
+  }, {} as Record<string, { count: number; minPrice: number; maxPrice: number; floors: Set<number> }>);
 
-  const calculateTotalPrice = (room: RoomAvailability) => {
-    const breakfastPrice = includeBreakfast ? calculateBreakfastPrice(room.roomType) : 0;
-    return room.basePrice + breakfastPrice;
-  };
-
-  const uniqueRoomTypes = Array.from(new Set(rooms.map(r => r.roomType)));
+  const uniqueRoomTypes = Object.keys(roomTypeStats);
 
   if (loading) {
     return (
@@ -94,111 +88,66 @@ const RoomSelection: React.FC<Props> = ({ onSelectRoom, onCancel }) => {
   return (
     <div className="room-selection">
       <div className="selection-header">
-        <h3>Select Room for Walk-in Booking</h3>
+        <h3>Select Room Type</h3>
         <button onClick={onCancel} className="cancel-button">
           ← Back to Dashboard
         </button>
       </div>
       
-      <div className="filters">
-        <div className="filter-group">
-          <label>Room Type:</label>
-          <select 
-            value={selectedType} 
-            onChange={(e) => setSelectedType(e.target.value)}
-            className="room-type-filter"
-          >
-            <option value="ALL">All Types ({rooms.length} available)</option>
-            {uniqueRoomTypes.map(type => {
-              const count = rooms.filter(r => r.roomType === type).length;
-              const display = getRoomTypeDisplay(type);
-              return (
-                <option key={type} value={type}>
-                  {display.name} ({count} available)
-                </option>
-              );
-            })}
-          </select>
-        </div>
-        
-        <div className="filter-group">
-          <label className="breakfast-toggle">
-            <input
-              type="checkbox"
-              checked={includeBreakfast}
-              onChange={(e) => setIncludeBreakfast(e.target.checked)}
-            />
-            <span className="checkbox-custom"></span>
-            Include Breakfast
-          </label>
-        </div>
-      </div>
-
-      {filteredRooms.length === 0 ? (
-        <div className="no-rooms">
-          <div className="no-rooms-icon">🚫</div>
-          <h4>No rooms available</h4>
-          <p>No {selectedType === 'ALL' ? '' : getRoomTypeDisplay(selectedType).name.toLowerCase()} rooms are currently available.</p>
-          <button onClick={() => setSelectedType('ALL')} className="show-all-button">
-            Show All Types
-          </button>
-        </div>
-      ) : (
-        <div className="room-list">
-          {filteredRooms.map(room => {
-            const display = getRoomTypeDisplay(room.roomType);
-            const totalPrice = calculateTotalPrice(room);
-            const breakfastPrice = calculateBreakfastPrice(room.roomType);
+      <div className="room-types-grid">
+        {uniqueRoomTypes.length === 0 ? (
+          <div className="no-rooms">
+            <div className="no-rooms-icon">🚫</div>
+            <h4>No rooms available</h4>
+            <p>There are currently no rooms available for booking.</p>
+          </div>
+        ) : (
+          uniqueRoomTypes.map(type => {
+            const display = getRoomTypeDisplay(type);
+            const stats = roomTypeStats[type];
+            const priceRange = stats.minPrice === stats.maxPrice 
+              ? `฿${stats.minPrice.toLocaleString()}`
+              : `฿${stats.minPrice.toLocaleString()} - ฿${stats.maxPrice.toLocaleString()}`;
             
             return (
               <div 
-                key={room.id} 
-                className="room-option"
+                key={type} 
+                className="room-type-card"
                 style={{ '--room-color': display.color } as React.CSSProperties}
+                onClick={() => onSelectRoomType(type)}
               >
-                <div className="room-header">
-                  <div className="room-icon">{display.icon}</div>
-                  <div className="room-info">
-                    <h4>Room {room.roomNumber}</h4>
-                    <span className="room-details">{display.name} • Floor {room.floor}</span>
+                <div className="room-type-header">
+                  <div className="room-type-icon">{display.initial}</div>
+                  <h4>{display.name}</h4>
+                </div>
+                
+                <div className="room-type-info">
+                  <div className="info-item">
+                    <span className="label">Available:</span>
+                    <span className="value">{stats.count} rooms</span>
+                  </div>
+                  <div className="info-item">
+                    <span className="label">Price range:</span>
+                    <span className="value">{priceRange}</span>
+                  </div>
+                  <div className="info-item">
+                    <span className="label">Floors:</span>
+                    <span className="value">{Array.from(stats.floors).sort().join(', ')}</span>
                   </div>
                 </div>
                 
-                <div className="room-pricing">
-                  <div className="price-breakdown">
-                    <div className="price-line">
-                      <span>Room Rate:</span>
-                      <span>฿{room.basePrice.toLocaleString()}</span>
-                    </div>
-                    {includeBreakfast && (
-                      <div className="price-line breakfast">
-                        <span>Breakfast:</span>
-                        <span>+฿{breakfastPrice.toLocaleString()}</span>
-                      </div>
-                    )}
-                    <div className="price-line total">
-                      <span>Total per night:</span>
-                      <span>฿{totalPrice.toLocaleString()}</span>
-                    </div>
-                  </div>
-                </div>
-                
-                <button 
-                  onClick={() => onSelectRoom({...room, includeBreakfast})}
-                  className="select-room-button"
-                >
-                  Select Room {room.roomNumber}
+                <button className="select-type-button">
+                  View Room Layout
                 </button>
               </div>
             );
-          })}
-        </div>
-      )}
+          })
+        )}
+      </div>
       
       <div className="selection-summary">
         <p>
-          Showing {filteredRooms.length} of {rooms.length} available rooms
-          {includeBreakfast && ' with breakfast included'}
+          {rooms.length} total rooms available across {uniqueRoomTypes.length} room types
         </p>
       </div>
     </div>

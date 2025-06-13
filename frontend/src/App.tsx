@@ -15,7 +15,6 @@ import { announceToScreenReader } from './utils/accessibility';
 import { useTranslation } from './hooks/useTranslation';
 
 // Lazy load page components for code splitting
-const WalkInOptionsPage = lazy(() => import('./WalkInOptionsPage'));
 const WalkInDashboardPage = lazy(() => import('./pages/WalkInDashboardPage'));
 const NewBookingPage = lazy(() => import('./NewBookingPage'));
 const CurrentBookingsPage = lazy(() => import('./CurrentBookingsPage'));
@@ -125,7 +124,7 @@ const App: React.FC<AppProps> = () => {
                   />
                 </div>
                 <div className="header-controls">
-                  <LanguageSwitcher variant="buttons" className="header-language-switcher" />
+                  <LanguageSwitcher variant="text" className="header-language-switcher" />
                   {/* Admin Access Button */}
                   <button 
                     className="header-admin-button" 
@@ -158,7 +157,6 @@ const App: React.FC<AppProps> = () => {
                 <Suspense fallback={<LoadingSpinner />}>
                   <Routes>
                     <Route path="/" element={<WalkInDashboardPage key="walk-in-dashboard" />} />
-                    <Route path="/walk-in-options" element={<WalkInOptionsPage key="walk-in" />} />
                     <Route path="/walk-in-dashboard" element={<WalkInDashboardPage key="walk-in-dashboard" />} />
                     <Route path="/new-booking" element={<NewBookingPage key="new-booking" />} />
                     <Route path="/current-bookings" element={<CurrentBookingsPage key="current-bookings" />} />

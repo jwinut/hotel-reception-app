@@ -89,11 +89,6 @@ jest.mock('./Navigation', () => {
   };
 });
 
-jest.mock('./WalkInOptionsPage', () => {
-  return function MockWalkInOptionsPage() {
-    return <div data-testid="walk-in-options">Walk-in Options</div>;
-  };
-});
 
 jest.mock('./NewBookingPage', () => {
   return function MockNewBookingPage() {

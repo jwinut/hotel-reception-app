@@ -4,7 +4,7 @@ import { walkinApi, RoomSummary, WalkInApiError } from '../../services/walkinApi
 import './RoomAvailabilityDashboard.css';
 
 interface Props {
-  onStartBooking?: () => void;
+  onStartBooking?: (roomType: string) => void;
 }
 
 const RoomAvailabilityDashboard: React.FC<Props> = ({ onStartBooking }) => {
@@ -40,7 +40,7 @@ const RoomAvailabilityDashboard: React.FC<Props> = ({ onStartBooking }) => {
 
   const handleRoomSelect = useCallback((roomType: string) => {
     if (onStartBooking) {
-      onStartBooking();
+      onStartBooking(roomType);
     } else {
       console.log('Selected room type:', roomType);
       alert(`Starting booking flow for ${roomType} room...`);

@@ -79,23 +79,22 @@ describe('Navigation Component', () => {
     it('renders all navigation buttons', () => {
       render(<Navigation {...defaultProps} />);
       
-      expect(screen.getByRole('button', { name: 'Walk-in Guest' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: '🏨 Walk-in' })).toBeInTheDocument();
       expect(screen.getByRole('button', { name: 'Existing Guest' })).toBeInTheDocument();
       expect(screen.getByRole('button', { name: 'New Booking' })).toBeInTheDocument();
       expect(screen.getByRole('button', { name: 'Current Bookings' })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: 'Home' })).toBeInTheDocument();
     });
   });
 
   describe('Navigation Actions', () => {
-    it('navigates to walk-in options page', async () => {
+    it('navigates to walk-in dashboard page', async () => {
       const user = userEvent.setup();
       render(<Navigation {...defaultProps} />);
       
-      const walkInButton = screen.getByRole('button', { name: 'Walk-in Guest' });
+      const walkInButton = screen.getByRole('button', { name: '🏨 Walk-in' });
       await user.click(walkInButton);
       
-      expect(mockNavigate).toHaveBeenCalledWith('/walk-in-options');
+      expect(mockNavigate).toHaveBeenCalledWith('/walk-in-dashboard');
     });
 
     it('navigates to existing guest page', async () => {

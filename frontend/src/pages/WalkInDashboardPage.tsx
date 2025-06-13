@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import RoomAvailabilityDashboard from '../components/walkin/RoomAvailabilityDashboard';
-import RoomSelection from '../components/walkin/RoomSelection';
+import RoomMap from '../components/walkin/RoomMap';
 import QuickGuestForm from '../components/walkin/QuickGuestForm';
 import BookingSuccess from '../components/walkin/BookingSuccess';
 import { RoomAvailability, walkinApi, CreateBookingRequest, BookingResponse, WalkInApiError } from '../services/walkinApi';
 import './WalkInDashboardPage.css';
 
-type ViewState = 'dashboard' | 'room-selection' | 'guest-form' | 'booking-success';
+type ViewState = 'dashboard' | 'room-map' | 'guest-form' | 'booking-success';
 
 interface GuestInfo {
   firstName: string;
@@ -19,18 +19,30 @@ interface GuestInfo {
 const WalkInDashboardPage: React.FC = () => {
   const [currentView, setCurrentView] = useState<ViewState>('dashboard');
   const [selectedRoom, setSelectedRoom] = useState<(RoomAvailability & { includeBreakfast: boolean }) | null>(null);
+  const [selectedRoomType, setSelectedRoomType] = useState<string>('ALL');
+  const [includeBreakfast, setIncludeBreakfast] = useState(false);
   const [completedBooking, setCompletedBooking] = useState<BookingResponse['booking'] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleStartBooking = () => {
-    setCurrentView('room-selection');
+  const handleStartBooking = (roomType: string) => {
+    setSelectedRoomType(roomType);
+    setCurrentView('room-map');
     setError(null);
   };
 
   const handleRoomSelected = (room: RoomAvailability & { includeBreakfast: boolean }) => {
     setSelectedRoom(room);
     setCurrentView('guest-form');
+  };
+
+  const handleBackToDashboard = () => {
+    setCurrentView('dashboard');
+    setSelectedRoom(null);
+    setSelectedRoomType('ALL');
+    setIncludeBreakfast(false);
+    setCompletedBooking(null);
+    setError(null);
   };
 
   const handleBookingSubmit = async (guest: GuestInfo, checkOutDate: Date) => {
@@ -63,16 +75,11 @@ const WalkInDashboardPage: React.FC = () => {
     }
   };
 
-  const handleBackToDashboard = () => {
+  const handleNewBooking = () => {
     setCurrentView('dashboard');
     setSelectedRoom(null);
-    setCompletedBooking(null);
-    setError(null);
-  };
-
-  const handleNewBooking = () => {
-    setCurrentView('room-selection');
-    setSelectedRoom(null);
+    setSelectedRoomType('ALL');
+    setIncludeBreakfast(false);
     setCompletedBooking(null);
     setError(null);
   };
@@ -86,11 +93,14 @@ const WalkInDashboardPage: React.FC = () => {
           />
         );
       
-      case 'room-selection':
+      case 'room-map':
         return (
-          <RoomSelection
+          <RoomMap
+            selectedRoomType={selectedRoomType}
             onSelectRoom={handleRoomSelected}
-            onCancel={handleBackToDashboard}
+            onBack={handleBackToDashboard}
+            includeBreakfast={includeBreakfast}
+            onBreakfastChange={setIncludeBreakfast}
           />
         );
       
@@ -99,7 +109,7 @@ const WalkInDashboardPage: React.FC = () => {
           <QuickGuestForm
             selectedRoom={selectedRoom}
             onSubmit={handleBookingSubmit}
-            onCancel={() => setCurrentView('room-selection')}
+            onCancel={() => setCurrentView('room-map')}
             loading={loading}
           />
         ) : null;
