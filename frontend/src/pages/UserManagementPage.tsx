@@ -18,11 +18,17 @@ const UserManagementPage: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showAddForm, setShowAddForm] = useState(false);
-  const [newUser, setNewUser] = useState({
+  const [newUser, setNewUser] = useState<{
+    username: string;
+    fullName: string;
+    password: string;
+    role: 'admin' | 'staff' | 'manager';
+    email: string;
+  }>({
     username: '',
     fullName: '',
     password: '',
-    role: 'staff' as const,
+    role: 'staff',
     email: ''
   });
 
@@ -77,7 +83,7 @@ const UserManagementPage: React.FC = () => {
       role: newUser.role,
       email: newUser.email,
       isActive: true,
-      createdAt: new Date().toISOString().split('T')[0]
+      createdAt: new Date().toISOString().split('T')[0]!
     };
 
     setUsers([...users, user]);

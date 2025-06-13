@@ -47,11 +47,13 @@ const RoomPricingPage: React.FC = () => {
   ) => {
     const updatedPricing = [...pricingData];
     const numValue = parseFloat(value) || 0;
-    updatedPricing[index] = {
-      ...updatedPricing[index],
-      [field]: numValue
-    };
-    setPricingData(updatedPricing);
+    if (updatedPricing[index]) {
+      updatedPricing[index] = {
+        ...updatedPricing[index],
+        [field]: numValue
+      };
+      setPricingData(updatedPricing);
+    }
   };
 
   const handleSaveAll = async () => {
