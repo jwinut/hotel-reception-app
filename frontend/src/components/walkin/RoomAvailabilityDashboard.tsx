@@ -27,7 +27,7 @@ const RoomAvailabilityDashboard: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [t]);
 
   const handleRefresh = useCallback(() => {
     setLoading(true);
