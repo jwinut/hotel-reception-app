@@ -51,14 +51,12 @@
   color: #1f2937;
   border-color: #e5e7eb;
   transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .nav-button.active {
   background: #3b82f6;
   color: white;
   border-color: #2563eb;
-  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
 }
 
 .nav-button.active:hover {
@@ -87,7 +85,6 @@
   background: #f59e0b;
   color: white;
   border-color: #d97706;
-  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
 }
 
 .admin-section .nav-button.active:hover {
