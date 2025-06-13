@@ -114,6 +114,15 @@ const App: React.FC<AppProps> = () => {
             <header className="App-header" role="banner">
               <div className="header-content">
                 <h1 id="site-title">{t('app.title')}</h1>
+                <div className="header-navigation" id="navigation">
+                  <Navigation 
+                    isAdminMode={isAdminMode}
+                    onReserved={handleReserved}
+                    onCurrentBookings={handleCurrentBookings}
+                    onAddUser={handleAddUser}
+                    onViewUsers={handleViewUsers}
+                  />
+                </div>
                 <div className="header-controls">
                   <LanguageSwitcher variant="buttons" className="header-language-switcher" />
                   {/* Admin Access Button */}
@@ -143,15 +152,6 @@ const App: React.FC<AppProps> = () => {
               </div>
             </header>
             
-            <div id="navigation">
-              <Navigation 
-                isAdminMode={isAdminMode}
-                onReserved={handleReserved}
-                onCurrentBookings={handleCurrentBookings}
-                onAddUser={handleAddUser}
-                onViewUsers={handleViewUsers}
-              />
-            </div>
             
             <main id="main-content" role="main" tabIndex={-1}>
               <ErrorBoundary>
