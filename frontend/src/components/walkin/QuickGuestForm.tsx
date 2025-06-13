@@ -288,12 +288,12 @@ const QuickGuestForm: React.FC<Props> = ({
         <div className="total-section">
           <div className="total-breakdown">
             <div className="breakdown-line">
-              <span>Room ({nights} night{nights !== 1 ? 's' : '}):</span>
+              <span>Room ({nights} night{nights !== 1 ? 's' : ''}):</span>
               <span>฿{(selectedRoom.basePrice * nights).toLocaleString()}</span>
             </div>
             {selectedRoom.includeBreakfast && (
               <div className="breakdown-line breakfast">
-                <span>Breakfast ({nights} night{nights !== 1 ? 's' : '}):</span>
+                <span>Breakfast ({nights} night{nights !== 1 ? 's' : ''}):</span>
                 <span>฿{(breakfastPrice * nights).toLocaleString()}</span>
               </div>
             )}

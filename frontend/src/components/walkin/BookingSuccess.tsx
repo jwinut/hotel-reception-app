@@ -1,5 +1,4 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next';
 import { BookingResponse } from '../../services/walkinApi';
 import './BookingSuccess.css';
 
@@ -10,7 +9,7 @@ interface Props {
 }
 
 const BookingSuccess: React.FC<Props> = ({ booking, onNewBooking, onBackToDashboard }) => {
-  const { t } = useTranslation();
+  const nightsText = booking.nights !== 1 ? 's' : '';
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-GB', {
@@ -29,6 +28,10 @@ const BookingSuccess: React.FC<Props> = ({ booking, onNewBooking, onBackToDashbo
   };
 
   const handlePrintReceipt = () => {
+    const breakfastLine = booking.breakfastIncluded 
+      ? `Breakfast (${booking.nights} night${nightsText}): ฿${booking.pricing.breakfastTotal.toLocaleString()}\n`
+      : '';
+    
     const printContent = `
 Hotel Reception - Booking Confirmation
 
@@ -48,12 +51,11 @@ Floor: ${booking.room.floor}
 STAY DETAILS
 Check-in: ${formatDate(booking.checkIn)} at ${formatTime(booking.checkIn)}
 Check-out: ${formatDate(booking.checkOut)} at 12:00 PM
-Duration: ${booking.nights} night${booking.nights !== 1 ? 's' : ''}
+Duration: ${booking.nights} night${nightsText}
 
 CHARGES
-Room Rate (${booking.nights} night${booking.nights !== 1 ? 's' : ''}): ฿${booking.pricing.roomTotal.toLocaleString()}
-${booking.breakfastIncluded ? `Breakfast (${booking.nights} night${booking.nights !== 1 ? 's' : ''}): ฿${booking.pricing.breakfastTotal.toLocaleString()}` : ''}
-────────────────────────────────────────
+Room Rate (${booking.nights} night${nightsText}): ฿${booking.pricing.roomTotal.toLocaleString()}
+${breakfastLine}────────────────────────────────────────
 TOTAL AMOUNT: ฿${booking.pricing.totalAmount.toLocaleString()}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -145,7 +147,7 @@ Safe travels and enjoy your stay.
               <div className="date-item">
                 <span className="date-label">Duration:</span>
                 <span className="date-value">
-                  {booking.nights} night{booking.nights !== 1 ? 's' : ''}
+                  {booking.nights} night{nightsText}
                 </span>
               </div>
             </div>
@@ -156,12 +158,12 @@ Safe travels and enjoy your stay.
           <h3>Pricing Breakdown</h3>
           <div className="pricing-breakdown">
             <div className="pricing-line">
-              <span>Room Rate ({booking.nights} night{booking.nights !== 1 ? 's' : ''}):</span>
+              <span>Room Rate ({booking.nights} night{nightsText}):</span>
               <span>฿{booking.pricing.roomTotal.toLocaleString()}</span>
             </div>
             {booking.breakfastIncluded && (
               <div className="pricing-line breakfast">
-                <span>Breakfast ({booking.nights} night{booking.nights !== 1 ? 's' : ''}):</span>
+                <span>Breakfast ({booking.nights} night{nightsText}):</span>
                 <span>฿{booking.pricing.breakfastTotal.toLocaleString()}</span>
               </div>
             )}

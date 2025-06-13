@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
 import { walkinApi, RoomAvailability } from '../../services/walkinApi';
 import './RoomSelection.css';
 
@@ -9,7 +8,6 @@ interface Props {
 }
 
 const RoomSelection: React.FC<Props> = ({ onSelectRoom, onCancel }) => {
-  const { t } = useTranslation();
   const [rooms, setRooms] = useState<RoomAvailability[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedType, setSelectedType] = useState<string>('ALL');
