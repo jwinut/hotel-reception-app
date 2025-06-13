@@ -17,9 +17,26 @@ RUN npm ci --only=production
 RUN npx prisma generate
 
 # Development stage
-FROM base AS development
+FROM node:18-alpine AS development
+
+# Install necessary packages for Prisma
+RUN apk add --no-cache openssl
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+COPY prisma ./prisma/
+
+# Install all dependencies including dev dependencies
 RUN npm ci
+
+# Generate Prisma client
+RUN npx prisma generate
+
+# Copy source code
 COPY . .
+
 EXPOSE 4000
 CMD ["npm", "run", "dev"]
 
