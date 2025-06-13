@@ -441,7 +441,7 @@ function CheckInProcess({ booking, onBack, onCheckInComplete }) {
         <button
           onClick={handlePrevious}
           disabled={currentStep === 1}
-          className="nav-button secondary"
+          className="process-nav-button secondary"
         >
           ← ย้อนกลับ
         </button>
@@ -450,7 +450,7 @@ function CheckInProcess({ booking, onBack, onCheckInComplete }) {
           <button
             onClick={handleNext}
             disabled={!canProceedToNext()}
-            className="nav-button primary"
+            className="process-nav-button primary"
           >
             ถัดไป →
           </button>
