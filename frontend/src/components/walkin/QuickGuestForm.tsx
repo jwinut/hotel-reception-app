@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { RoomAvailability } from '../../services/walkinApi';
 import './QuickGuestForm.css';
 
@@ -24,7 +23,6 @@ const QuickGuestForm: React.FC<Props> = ({
   onCancel,
   loading = false
 }) => {
-  const { t } = useTranslation();
   const [guest, setGuest] = useState<GuestInfo>({
     firstName: '',
     lastName: '',
