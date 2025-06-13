@@ -14,7 +14,11 @@
     "restart": "npm run stop && npm run start",
     "seed": "docker compose exec hotel-backend npm run prisma:seed",
     "migrate": "docker compose exec hotel-backend npm run prisma:deploy",
-    "studio": "docker compose exec hotel-backend npm run prisma:studio"
+    "studio": "docker compose exec hotel-backend npm run prisma:studio",
+    "backup": "./scripts/backup/daily-backup.sh",
+    "backup:setup": "./scripts/backup/setup-cron.sh",
+    "backup:list": "./scripts/backup/restore-backup.sh --list",
+    "backup:restore": "./scripts/backup/restore-backup.sh"
   },
   "keywords": [
     "hotel",

@@ -242,6 +242,229 @@ npm run prisma:seed
 npx prisma migrate reset
 ```
 
+## 💾 Database Backup & Recovery
+
+### Automated Daily Backups
+
+The system includes automated database backup scripts with retention policies.
+
+#### Quick Setup
+```bash
+# Setup automatic daily backups at 2 AM
+./scripts/backup/setup-cron.sh
+
+# Setup backups at custom time (3 AM daily)
+./scripts/backup/setup-cron.sh '0 3 * * *'
+
+# Setup weekly backups (Sunday at 2 AM)
+./scripts/backup/setup-cron.sh '0 2 * * 0'
+```
+
+#### Manual Backup
+```bash
+# Create immediate backup
+./scripts/backup/daily-backup.sh
+
+# Create backup for specific environment
+./scripts/backup/daily-backup.sh production
+```
+
+#### Backup Features
+- **Automatic Compression**: All backups are gzipped to save space
+- **Retention Policy**: Keeps 30 days of backups (configurable)
+- **Integrity Verification**: Automatic backup corruption detection
+- **Detailed Logging**: Full backup logs with timestamps
+- **Health Monitoring**: Database connection testing before backup
+
+### Backup Storage
+
+Backups are stored in the `backups/` directory:
+```
+backups/
+├── hotel_backup_20241215_020000.sql.gz  # Daily backup files
+├── hotel_backup_20241214_020000.sql.gz
+├── backup.log                           # Backup operation logs
+└── cron.log                            # Automated backup logs
+```
+
+### Database Restoration
+
+#### List Available Backups
+```bash
+# Show all available backup files
+./scripts/backup/restore-backup.sh --list
+```
+
+#### Restore from Backup
+```bash
+# Restore to new database (safe)
+./scripts/backup/restore-backup.sh hotel_backup_20241215_020000.sql.gz
+
+# Restore to specific database name
+./scripts/backup/restore-backup.sh hotel_backup_20241215_020000.sql.gz hoteldb_restored
+
+# Restore from full path
+./scripts/backup/restore-backup.sh /path/to/backup.sql.gz
+```
+
+#### Production Database Restore (⚠️ Caution)
+```bash
+# Stop the application
+docker compose down
+
+# Backup current database first
+./scripts/backup/daily-backup.sh
+
+# Restore to production database
+./scripts/backup/restore-backup.sh backup_file.sql.gz hoteldb
+
+# Restart application
+docker compose up -d
+```
+
+### Backup Monitoring
+
+#### Check Backup Status
+```bash
+# View recent backup logs
+tail -f backups/backup.log
+
+# View automated backup logs
+tail -f backups/cron.log
+
+# Check current cron jobs
+./scripts/backup/setup-cron.sh --status
+```
+
+#### Backup Verification
+```bash
+# Test backup integrity
+gunzip -t backups/hotel_backup_20241215_020000.sql.gz
+
+# View backup contents (first 20 lines)
+gunzip -c backups/hotel_backup_20241215_020000.sql.gz | head -20
+```
+
+### Backup Configuration
+
+#### Customize Backup Settings
+Edit `scripts/backup/daily-backup.sh` to modify:
+- **Retention Period**: Change `RETENTION_DAYS=30` (default: 30 days)
+- **Backup Location**: Change `BACKUP_DIR` variable
+- **Compression**: Disable by removing `gzip` commands
+
+#### Environment Variables
+```bash
+# Database configuration (in backup scripts)
+DB_CONTAINER="hotel_postgres"
+DB_NAME="hoteldb"
+DB_USER="hoteluser"
+DB_PASSWORD="hotelpass"
+
+# Backup settings
+RETENTION_DAYS=30
+BACKUP_DIR="${PROJECT_DIR}/backups"
+```
+
+### Backup Best Practices
+
+1. **Test Restores Regularly**:
+   ```bash
+   # Monthly restore test
+   ./scripts/backup/restore-backup.sh latest_backup.sql.gz test_restore_db
+   ```
+
+2. **Monitor Disk Space**:
+   ```bash
+   # Check backup directory size
+   du -sh backups/
+   
+   # Check available disk space
+   df -h
+   ```
+
+3. **Off-site Backup Storage**:
+   ```bash
+   # Copy backups to remote server
+   rsync -av backups/ user@backup-server:/hotel-backups/
+   
+   # Or use cloud storage
+   aws s3 sync backups/ s3://your-backup-bucket/hotel-reception/
+   ```
+
+4. **Backup Verification**:
+   ```bash
+   # Schedule weekly restore tests
+   0 3 * * 0 /path/to/test-restore.sh
+   ```
+
+### Disaster Recovery
+
+#### Complete System Recovery
+```bash
+# 1. Setup new server with Docker
+# 2. Clone repository
+git clone <repository-url>
+cd hotel-reception-app
+
+# 3. Restore latest backup
+./scripts/backup/restore-backup.sh latest_backup.sql.gz hoteldb
+
+# 4. Start services
+docker compose up -d
+
+# 5. Verify application
+curl http://localhost:3000/health
+curl http://localhost:4000/health
+```
+
+#### Data Loss Prevention
+- Backups run daily at 2 AM automatically
+- 30-day retention ensures multiple recovery points
+- Compressed backups minimize storage requirements
+- Integrity checks prevent corrupted backups
+- Detailed logging for troubleshooting
+
+### Backup Troubleshooting
+
+#### Common Issues
+
+**Backup Script Fails**:
+```bash
+# Check database connection
+docker compose ps hotel-database
+
+# Check logs
+tail -f backups/backup.log
+
+# Test manually
+./scripts/backup/daily-backup.sh
+```
+
+**Restore Fails**:
+```bash
+# Verify backup file integrity
+gunzip -t backup_file.sql.gz
+
+# Check database service
+docker compose ps hotel-database
+
+# Check disk space
+df -h
+```
+
+**Cron Job Not Running**:
+```bash
+# Check cron service
+sudo systemctl status cron
+
+# View cron logs
+sudo tail -f /var/log/cron
+
+# Reinstall cron job
+./scripts/backup/setup-cron.sh
+```
+
 ## 🐛 Troubleshooting
 
 ### Common Issues
