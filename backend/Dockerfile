@@ -25,8 +25,18 @@ CMD ["npm", "run", "dev"]
 
 # Production stage
 FROM base AS production
+
+# Install all dependencies (including dev deps for building)
+RUN npm ci
+
+# Copy source code
 COPY . .
+
+# Build the application
 RUN npm run build
+
+# Remove dev dependencies after build
+RUN npm ci --only=production && npm cache clean --force
 
 # Create non-root user
 RUN addgroup -g 1001 -S nodejs
