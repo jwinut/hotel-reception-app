@@ -93,26 +93,26 @@
   }
 }
 
-/* Dark mode */
+/* Force light mode - override dark mode */
 @media (prefers-color-scheme: dark) {
   .language-switcher.buttons {
-    background-color: var(--background-dark, #2a2a2a);
-    border-color: var(--border-color-dark, #404040);
+    background-color: #f8f9fa !important;
+    border-color: #e0e0e0 !important;
   }
   
   .language-select {
-    background-color: var(--input-bg-dark, #2a2a2a);
-    border-color: var(--border-color-dark, #404040);
-    color: var(--text-color-dark, #ffffff);
+    background-color: #ffffff !important;
+    border-color: #e0e0e0 !important;
+    color: #212121 !important;
   }
   
   .language-button:not([aria-pressed="true"]) {
-    color: var(--text-secondary-dark, #b3b3b3) !important;
+    color: #666666 !important;
   }
   
   .language-button:not([aria-pressed="true"]):hover {
-    background-color: var(--hover-bg-dark, #404040) !important;
-    color: var(--text-color-dark, #ffffff) !important;
+    background-color: #f0f0f0 !important;
+    color: #212121 !important;
   }
 }
 
