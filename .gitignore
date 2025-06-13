@@ -87,6 +87,11 @@ logs/
 postgres_data/
 hotel_postgres_data/
 
+# Ignore database backups
+backups/
+*.sql
+*.sql.gz
+
 # Ignore IDE files
 .vscode/
 .idea/
