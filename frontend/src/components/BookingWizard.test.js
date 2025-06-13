@@ -1,7 +1,6 @@
 // src/components/BookingWizard.test.js
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import BookingWizard from './BookingWizard';
 
 // Mock child components
@@ -185,7 +184,7 @@ describe('BookingWizard Component', () => {
       
       // Complete guest form
       const completeButton = screen.getByTestId('guest-complete');
-      await userEvent.click(completeButton);
+      fireEvent.click(completeButton);
       
       // Should now show date selection
       expect(screen.getByTestId('date-selection')).toBeInTheDocument();
@@ -204,10 +203,10 @@ describe('BookingWizard Component', () => {
       render(<BookingWizard onComplete={mockOnComplete} onCancel={mockOnCancel} />);
       
       // Complete guest form
-      await userEvent.click(screen.getByTestId('guest-complete'));
+      fireEvent.click(screen.getByTestId('guest-complete'));
       
       // Complete date selection
-      await userEvent.click(screen.getByTestId('date-complete'));
+      fireEvent.click(screen.getByTestId('date-complete'));
       
       // Should now show room selection
       expect(screen.getByTestId('room-selection')).toBeInTheDocument();
@@ -224,9 +223,9 @@ describe('BookingWizard Component', () => {
       render(<BookingWizard onComplete={mockOnComplete} onCancel={mockOnCancel} />);
       
       // Complete all previous steps
-      await userEvent.click(screen.getByTestId('guest-complete'));
-      await userEvent.click(screen.getByTestId('date-complete'));
-      await userEvent.click(screen.getByTestId('room-complete'));
+      fireEvent.click(screen.getByTestId('guest-complete'));
+      fireEvent.click(screen.getByTestId('date-complete'));
+      fireEvent.click(screen.getByTestId('room-complete'));
       
       // Should now show booking confirmation
       expect(screen.getByTestId('booking-confirmation')).toBeInTheDocument();
@@ -244,10 +243,10 @@ describe('BookingWizard Component', () => {
       render(<BookingWizard onComplete={mockOnComplete} onCancel={mockOnCancel} />);
       
       // Complete all steps
-      await userEvent.click(screen.getByTestId('guest-complete'));
-      await userEvent.click(screen.getByTestId('date-complete'));
-      await userEvent.click(screen.getByTestId('room-complete'));
-      await userEvent.click(screen.getByTestId('confirm-complete'));
+      fireEvent.click(screen.getByTestId('guest-complete'));
+      fireEvent.click(screen.getByTestId('date-complete'));
+      fireEvent.click(screen.getByTestId('room-complete'));
+      fireEvent.click(screen.getByTestId('confirm-complete'));
       
       // Should call onComplete with consolidated booking data
       expect(mockOnComplete).toHaveBeenCalledWith({
@@ -287,11 +286,11 @@ describe('BookingWizard Component', () => {
       render(<BookingWizard onComplete={mockOnComplete} onCancel={mockOnCancel} />);
       
       // Complete guest form to get to date selection
-      await userEvent.click(screen.getByTestId('guest-complete'));
+      fireEvent.click(screen.getByTestId('guest-complete'));
       expect(screen.getByTestId('date-selection')).toBeInTheDocument();
       
       // Click back button
-      await userEvent.click(screen.getByTestId('date-back'));
+      fireEvent.click(screen.getByTestId('date-back'));
       
       // Should be back to guest form
       expect(screen.getByTestId('guest-form')).toBeInTheDocument();
@@ -309,12 +308,12 @@ describe('BookingWizard Component', () => {
       render(<BookingWizard onComplete={mockOnComplete} onCancel={mockOnCancel} />);
       
       // Complete first two steps
-      await userEvent.click(screen.getByTestId('guest-complete'));
-      await userEvent.click(screen.getByTestId('date-complete'));
+      fireEvent.click(screen.getByTestId('guest-complete'));
+      fireEvent.click(screen.getByTestId('date-complete'));
       expect(screen.getByTestId('room-selection')).toBeInTheDocument();
       
       // Click back button
-      await userEvent.click(screen.getByTestId('room-back'));
+      fireEvent.click(screen.getByTestId('room-back'));
       
       // Should be back to date selection
       expect(screen.getByTestId('date-selection')).toBeInTheDocument();
@@ -328,13 +327,13 @@ describe('BookingWizard Component', () => {
       render(<BookingWizard onComplete={mockOnComplete} onCancel={mockOnCancel} />);
       
       // Complete all steps to reach confirmation
-      await userEvent.click(screen.getByTestId('guest-complete'));
-      await userEvent.click(screen.getByTestId('date-complete'));
-      await userEvent.click(screen.getByTestId('room-complete'));
+      fireEvent.click(screen.getByTestId('guest-complete'));
+      fireEvent.click(screen.getByTestId('date-complete'));
+      fireEvent.click(screen.getByTestId('room-complete'));
       expect(screen.getByTestId('booking-confirmation')).toBeInTheDocument();
       
       // Click back button
-      await userEvent.click(screen.getByTestId('confirm-back'));
+      fireEvent.click(screen.getByTestId('confirm-back'));
       
       // Should be back to room selection
       expect(screen.getByTestId('room-selection')).toBeInTheDocument();
@@ -357,7 +356,7 @@ describe('BookingWizard Component', () => {
       render(<BookingWizard onComplete={mockOnComplete} onCancel={mockOnCancel} />);
       
       // Try to cancel from guest form
-      await userEvent.click(screen.getByTestId('guest-cancel'));
+      fireEvent.click(screen.getByTestId('guest-cancel'));
       
       // Should show confirmation dialog
       expect(mockConfirm).toHaveBeenCalledWith('ต้องการยกเลิกการจองหรือไม่? ข้อมูลที่กรอกจะหายไป');
@@ -367,7 +366,7 @@ describe('BookingWizard Component', () => {
       mockConfirm.mockReturnValue(true);
       render(<BookingWizard onComplete={mockOnComplete} onCancel={mockOnCancel} />);
       
-      await userEvent.click(screen.getByTestId('guest-cancel'));
+      fireEvent.click(screen.getByTestId('guest-cancel'));
       
       expect(mockOnCancel).toHaveBeenCalled();
     });
@@ -376,7 +375,7 @@ describe('BookingWizard Component', () => {
       mockConfirm.mockReturnValue(false);
       render(<BookingWizard onComplete={mockOnComplete} onCancel={mockOnCancel} />);
       
-      await userEvent.click(screen.getByTestId('guest-cancel'));
+      fireEvent.click(screen.getByTestId('guest-cancel'));
       
       expect(mockOnCancel).not.toHaveBeenCalled();
       // Should still be on guest form
@@ -387,10 +386,10 @@ describe('BookingWizard Component', () => {
       render(<BookingWizard onComplete={mockOnComplete} onCancel={mockOnCancel} />);
       
       // Complete guest form to get to date selection
-      await userEvent.click(screen.getByTestId('guest-complete'));
+      fireEvent.click(screen.getByTestId('guest-complete'));
       
       // Cancel from date selection
-      await userEvent.click(screen.getByTestId('date-cancel'));
+      fireEvent.click(screen.getByTestId('date-cancel'));
       
       expect(mockConfirm).toHaveBeenCalledWith('ต้องการยกเลิกการจองหรือไม่? ข้อมูลที่กรอกจะหายไป');
       expect(mockOnCancel).toHaveBeenCalled();
@@ -409,7 +408,7 @@ describe('BookingWizard Component', () => {
       expect(stepIcons[3]).toHaveTextContent('✅');
       
       // Complete first step
-      await userEvent.click(screen.getByTestId('guest-complete'));
+      fireEvent.click(screen.getByTestId('guest-complete'));
       
       // First step should now show checkmark, second should be active
       stepIcons = document.querySelectorAll('.step-icon');
@@ -429,15 +428,15 @@ describe('BookingWizard Component', () => {
       // Step 1 (25%)
       expect(progressFill).toHaveStyle('width: 25%');
       
-      await userEvent.click(screen.getByTestId('guest-complete'));
+      fireEvent.click(screen.getByTestId('guest-complete'));
       // Step 2 (50%)
       expect(progressFill).toHaveStyle('width: 50%');
       
-      await userEvent.click(screen.getByTestId('date-complete'));
+      fireEvent.click(screen.getByTestId('date-complete'));
       // Step 3 (75%)
       expect(progressFill).toHaveStyle('width: 75%');
       
-      await userEvent.click(screen.getByTestId('room-complete'));
+      fireEvent.click(screen.getByTestId('room-complete'));
       // Step 4 (100%)
       expect(progressFill).toHaveStyle('width: 100%');
     });
@@ -448,19 +447,19 @@ describe('BookingWizard Component', () => {
       render(<BookingWizard onComplete={mockOnComplete} onCancel={mockOnCancel} />);
       
       // Complete guest form
-      await userEvent.click(screen.getByTestId('guest-complete'));
+      fireEvent.click(screen.getByTestId('guest-complete'));
       
       // Complete date selection
-      await userEvent.click(screen.getByTestId('date-complete'));
+      fireEvent.click(screen.getByTestId('date-complete'));
       
       // Go back to date selection
-      await userEvent.click(screen.getByTestId('room-back'));
+      fireEvent.click(screen.getByTestId('room-back'));
       
       // Should preserve date data
       expect(screen.getByText('Initial Data: {"checkInDate":"2024-12-15","checkOutDate":"2024-12-17","nights":2,"includeBreakfast":true}')).toBeInTheDocument();
       
       // Go back to guest form
-      await userEvent.click(screen.getByTestId('date-back'));
+      fireEvent.click(screen.getByTestId('date-back'));
       
       // Should preserve guest data
       expect(screen.getByText('Initial Data: {"firstName":"John","lastName":"Doe","numGuests":2,"phone":"081-234-5678","email":"john@test.com"}')).toBeInTheDocument();
@@ -470,20 +469,20 @@ describe('BookingWizard Component', () => {
       render(<BookingWizard onComplete={mockOnComplete} onCancel={mockOnCancel} />);
       
       // Complete guest form
-      await userEvent.click(screen.getByTestId('guest-complete'));
+      fireEvent.click(screen.getByTestId('guest-complete'));
       
       // Date selection should receive guest data
       expect(screen.getByText('Guest: John Doe')).toBeInTheDocument();
       
       // Complete date selection
-      await userEvent.click(screen.getByTestId('date-complete'));
+      fireEvent.click(screen.getByTestId('date-complete'));
       
       // Room selection should receive both guest and date data
       expect(screen.getByText('Guest: John Doe')).toBeInTheDocument();
       expect(screen.getByText('Dates: 2024-12-15 to 2024-12-17')).toBeInTheDocument();
       
       // Complete room selection
-      await userEvent.click(screen.getByTestId('room-complete'));
+      fireEvent.click(screen.getByTestId('room-complete'));
       
       // Confirmation should receive all data
       expect(screen.getByText('Guest: John Doe')).toBeInTheDocument();

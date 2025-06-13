@@ -63,7 +63,7 @@ describe('AuthenticationService', () => {
   describe('authenticateAdmin', () => {
     it('authenticates admin successfully in development mode', async () => {
       const promise = authenticationService.authenticateAdmin('test-admin-code');
-      jest.advanceTimersByTime(300);
+      jest.runAllTimers();
       const result = await promise;
 
       expect(result.success).toBe(true);
@@ -76,14 +76,14 @@ describe('AuthenticationService', () => {
 
     it('rejects incorrect admin password', async () => {
       const promise = authenticationService.authenticateAdmin('wrong-password');
-      jest.advanceTimersByTime(300);
+      jest.runAllTimers();
 
       await expect(promise).rejects.toThrow('รหัสผ่านไม่ถูกต้อง');
     });
 
     it('sanitizes input password', async () => {
       const promise = authenticationService.authenticateAdmin('  test-admin-code  ');
-      jest.advanceTimersByTime(300);
+      jest.runAllTimers();
 
       expect(mockValidation.sanitizeInput).toHaveBeenCalledWith('  test-admin-code  ');
       await expect(promise).resolves.toBeDefined();
@@ -146,7 +146,7 @@ describe('AuthenticationService', () => {
 
     it('authenticates staff successfully in development mode', async () => {
       const promise = authenticationService.authenticateStaff(validCredentials);
-      jest.advanceTimersByTime(500);
+      jest.runAllTimers();
       const result = await promise;
 
       expect(result.success).toBe(true);
@@ -164,7 +164,7 @@ describe('AuthenticationService', () => {
       };
 
       const promise = authenticationService.authenticateStaff(invalidCredentials);
-      jest.advanceTimersByTime(500);
+      jest.runAllTimers();
 
       await expect(promise).rejects.toThrow('ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง');
     });
@@ -177,7 +177,7 @@ describe('AuthenticationService', () => {
       };
 
       const promise = authenticationService.authenticateStaff(credentialsWithSpaces);
-      jest.advanceTimersByTime(500);
+      jest.runAllTimers();
 
       expect(mockValidation.sanitizeInput).toHaveBeenCalledWith('  staff1  ');
       expect(mockValidation.sanitizeInput).toHaveBeenCalledWith('  staff123  ');
@@ -190,7 +190,7 @@ describe('AuthenticationService', () => {
       };
 
       const promise = authenticationService.authenticateStaff(credentialsNoUsername);
-      jest.advanceTimersByTime(500);
+      jest.runAllTimers();
 
       await expect(promise).rejects.toThrow('ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง');
     });
@@ -239,7 +239,7 @@ describe('AuthenticationService', () => {
   describe('validateSession', () => {
     it('validates session in development mode', async () => {
       const promise = authenticationService.validateSession();
-      jest.advanceTimersByTime(100);
+      jest.runAllTimers();
       const result = await promise;
 
       expect(result.success).toBe(true);
@@ -274,7 +274,7 @@ describe('AuthenticationService', () => {
   describe('refreshToken', () => {
     it('throws error in development mode', async () => {
       const promise = authenticationService.refreshToken('refresh-token');
-      jest.advanceTimersByTime(300);
+      jest.runAllTimers();
 
       await expect(promise).rejects.toThrow('Token refresh not implemented in development mode');
     });
@@ -312,7 +312,7 @@ describe('AuthenticationService', () => {
   describe('logout', () => {
     it('logs out successfully in development mode', async () => {
       const promise = authenticationService.logout();
-      jest.advanceTimersByTime(200);
+      jest.runAllTimers();
       const result = await promise;
 
       expect(result.success).toBe(true);
@@ -343,7 +343,7 @@ describe('AuthenticationService', () => {
   describe('changePassword', () => {
     it('changes password successfully in development mode', async () => {
       const promise = authenticationService.changePassword('old-password', 'new-password');
-      jest.advanceTimersByTime(500);
+      jest.runAllTimers();
       const result = await promise;
 
       expect(result.success).toBe(true);
@@ -379,7 +379,7 @@ describe('AuthenticationService', () => {
   describe('getUserPermissions', () => {
     it('returns mock permissions in development mode', async () => {
       const promise = authenticationService.getUserPermissions('user-001');
-      jest.advanceTimersByTime(200);
+      jest.runAllTimers();
       const result = await promise;
 
       expect(result.success).toBe(true);
@@ -417,7 +417,7 @@ describe('AuthenticationService', () => {
   describe('getSecurityLogs', () => {
     it('returns mock security logs in development mode', async () => {
       const promise = authenticationService.getSecurityLogs(10, 0);
-      jest.advanceTimersByTime(200);
+      jest.runAllTimers();
       const result = await promise;
 
       expect(result.success).toBe(true);
@@ -431,7 +431,7 @@ describe('AuthenticationService', () => {
 
     it('applies pagination correctly', async () => {
       const promise = authenticationService.getSecurityLogs(1, 1);
-      jest.advanceTimersByTime(200);
+      jest.runAllTimers();
       const result = await promise;
 
       expect(result.success).toBe(true);
@@ -441,7 +441,7 @@ describe('AuthenticationService', () => {
 
     it('uses default parameters', async () => {
       const promise = authenticationService.getSecurityLogs();
-      jest.advanceTimersByTime(200);
+      jest.runAllTimers();
       const result = await promise;
 
       expect(result.success).toBe(true);
@@ -536,7 +536,7 @@ describe('AuthenticationService', () => {
       const service = authenticationService as any;
       
       const promise = authenticationService.authenticateAdmin('test-admin-code');
-      jest.advanceTimersByTime(300);
+      jest.runAllTimers();
       await promise;
       
       expect(service.sessionTimer).toBeDefined();
@@ -548,7 +548,7 @@ describe('AuthenticationService', () => {
       
       // First authenticate to set up session
       const authPromise = authenticationService.authenticateAdmin('test-admin-code');
-      jest.advanceTimersByTime(300);
+      jest.runAllTimers();
       await authPromise;
       
       expect(service.sessionTimer).toBeDefined();
@@ -556,7 +556,7 @@ describe('AuthenticationService', () => {
       
       // Then logout
       const logoutPromise = authenticationService.logout();
-      jest.advanceTimersByTime(200);
+      jest.runAllTimers();
       await logoutPromise;
       
       expect(service.sessionTimer).toBeNull();
@@ -593,13 +593,13 @@ describe('AuthenticationService', () => {
   describe('Security logging', () => {
     it('logs successful admin login', async () => {
       const promise = authenticationService.authenticateAdmin('test-admin-code');
-      jest.advanceTimersByTime(300);
+      jest.runAllTimers();
       await promise;
     });
 
     it('logs failed admin login', async () => {
       const promise = authenticationService.authenticateAdmin('wrong-password');
-      jest.advanceTimersByTime(300);
+      jest.runAllTimers();
 
       await expect(promise).rejects.toThrow();
     });
@@ -611,7 +611,7 @@ describe('AuthenticationService', () => {
       service.SESSION_DURATION = 100;
       
       const promise = authenticationService.authenticateAdmin('test-admin-code');
-      jest.advanceTimersByTime(300);
+      jest.runAllTimers();
       await promise;
       
       // Fast-forward past session expiry
@@ -631,7 +631,7 @@ describe('AuthenticationService', () => {
       delete process.env.REACT_APP_ADMIN_CODE;
       
       const promise = authenticationService.authenticateAdmin('default-dev-code');
-      jest.advanceTimersByTime(300);
+      jest.runAllTimers();
       const result = await promise;
 
       expect(result.success).toBe(true);
@@ -644,7 +644,7 @@ describe('AuthenticationService', () => {
       };
 
       const promise = authenticationService.authenticateStaff(staff2Credentials);
-      jest.advanceTimersByTime(500);
+      jest.runAllTimers();
       const result = await promise;
 
       expect(result.success).toBe(true);

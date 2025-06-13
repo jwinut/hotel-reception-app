@@ -41,7 +41,7 @@ describe('ConfigurationService', () => {
   describe('getConfiguration', () => {
     it('returns mock configuration in development mode', async () => {
       const promise = configurationService.getConfiguration();
-      jest.advanceTimersByTime(300);
+      jest.runAllTimers();
       const result = await promise;
 
       expect(result.success).toBe(true);
@@ -59,7 +59,7 @@ describe('ConfigurationService', () => {
     it('uses cache when available and not expired', async () => {
       // First call to populate cache
       const promise1 = configurationService.getConfiguration();
-      jest.advanceTimersByTime(300);
+      jest.runAllTimers();
       await promise1;
 
       // Second call should use cache (no delay)
@@ -73,12 +73,10 @@ describe('ConfigurationService', () => {
     it('bypasses cache when forceRefresh is true', async () => {
       // First call to populate cache
       const promise1 = configurationService.getConfiguration();
-      jest.advanceTimersByTime(300);
-      await promise1;
-
       // Force refresh should bypass cache and trigger delay
       const promise2 = configurationService.getConfiguration(true);
-      jest.advanceTimersByTime(300);
+      jest.runAllTimers();
+      await promise1;
       const result2 = await promise2;
 
       expect(result2.success).toBe(true);
@@ -90,7 +88,7 @@ describe('ConfigurationService', () => {
       
       // First call to populate cache
       const promise1 = configurationService.getConfiguration();
-      jest.advanceTimersByTime(300);
+      jest.runAllTimers();
       await promise1;
 
       // Simulate cache expiry (5 minutes + 1ms)
@@ -98,7 +96,7 @@ describe('ConfigurationService', () => {
 
       // Next call should refresh cache
       const promise2 = configurationService.getConfiguration();
-      jest.advanceTimersByTime(300);
+      jest.runAllTimers();
       const result2 = await promise2;
 
       expect(result2.success).toBe(true);
@@ -165,7 +163,7 @@ describe('ConfigurationService', () => {
   describe('getHotelConfiguration', () => {
     it('returns hotel configuration from full config', async () => {
       const promise = configurationService.getHotelConfiguration();
-      jest.advanceTimersByTime(300);
+      jest.runAllTimers();
       const result = await promise;
 
       expect(result.success).toBe(true);
@@ -192,7 +190,7 @@ describe('ConfigurationService', () => {
   describe('getRoomConfigurations', () => {
     it('returns room configurations from full config', async () => {
       const promise = configurationService.getRoomConfigurations();
-      jest.advanceTimersByTime(300);
+      jest.runAllTimers();
       const result = await promise;
 
       expect(result.success).toBe(true);
@@ -222,7 +220,7 @@ describe('ConfigurationService', () => {
   describe('getPricingConfigurations', () => {
     it('returns pricing configurations from full config', async () => {
       const promise = configurationService.getPricingConfigurations();
-      jest.advanceTimersByTime(300);
+      jest.runAllTimers();
       const result = await promise;
 
       expect(result.success).toBe(true);
@@ -250,7 +248,7 @@ describe('ConfigurationService', () => {
   describe('getBookingConfiguration', () => {
     it('returns booking configuration from full config', async () => {
       const promise = configurationService.getBookingConfiguration();
-      jest.advanceTimersByTime(300);
+      jest.runAllTimers();
       const result = await promise;
 
       expect(result.success).toBe(true);
@@ -284,11 +282,11 @@ describe('ConfigurationService', () => {
     it('updates hotel configuration in development mode', async () => {
       // First get initial config to populate cache
       const getPromise = configurationService.getConfiguration();
-      jest.advanceTimersByTime(300);
+      jest.runAllTimers();
       await getPromise;
 
       const updatePromise = configurationService.updateHotelConfiguration(hotelUpdate);
-      jest.advanceTimersByTime(500);
+      jest.runAllTimers();
       const result = await updatePromise;
 
       expect(result.success).toBe(true);
@@ -301,12 +299,12 @@ describe('ConfigurationService', () => {
     it('updates cache when updating hotel configuration', async () => {
       // First get initial config
       const getPromise = configurationService.getConfiguration();
-      jest.advanceTimersByTime(300);
+      jest.runAllTimers();
       await getPromise;
 
       // Update configuration
       const updatePromise = configurationService.updateHotelConfiguration(hotelUpdate);
-      jest.advanceTimersByTime(500);
+      jest.runAllTimers();
       await updatePromise;
 
       // Get configuration again (should use updated cache)
@@ -374,11 +372,11 @@ describe('ConfigurationService', () => {
     it('updates room configuration in development mode', async () => {
       // First get initial config
       const getPromise = configurationService.getConfiguration();
-      jest.advanceTimersByTime(300);
+      jest.runAllTimers();
       await getPromise;
 
       const updatePromise = configurationService.updateRoomConfiguration('standard-1', roomUpdate);
-      jest.advanceTimersByTime(500);
+      jest.runAllTimers();
       const result = await updatePromise;
 
       expect(result.success).toBe(true);
@@ -391,11 +389,11 @@ describe('ConfigurationService', () => {
     it('throws error for non-existent room ID', async () => {
       // First get initial config
       const getPromise = configurationService.getConfiguration();
-      jest.advanceTimersByTime(300);
+      jest.runAllTimers();
       await getPromise;
 
       const updatePromise = configurationService.updateRoomConfiguration('non-existent', roomUpdate);
-      jest.advanceTimersByTime(500);
+      jest.runAllTimers();
 
       await expect(updatePromise).rejects.toThrow('ไม่พบห้องพักที่ระบุ');
     });
@@ -403,12 +401,12 @@ describe('ConfigurationService', () => {
     it('updates cache when updating room configuration', async () => {
       // First get initial config
       const getPromise = configurationService.getConfiguration();
-      jest.advanceTimersByTime(300);
+      jest.runAllTimers();
       await getPromise;
 
       // Update room configuration
       const updatePromise = configurationService.updateRoomConfiguration('standard-1', roomUpdate);
-      jest.advanceTimersByTime(500);
+      jest.runAllTimers();
       await updatePromise;
 
       // Get rooms again (should use updated cache)
@@ -450,11 +448,11 @@ describe('ConfigurationService', () => {
     it('updates pricing configuration in development mode', async () => {
       // First get initial config
       const getPromise = configurationService.getConfiguration();
-      jest.advanceTimersByTime(300);
+      jest.runAllTimers();
       await getPromise;
 
       const updatePromise = configurationService.updatePricingConfiguration('Standard', pricingUpdate);
-      jest.advanceTimersByTime(500);
+      jest.runAllTimers();
       const result = await updatePromise;
 
       expect(result.success).toBe(true);
@@ -467,11 +465,11 @@ describe('ConfigurationService', () => {
     it('throws error for non-existent room type', async () => {
       // First get initial config
       const getPromise = configurationService.getConfiguration();
-      jest.advanceTimersByTime(300);
+      jest.runAllTimers();
       await getPromise;
 
       const updatePromise = configurationService.updatePricingConfiguration('NonExistent', pricingUpdate);
-      jest.advanceTimersByTime(500);
+      jest.runAllTimers();
 
       await expect(updatePromise).rejects.toThrow('ไม่พบการตั้งค่าราคาสำหรับประเภทห้องนี้');
     });
@@ -507,11 +505,11 @@ describe('ConfigurationService', () => {
     it('updates booking configuration in development mode', async () => {
       // First get initial config
       const getPromise = configurationService.getConfiguration();
-      jest.advanceTimersByTime(300);
+      jest.runAllTimers();
       await getPromise;
 
       const updatePromise = configurationService.updateBookingConfiguration(bookingUpdate);
-      jest.advanceTimersByTime(500);
+      jest.runAllTimers();
       const result = await updatePromise;
 
       expect(result.success).toBe(true);
@@ -546,7 +544,7 @@ describe('ConfigurationService', () => {
     it('clears the configuration cache', async () => {
       // First populate cache
       const getPromise = configurationService.getConfiguration();
-      jest.advanceTimersByTime(300);
+      jest.runAllTimers();
       await getPromise;
 
       // Clear cache
@@ -554,7 +552,7 @@ describe('ConfigurationService', () => {
 
       // Next get should trigger fresh fetch
       const getPromise2 = configurationService.getConfiguration();
-      jest.advanceTimersByTime(300);
+      jest.runAllTimers();
       await getPromise2;
 
       // Should have triggered the delay twice (indicating fresh fetches)
@@ -565,7 +563,7 @@ describe('ConfigurationService', () => {
   describe('getAvailableRoomTypes', () => {
     it('returns unique room types for active rooms', async () => {
       const promise = configurationService.getAvailableRoomTypes();
-      jest.advanceTimersByTime(300);
+      jest.runAllTimers();
       const result = await promise;
 
       expect(result.success).toBe(true);
@@ -579,7 +577,7 @@ describe('ConfigurationService', () => {
     it('filters out inactive rooms', async () => {
       // First get initial config and modify it
       const getPromise = configurationService.getConfiguration();
-      jest.advanceTimersByTime(300);
+      jest.runAllTimers();
       const config = await getPromise;
 
       // Mock a scenario where one room is inactive
@@ -609,7 +607,7 @@ describe('ConfigurationService', () => {
     beforeEach(async () => {
       // Populate configuration cache
       const promise = configurationService.getConfiguration();
-      jest.advanceTimersByTime(300);
+      jest.runAllTimers();
       await promise;
     });
 
@@ -752,7 +750,7 @@ describe('ConfigurationService', () => {
       it('detects weekends correctly through price calculation', async () => {
         // First populate cache
         const getPromise = configurationService.getConfiguration();
-        jest.advanceTimersByTime(300);
+        jest.runAllTimers();
         await getPromise;
 
         // Test weekend detection indirectly through price calculation
@@ -778,7 +776,7 @@ describe('ConfigurationService', () => {
       it('handles same-day bookings through price calculation', async () => {
         // First populate cache
         const getPromise = configurationService.getConfiguration();
-        jest.advanceTimersByTime(300);
+        jest.runAllTimers();
         await getPromise;
 
         // Test same-day booking (0 nights)
@@ -799,7 +797,7 @@ describe('ConfigurationService', () => {
     it('handles full configuration update cycle', async () => {
       // Get initial configuration
       const getPromise1 = configurationService.getConfiguration();
-      jest.advanceTimersByTime(300);
+      jest.runAllTimers();
       const initialConfig = await getPromise1;
 
       expect(initialConfig.data.hotel.hotelName).toBe('โรงแรมสวนสน');
@@ -807,7 +805,7 @@ describe('ConfigurationService', () => {
       // Update hotel configuration
       const hotelUpdate = { hotelName: 'Updated Hotel' };
       const updatePromise = configurationService.updateHotelConfiguration(hotelUpdate);
-      jest.advanceTimersByTime(500);
+      jest.runAllTimers();
       await updatePromise;
 
       // Get configuration again (should show updated data)
@@ -825,7 +823,7 @@ describe('ConfigurationService', () => {
         configurationService.getBookingConfiguration(),
       ];
 
-      jest.advanceTimersByTime(300);
+      jest.runAllTimers();
       const results = await Promise.all(promises);
 
       expect(results).toHaveLength(4);
@@ -835,7 +833,7 @@ describe('ConfigurationService', () => {
     it('handles price calculation with complex scenarios', async () => {
       // First populate cache
       const getPromise = configurationService.getConfiguration();
-      jest.advanceTimersByTime(300);
+      jest.runAllTimers();
       await getPromise;
 
       // Test multiple price calculations

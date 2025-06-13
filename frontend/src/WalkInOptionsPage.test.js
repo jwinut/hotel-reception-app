@@ -88,13 +88,14 @@ describe('WalkInOptionsPage Component', () => {
     it('fetches and displays booking options', async () => {
       render(<WalkInOptionsPage />);
       
+      // Wait for data to load, then check content
       await waitFor(() => {
-        expect(screen.getByText('พักชั่วคราว')).toBeInTheDocument();
-        expect(screen.getByText('เข้าพักปกติ')).toBeInTheDocument();
-        expect(screen.getByText('บริการ VIP')).toBeInTheDocument();
+        expect(mockFetch).toHaveBeenCalledWith('/config/bookingOptions.json');
       });
       
-      expect(mockFetch).toHaveBeenCalledWith('/config/bookingOptions.json');
+      expect(screen.getByText('พักชั่วคราว')).toBeInTheDocument();
+      expect(screen.getByText('เข้าพักปกติ')).toBeInTheDocument();
+      expect(screen.getByText('บริการ VIP')).toBeInTheDocument();
       expect(mockFetch).toHaveBeenCalledWith('/config/roomData.json');
       expect(mockFetch).toHaveBeenCalledWith('/config/hotelLayout.json');
     });
@@ -102,12 +103,15 @@ describe('WalkInOptionsPage Component', () => {
     it('allows selecting booking options', async () => {
       render(<WalkInOptionsPage />);
       
+      // Wait for data to load first
       await waitFor(() => {
-        expect(screen.getByText('พักชั่วคราว')).toBeInTheDocument();
+        expect(mockFetch).toHaveBeenCalled();
       });
       
+      expect(screen.getByText('พักชั่วคราว')).toBeInTheDocument();
+      
       const temporaryOption = screen.getByText('พักชั่วคราว').closest('button');
-      await userEvent.click(temporaryOption);
+      fireEvent.click(temporaryOption);
       
       expect(temporaryOption).toHaveClass('selected');
       expect(screen.getByText('✓')).toBeInTheDocument();
@@ -116,12 +120,15 @@ describe('WalkInOptionsPage Component', () => {
     it('shows room selection after booking option selected', async () => {
       render(<WalkInOptionsPage />);
       
+      // Wait for data to load first
       await waitFor(() => {
-        expect(screen.getByText('พักชั่วคราว')).toBeInTheDocument();
+        expect(mockFetch).toHaveBeenCalled();
       });
       
+      expect(screen.getByText('พักชั่วคราว')).toBeInTheDocument();
+      
       const temporaryOption = screen.getByText('พักชั่วคราว').closest('button');
-      await userEvent.click(temporaryOption);
+      fireEvent.click(temporaryOption);
       
       expect(screen.getByText('เลือกประเภทห้องพักและห้อง')).toBeInTheDocument();
       expect(screen.getByText('ประเภทห้องพัก')).toBeInTheDocument();
@@ -133,17 +140,18 @@ describe('WalkInOptionsPage Component', () => {
     beforeEach(async () => {
       render(<WalkInOptionsPage />);
       
+      // Wait for data to load
       await waitFor(() => {
-        expect(screen.getByText('พักชั่วคราว')).toBeInTheDocument();
+        expect(mockFetch).toHaveBeenCalled();
       });
+      
+      expect(screen.getByText('พักชั่วคราว')).toBeInTheDocument();
       
       // Select booking option to enable room selection
       const temporaryOption = screen.getByText('พักชั่วคราว').closest('button');
-      await userEvent.click(temporaryOption);
+      fireEvent.click(temporaryOption);
       
-      await waitFor(() => {
-        expect(screen.getByText('101')).toBeInTheDocument();
-      });
+      expect(screen.getByText('101')).toBeInTheDocument();
     });
 
     it('displays room grid with available rooms', async () => {
@@ -155,28 +163,24 @@ describe('WalkInOptionsPage Component', () => {
       expect(standardElements.length).toBeGreaterThan(0);
     });
 
-    it('opens confirmation modal when room selected', async () => {
+    it('opens confirmation modal when room selected', () => {
       const room101 = screen.getByText('101').closest('button');
-      await userEvent.click(room101);
+      fireEvent.click(room101);
       
-      await waitFor(() => {
-        expect(screen.getByText('ยืนยันการเลือกห้อง')).toBeInTheDocument();
-      });
+      expect(screen.getByText('ยืนยันการเลือกห้อง')).toBeInTheDocument();
       
       const bookingTypeElements = screen.getAllByText('พักชั่วคราว');
       expect(bookingTypeElements.length).toBeGreaterThan(0);
     });
 
-    it('confirms booking successfully', async () => {
+    it('confirms booking successfully', () => {
       const room101 = screen.getByText('101').closest('button');
-      await userEvent.click(room101);
+      fireEvent.click(room101);
       
-      await waitFor(() => {
-        expect(screen.getByText('ยืนยันเช็คอิน')).toBeInTheDocument();
-      });
+      expect(screen.getByText('ยืนยันเช็คอิน')).toBeInTheDocument();
       
       const confirmButton = screen.getByText('ยืนยันเช็คอิน');
-      await userEvent.click(confirmButton);
+      fireEvent.click(confirmButton);
       
       expect(mockAlert).toHaveBeenCalledWith(
         expect.stringContaining('เช็คอินสำเร็จ!')
@@ -186,16 +190,14 @@ describe('WalkInOptionsPage Component', () => {
       );
     });
 
-    it('cancels room selection', async () => {
+    it('cancels room selection', () => {
       const room101 = screen.getByText('101').closest('button');
-      await userEvent.click(room101);
+      fireEvent.click(room101);
       
-      await waitFor(() => {
-        expect(screen.getByText('ยกเลิก')).toBeInTheDocument();
-      });
+      expect(screen.getByText('ยกเลิก')).toBeInTheDocument();
       
       const cancelButton = screen.getByText('ยกเลิก');
-      await userEvent.click(cancelButton);
+      fireEvent.click(cancelButton);
       
       expect(screen.queryByText('ยืนยันการเลือกห้อง')).not.toBeInTheDocument();
     });
@@ -205,16 +207,17 @@ describe('WalkInOptionsPage Component', () => {
     beforeEach(async () => {
       render(<WalkInOptionsPage />);
       
+      // Wait for data to load
       await waitFor(() => {
-        expect(screen.getByText('พักชั่วคราว')).toBeInTheDocument();
+        expect(mockFetch).toHaveBeenCalled();
       });
+      
+      expect(screen.getByText('พักชั่วคราว')).toBeInTheDocument();
       
       const temporaryOption = screen.getByText('พักชั่วคราว').closest('button');
-      await userEvent.click(temporaryOption);
+      fireEvent.click(temporaryOption);
       
-      await waitFor(() => {
-        expect(screen.getByText('ทุกประเภท')).toBeInTheDocument();
-      });
+      expect(screen.getByText('ทุกประเภท')).toBeInTheDocument();
     });
 
     it('defaults to "All" room type filter', () => {
@@ -222,7 +225,7 @@ describe('WalkInOptionsPage Component', () => {
       expect(allTypeButton).toHaveClass('active');
     });
 
-    it('allows filtering by room type', async () => {
+    it('allows filtering by room type', () => {
       const standardElements = screen.getAllByText('Standard');
       // Find the filter button (should be in the room type filters section)
       const standardFilterButton = standardElements.find(el => 
@@ -230,7 +233,7 @@ describe('WalkInOptionsPage Component', () => {
       )?.closest('button');
       
       if (standardFilterButton) {
-        await userEvent.click(standardFilterButton);
+        fireEvent.click(standardFilterButton);
         expect(standardFilterButton).toHaveClass('active');
       }
     });
@@ -240,23 +243,22 @@ describe('WalkInOptionsPage Component', () => {
     it('handles escape key to close modal', async () => {
       render(<WalkInOptionsPage />);
       
+      // Wait for data to load
       await waitFor(() => {
-        expect(screen.getByText('พักชั่วคราว')).toBeInTheDocument();
+        expect(mockFetch).toHaveBeenCalled();
       });
+      
+      expect(screen.getByText('พักชั่วคราว')).toBeInTheDocument();
       
       const temporaryOption = screen.getByText('พักชั่วคราว').closest('button');
-      await userEvent.click(temporaryOption);
+      fireEvent.click(temporaryOption);
       
-      await waitFor(() => {
-        expect(screen.getByText('101')).toBeInTheDocument();
-      });
+      expect(screen.getByText('101')).toBeInTheDocument();
       
       const room101 = screen.getByText('101').closest('button');
-      await userEvent.click(room101);
+      fireEvent.click(room101);
       
-      await waitFor(() => {
-        expect(screen.getByText('ยืนยันการเลือกห้อง')).toBeInTheDocument();
-      });
+      expect(screen.getByText('ยืนยันการเลือกห้อง')).toBeInTheDocument();
       
       fireEvent.keyDown(document, { key: 'Escape' });
       

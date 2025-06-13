@@ -1,7 +1,6 @@
 // src/components/GuestForm.test.tsx
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import GuestForm from './GuestForm';
 import type { Guest } from '../types';
 
@@ -16,6 +15,12 @@ describe('GuestForm Component', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    jest.useFakeTimers();
+  });
+
+  afterEach(() => {
+    jest.runOnlyPendingTimers();
+    jest.useRealTimers();
   });
 
   it('renders all form fields', () => {
@@ -52,11 +57,10 @@ describe('GuestForm Component', () => {
   });
 
   it('validates required fields', async () => {
-    const user = userEvent.setup();
     render(<GuestForm {...defaultProps} />);
     
     const submitButton = screen.getByRole('button', { name: /ถัดไป/ });
-    await user.click(submitButton);
+    fireEvent.click(submitButton);
     
     await waitFor(() => {
       expect(screen.getByText(/กรุณากรอกชื่อ/)).toBeInTheDocument();
@@ -68,14 +72,13 @@ describe('GuestForm Component', () => {
   });
 
   it('validates phone number format', async () => {
-    const user = userEvent.setup();
     render(<GuestForm {...defaultProps} />);
     
     const phoneInput = screen.getByLabelText(/เบอร์โทรศัพท์/);
-    await user.type(phoneInput, 'invalid-phone');
+    fireEvent.change(phoneInput, { target: { value: 'invalid-phone' } });
     
     const submitButton = screen.getByRole('button', { name: /ถัดไป/ });
-    await user.click(submitButton);
+    fireEvent.click(submitButton);
     
     await waitFor(() => {
       expect(screen.getByText(/รูปแบบเบอร์โทรศัพท์ไม่ถูกต้อง/)).toBeInTheDocument();
@@ -83,14 +86,13 @@ describe('GuestForm Component', () => {
   });
 
   it('validates email format when provided', async () => {
-    const user = userEvent.setup();
     render(<GuestForm {...defaultProps} />);
     
     const emailInput = screen.getByLabelText(/อีเมล/);
-    await user.type(emailInput, 'invalid-email');
+    fireEvent.change(emailInput, { target: { value: 'invalid-email' } });
     
     const submitButton = screen.getByRole('button', { name: /ถัดไป/ });
-    await user.click(submitButton);
+    fireEvent.click(submitButton);
     
     await waitFor(() => {
       expect(screen.getByText(/รูปแบบอีเมลไม่ถูกต้อง/)).toBeInTheDocument();
@@ -98,12 +100,11 @@ describe('GuestForm Component', () => {
   });
 
   it('clears errors when user starts typing', async () => {
-    const user = userEvent.setup();
     render(<GuestForm {...defaultProps} />);
     
     // Trigger validation error
     const submitButton = screen.getByRole('button', { name: /ถัดไป/ });
-    await user.click(submitButton);
+    fireEvent.click(submitButton);
     
     await waitFor(() => {
       expect(screen.getByText(/กรุณากรอกชื่อ/)).toBeInTheDocument();
@@ -111,33 +112,33 @@ describe('GuestForm Component', () => {
     
     // Start typing in first name field
     const firstNameInput = screen.getByLabelText(/ชื่อ/);
-    await user.type(firstNameInput, 'J');
+    fireEvent.change(firstNameInput, { target: { value: 'J' } });
     
-    expect(screen.queryByText(/กรุณากรอกชื่อ/)).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.queryByText(/กรุณากรอกชื่อ/)).not.toBeInTheDocument();
+    });
   });
 
-  it('updates character count for special requests', async () => {
-    const user = userEvent.setup();
+  it('updates character count for special requests', () => {
     render(<GuestForm {...defaultProps} />);
     
     const textArea = screen.getByLabelText(/ความต้องการพิเศษ/);
-    await user.type(textArea, 'Test request');
+    fireEvent.change(textArea, { target: { value: 'Test request' } });
     
     expect(screen.getByText('12/500')).toBeInTheDocument();
   });
 
   it('submits form with valid data', async () => {
-    const user = userEvent.setup();
     render(<GuestForm {...defaultProps} />);
     
     // Fill in required fields
-    await user.type(screen.getByLabelText(/ชื่อ/), 'John');
-    await user.type(screen.getByLabelText(/นามสกุล/), 'Doe');
-    await user.type(screen.getByLabelText(/เบอร์โทรศัพท์/), '081-234-5678');
-    await user.type(screen.getByLabelText(/เลขบัตรประชาชน/), 'AB123456');
+    fireEvent.change(screen.getByLabelText(/ชื่อ/), { target: { value: 'John' } });
+    fireEvent.change(screen.getByLabelText(/นามสกุล/), { target: { value: 'Doe' } });
+    fireEvent.change(screen.getByLabelText(/เบอร์โทรศัพท์/), { target: { value: '081-234-5678' } });
+    fireEvent.change(screen.getByLabelText(/เลขบัตรประชาชน/), { target: { value: 'AB123456' } });
     
     const submitButton = screen.getByRole('button', { name: /ถัดไป/ });
-    await user.click(submitButton);
+    fireEvent.click(submitButton);
     
     await waitFor(() => {
       expect(mockOnComplete).toHaveBeenCalledWith(
@@ -154,49 +155,48 @@ describe('GuestForm Component', () => {
   });
 
   it('shows loading state during submission', async () => {
-    const user = userEvent.setup();
     render(<GuestForm {...defaultProps} />);
     
     // Fill in required fields
-    await user.type(screen.getByLabelText(/ชื่อ/), 'John');
-    await user.type(screen.getByLabelText(/นามสกุล/), 'Doe');
-    await user.type(screen.getByLabelText(/เบอร์โทรศัพท์/), '081-234-5678');
-    await user.type(screen.getByLabelText(/เลขบัตรประชาชน/), 'AB123456');
+    fireEvent.change(screen.getByLabelText(/ชื่อ/), { target: { value: 'John' } });
+    fireEvent.change(screen.getByLabelText(/นามสกุล/), { target: { value: 'Doe' } });
+    fireEvent.change(screen.getByLabelText(/เบอร์โทรศัพท์/), { target: { value: '081-234-5678' } });
+    fireEvent.change(screen.getByLabelText(/เลขบัตรประชาชน/), { target: { value: 'AB123456' } });
     
     const submitButton = screen.getByRole('button', { name: /ถัดไป/ });
-    await user.click(submitButton);
+    fireEvent.click(submitButton);
     
-    // Check loading state
-    expect(screen.getByText(/กำลังดำเนินการ/)).toBeInTheDocument();
+    // Check loading state immediately
+    await waitFor(() => {
+      expect(screen.getByText(/กำลังดำเนินการ/)).toBeInTheDocument();
+    });
     expect(submitButton).toBeDisabled();
     expect(screen.getByRole('button', { name: /ยกเลิก/ })).toBeDisabled();
   });
 
-  it('calls onCancel when cancel button is clicked', async () => {
-    const user = userEvent.setup();
+  it('calls onCancel when cancel button is clicked', () => {
     render(<GuestForm {...defaultProps} />);
     
     const cancelButton = screen.getByRole('button', { name: /ยกเลิก/ });
-    await user.click(cancelButton);
+    fireEvent.click(cancelButton);
     
     expect(mockOnCancel).toHaveBeenCalled();
   });
 
   it.skip('handles form submission error gracefully', async () => {
-    const user = userEvent.setup();
     // Create a mock that throws an error during the submission process
     const mockOnCompleteError = jest.fn().mockRejectedValue(new Error('Submission failed'));
     
     render(<GuestForm {...defaultProps} onComplete={mockOnCompleteError} />);
     
     // Fill in required fields
-    await user.type(screen.getByLabelText(/ชื่อ/), 'John');
-    await user.type(screen.getByLabelText(/นามสกุล/), 'Doe');
-    await user.type(screen.getByLabelText(/เบอร์โทรศัพท์/), '081-234-5678');
-    await user.type(screen.getByLabelText(/เลขบัตรประชาชน/), 'AB123456');
+    fireEvent.change(screen.getByLabelText(/ชื่อ/), { target: { value: 'John' } });
+    fireEvent.change(screen.getByLabelText(/นามสกุล/), { target: { value: 'Doe' } });
+    fireEvent.change(screen.getByLabelText(/เบอร์โทรศัพท์/), { target: { value: '081-234-5678' } });
+    fireEvent.change(screen.getByLabelText(/เลขบัตรประชาชน/), { target: { value: 'AB123456' } });
     
     const submitButton = screen.getByRole('button', { name: /ถัดไป/ });
-    await user.click(submitButton);
+    fireEvent.click(submitButton);
     
     // Wait for the error to be handled
     await waitFor(() => {
@@ -226,22 +226,20 @@ describe('GuestForm Component', () => {
     expect(screen.getByText('0/500')).toBeInTheDocument();
   });
 
-  it('allows selecting different nationalities', async () => {
-    const user = userEvent.setup();
+  it('allows selecting different nationalities', () => {
     render(<GuestForm {...defaultProps} />);
     
     const nationalitySelect = screen.getByLabelText(/สัญชาติ/);
-    await user.selectOptions(nationalitySelect, 'ญี่ปุ่น');
+    fireEvent.change(nationalitySelect, { target: { value: 'ญี่ปุ่น' } });
     
     expect(screen.getByDisplayValue('ญี่ปุ่น')).toBeInTheDocument();
   });
 
-  it('allows selecting number of guests', async () => {
-    const user = userEvent.setup();
+  it('allows selecting number of guests', () => {
     render(<GuestForm {...defaultProps} />);
     
     const guestsSelect = screen.getByLabelText(/จำนวนผู้เข้าพัก/);
-    await user.selectOptions(guestsSelect, '5');
+    fireEvent.change(guestsSelect, { target: { value: '5' } });
     
     expect(screen.getByDisplayValue('5 คน')).toBeInTheDocument();
   });
@@ -249,17 +247,16 @@ describe('GuestForm Component', () => {
   describe('Edge Cases and Validation Scenarios', () => {
     describe('Thai ID Validation', () => {
       it('validates valid Thai ID with proper checksum', async () => {
-        const user = userEvent.setup();
         render(<GuestForm {...defaultProps} />);
         
         // Fill required fields with valid Thai ID (1101700550095 is a valid test ID)
-        await user.type(screen.getByLabelText(/ชื่อ/), 'สมชาย');
-        await user.type(screen.getByLabelText(/นามสกุล/), 'ใจดี');
-        await user.type(screen.getByLabelText(/เบอร์โทรศัพท์/), '081-234-5678');
-        await user.type(screen.getByLabelText(/เลขบัตรประชาชน/), '1101700550095');
+        fireEvent.change(screen.getByLabelText(/ชื่อ/), { target: { value: 'สมชาย' } });
+        fireEvent.change(screen.getByLabelText(/นามสกุล/), { target: { value: 'ใจดี' } });
+        fireEvent.change(screen.getByLabelText(/เบอร์โทรศัพท์/), { target: { value: '081-234-5678' } });
+        fireEvent.change(screen.getByLabelText(/เลขบัตรประชาชน/), { target: { value: '1101700550095' } });
         
         const submitButton = screen.getByRole('button', { name: /ถัดไป/ });
-        await user.click(submitButton);
+        fireEvent.click(submitButton);
         
         await waitFor(() => {
           expect(mockOnComplete).toHaveBeenCalledWith(
@@ -273,16 +270,15 @@ describe('GuestForm Component', () => {
       });
 
       it('rejects Thai ID with invalid checksum', async () => {
-        const user = userEvent.setup();
         render(<GuestForm {...defaultProps} />);
         
-        await user.type(screen.getByLabelText(/ชื่อ/), 'สมชาย');
-        await user.type(screen.getByLabelText(/นามสกุล/), 'ใจดี');
-        await user.type(screen.getByLabelText(/เบอร์โทรศัพท์/), '081-234-5678');
-        await user.type(screen.getByLabelText(/เลขบัตรประชาชน/), '1234567890129'); // Invalid checksum
+        fireEvent.change(screen.getByLabelText(/ชื่อ/), { target: { value: 'สมชาย' } });
+        fireEvent.change(screen.getByLabelText(/นามสกุล/), { target: { value: 'ใจดี' } });
+        fireEvent.change(screen.getByLabelText(/เบอร์โทรศัพท์/), { target: { value: '081-234-5678' } });
+        fireEvent.change(screen.getByLabelText(/เลขบัตรประชาชน/), { target: { value: '1234567890129' } }); // Invalid checksum
         
         const submitButton = screen.getByRole('button', { name: /ถัดไป/ });
-        await user.click(submitButton);
+        fireEvent.click(submitButton);
         
         await waitFor(() => {
           expect(screen.getByText(/รูปแบบเลขบัตรประชาชนไม่ถูกต้อง/)).toBeInTheDocument();
@@ -291,13 +287,12 @@ describe('GuestForm Component', () => {
       });
 
       it('rejects Thai ID with incorrect length', async () => {
-        const user = userEvent.setup();
         render(<GuestForm {...defaultProps} />);
         
-        await user.type(screen.getByLabelText(/เลขบัตรประชาชน/), '12345678901'); // Only 11 digits
+        fireEvent.change(screen.getByLabelText(/เลขบัตรประชาชน/), { target: { value: '12345678901' } }); // Only 11 digits
         
         const submitButton = screen.getByRole('button', { name: /ถัดไป/ });
-        await user.click(submitButton);
+        fireEvent.click(submitButton);
         
         await waitFor(() => {
           expect(screen.getByText(/รูปแบบเลขบัตรประชาชนไม่ถูกต้อง/)).toBeInTheDocument();
@@ -305,16 +300,15 @@ describe('GuestForm Component', () => {
       });
 
       it('handles Thai ID with dashes and spaces', async () => {
-        const user = userEvent.setup();
         render(<GuestForm {...defaultProps} />);
         
-        await user.type(screen.getByLabelText(/ชื่อ/), 'สมชาย');
-        await user.type(screen.getByLabelText(/นามสกุล/), 'ใจดี');
-        await user.type(screen.getByLabelText(/เบอร์โทรศัพท์/), '081-234-5678');
-        await user.type(screen.getByLabelText(/เลขบัตรประชาชน/), '1-1017-00550-09-5'); // With dashes
+        fireEvent.change(screen.getByLabelText(/ชื่อ/), { target: { value: 'สมชาย' } });
+        fireEvent.change(screen.getByLabelText(/นามสกุล/), { target: { value: 'ใจดี' } });
+        fireEvent.change(screen.getByLabelText(/เบอร์โทรศัพท์/), { target: { value: '081-234-5678' } });
+        fireEvent.change(screen.getByLabelText(/เลขบัตรประชาชน/), { target: { value: '1-1017-00550-09-5' } }); // With dashes
         
         const submitButton = screen.getByRole('button', { name: /ถัดไป/ });
-        await user.click(submitButton);
+        fireEvent.click(submitButton);
         
         await waitFor(() => {
           expect(mockOnComplete).toHaveBeenCalledWith(
@@ -328,17 +322,16 @@ describe('GuestForm Component', () => {
 
     describe('Passport Validation', () => {
       it('validates valid passport numbers', async () => {
-        const user = userEvent.setup();
         render(<GuestForm {...defaultProps} />);
         
         // Test with one valid passport
-        await user.type(screen.getByLabelText(/ชื่อ/), 'John');
-        await user.type(screen.getByLabelText(/นามสกุล/), 'Doe');
-        await user.type(screen.getByLabelText(/เบอร์โทรศัพท์/), '081-234-5678');
-        await user.type(screen.getByLabelText(/เลขบัตรประชาชน/), 'AB123456');
+        fireEvent.change(screen.getByLabelText(/ชื่อ/), { target: { value: 'John' } });
+        fireEvent.change(screen.getByLabelText(/นามสกุล/), { target: { value: 'Doe' } });
+        fireEvent.change(screen.getByLabelText(/เบอร์โทรศัพท์/), { target: { value: '081-234-5678' } });
+        fireEvent.change(screen.getByLabelText(/เลขบัตรประชาชน/), { target: { value: 'AB123456' } });
         
         const submitButton = screen.getByRole('button', { name: /ถัดไป/ });
-        await user.click(submitButton);
+        fireEvent.click(submitButton);
         
         await waitFor(() => {
           expect(mockOnComplete).toHaveBeenCalledWith(
@@ -350,14 +343,13 @@ describe('GuestForm Component', () => {
       });
 
       it('rejects invalid passport formats', async () => {
-        const user = userEvent.setup();
         render(<GuestForm {...defaultProps} />);
         
         // Test with one invalid passport
-        await user.type(screen.getByLabelText(/เลขบัตรประชาชน/), '12345');
+        fireEvent.change(screen.getByLabelText(/เลขบัตรประชาชน/), { target: { value: '12345' } });
         
         const submitButton = screen.getByRole('button', { name: /ถัดไป/ });
-        await user.click(submitButton);
+        fireEvent.click(submitButton);
         
         await waitFor(() => {
           expect(screen.getByText(/รูปแบบหนังสือเดินทางไม่ถูกต้อง/)).toBeInTheDocument();
@@ -368,17 +360,16 @@ describe('GuestForm Component', () => {
 
     describe('Phone Number Validation', () => {
       it('validates various Thai phone formats', async () => {
-        const user = userEvent.setup();
         render(<GuestForm {...defaultProps} />);
         
         // Test with one valid phone format
-        await user.type(screen.getByLabelText(/ชื่อ/), 'สมชาย');
-        await user.type(screen.getByLabelText(/นามสกุล/), 'ใจดี');
-        await user.type(screen.getByLabelText(/เบอร์โทรศัพท์/), '081-234-5678');
-        await user.type(screen.getByLabelText(/เลขบัตรประชาชน/), 'AB123456');
+        fireEvent.change(screen.getByLabelText(/ชื่อ/), { target: { value: 'สมชาย' } });
+        fireEvent.change(screen.getByLabelText(/นามสกุล/), { target: { value: 'ใจดี' } });
+        fireEvent.change(screen.getByLabelText(/เบอร์โทรศัพท์/), { target: { value: '081-234-5678' } });
+        fireEvent.change(screen.getByLabelText(/เลขบัตรประชาชน/), { target: { value: 'AB123456' } });
         
         const submitButton = screen.getByRole('button', { name: /ถัดไป/ });
-        await user.click(submitButton);
+        fireEvent.click(submitButton);
         
         await waitFor(() => {
           expect(mockOnComplete).toHaveBeenCalledWith(
@@ -390,14 +381,13 @@ describe('GuestForm Component', () => {
       });
 
       it('rejects invalid phone formats', async () => {
-        const user = userEvent.setup();
         render(<GuestForm {...defaultProps} />);
         
         // Test with one invalid phone
-        await user.type(screen.getByLabelText(/เบอร์โทรศัพท์/), 'abc-def-ghij');
+        fireEvent.change(screen.getByLabelText(/เบอร์โทรศัพท์/), { target: { value: 'abc-def-ghij' } });
         
         const submitButton = screen.getByRole('button', { name: /ถัดไป/ });
-        await user.click(submitButton);
+        fireEvent.click(submitButton);
         
         await waitFor(() => {
           expect(screen.getByText(/รูปแบบเบอร์โทรศัพท์ไม่ถูกต้อง/)).toBeInTheDocument();
@@ -408,18 +398,17 @@ describe('GuestForm Component', () => {
 
     describe('Email Validation', () => {
       it('validates correct email formats', async () => {
-        const user = userEvent.setup();
         render(<GuestForm {...defaultProps} />);
         
         // Test with one valid email
-        await user.type(screen.getByLabelText(/ชื่อ/), 'John');
-        await user.type(screen.getByLabelText(/นามสกุล/), 'Doe');
-        await user.type(screen.getByLabelText(/เบอร์โทรศัพท์/), '081-234-5678');
-        await user.type(screen.getByLabelText(/เลขบัตรประชาชน/), 'AB123456');
-        await user.type(screen.getByLabelText(/อีเมล/), 'test@example.com');
+        fireEvent.change(screen.getByLabelText(/ชื่อ/), { target: { value: 'John' } });
+        fireEvent.change(screen.getByLabelText(/นามสกุล/), { target: { value: 'Doe' } });
+        fireEvent.change(screen.getByLabelText(/เบอร์โทรศัพท์/), { target: { value: '081-234-5678' } });
+        fireEvent.change(screen.getByLabelText(/เลขบัตรประชาชน/), { target: { value: 'AB123456' } });
+        fireEvent.change(screen.getByLabelText(/อีเมล/), { target: { value: 'test@example.com' } });
         
         const submitButton = screen.getByRole('button', { name: /ถัดไป/ });
-        await user.click(submitButton);
+        fireEvent.click(submitButton);
         
         await waitFor(() => {
           expect(mockOnComplete).toHaveBeenCalledWith(
@@ -431,14 +420,13 @@ describe('GuestForm Component', () => {
       });
 
       it('rejects invalid email formats', async () => {
-        const user = userEvent.setup();
         render(<GuestForm {...defaultProps} />);
         
         // Test with one invalid email
-        await user.type(screen.getByLabelText(/อีเมล/), 'invalid-email');
+        fireEvent.change(screen.getByLabelText(/อีเมล/), { target: { value: 'invalid-email' } });
         
         const submitButton = screen.getByRole('button', { name: /ถัดไป/ });
-        await user.click(submitButton);
+        fireEvent.click(submitButton);
         
         await waitFor(() => {
           expect(screen.getByText(/รูปแบบอีเมลไม่ถูกต้อง/)).toBeInTheDocument();
@@ -447,17 +435,16 @@ describe('GuestForm Component', () => {
       });
 
       it('allows empty email (optional field)', async () => {
-        const user = userEvent.setup();
         render(<GuestForm {...defaultProps} />);
         
         // Fill required fields without email
-        await user.type(screen.getByLabelText(/ชื่อ/), 'John');
-        await user.type(screen.getByLabelText(/นามสกุล/), 'Doe');
-        await user.type(screen.getByLabelText(/เบอร์โทรศัพท์/), '081-234-5678');
-        await user.type(screen.getByLabelText(/เลขบัตรประชาชน/), 'AB123456');
+        fireEvent.change(screen.getByLabelText(/ชื่อ/), { target: { value: 'John' } });
+        fireEvent.change(screen.getByLabelText(/นามสกุล/), { target: { value: 'Doe' } });
+        fireEvent.change(screen.getByLabelText(/เบอร์โทรศัพท์/), { target: { value: '081-234-5678' } });
+        fireEvent.change(screen.getByLabelText(/เลขบัตรประชาชน/), { target: { value: 'AB123456' } });
         
         const submitButton = screen.getByRole('button', { name: /ถัดไป/ });
-        await user.click(submitButton);
+        fireEvent.click(submitButton);
         
         await waitFor(() => {
           expect(mockOnComplete).toHaveBeenCalledWith(
@@ -471,17 +458,16 @@ describe('GuestForm Component', () => {
 
     describe('Input Sanitization', () => {
       it('sanitizes HTML tags from input fields', async () => {
-        const user = userEvent.setup();
         render(<GuestForm {...defaultProps} />);
         
         // Try to inject HTML
-        await user.type(screen.getByLabelText(/ชื่อ/), '<script>alert("xss")</script>John');
-        await user.type(screen.getByLabelText(/นามสกุล/), '<div>Doe</div>');
-        await user.type(screen.getByLabelText(/เบอร์โทรศัพท์/), '081-234-5678');
-        await user.type(screen.getByLabelText(/เลขบัตรประชาชน/), 'AB123456');
+        fireEvent.change(screen.getByLabelText(/ชื่อ/), { target: { value: '<script>alert("xss")</script>John' } });
+        fireEvent.change(screen.getByLabelText(/นามสกุล/), { target: { value: '<div>Doe</div>' } });
+        fireEvent.change(screen.getByLabelText(/เบอร์โทรศัพท์/), { target: { value: '081-234-5678' } });
+        fireEvent.change(screen.getByLabelText(/เลขบัตรประชาชน/), { target: { value: 'AB123456' } });
         
         const submitButton = screen.getByRole('button', { name: /ถัดไป/ });
-        await user.click(submitButton);
+        fireEvent.click(submitButton);
         
         await waitFor(() => {
           expect(mockOnComplete).toHaveBeenCalledWith(
@@ -494,21 +480,20 @@ describe('GuestForm Component', () => {
       });
 
       it('handles special characters in special requests', async () => {
-        const user = userEvent.setup();
         render(<GuestForm {...defaultProps} />);
         
         // Fill required fields
-        await user.type(screen.getByLabelText(/ชื่อ/), 'John');
-        await user.type(screen.getByLabelText(/นามสกุล/), 'Doe');
-        await user.type(screen.getByLabelText(/เบอร์โทรศัพท์/), '081-234-5678');
-        await user.type(screen.getByLabelText(/เลขบัตรประชาชน/), 'AB123456');
+        fireEvent.change(screen.getByLabelText(/ชื่อ/), { target: { value: 'John' } });
+        fireEvent.change(screen.getByLabelText(/นามสกุล/), { target: { value: 'Doe' } });
+        fireEvent.change(screen.getByLabelText(/เบอร์โทรศัพท์/), { target: { value: '081-234-5678' } });
+        fireEvent.change(screen.getByLabelText(/เลขบัตรประชาชน/), { target: { value: 'AB123456' } });
         
         // Add special requests with special characters
         const specialRequest = 'ต้องการห้องชั้นล่าง & ไม่มีกลิ่นบุหรี่';
-        await user.type(screen.getByLabelText(/ความต้องการพิเศษ/), specialRequest);
+        fireEvent.change(screen.getByLabelText(/ความต้องการพิเศษ/), { target: { value: specialRequest } });
         
         const submitButton = screen.getByRole('button', { name: /ถัดไป/ });
-        await user.click(submitButton);
+        fireEvent.click(submitButton);
         
         await waitFor(() => {
           expect(mockOnComplete).toHaveBeenCalledWith(
@@ -522,7 +507,6 @@ describe('GuestForm Component', () => {
 
     describe('Field Length Validation', () => {
       it('enforces maximum length for name fields', async () => {
-        const user = userEvent.setup();
         render(<GuestForm {...defaultProps} />);
         
         // The input has maxLength=50, so typing 51 characters will only input 50
@@ -536,7 +520,7 @@ describe('GuestForm Component', () => {
         });
         
         const submitButton = screen.getByRole('button', { name: /ถัดไป/ });
-        await user.click(submitButton);
+        fireEvent.click(submitButton);
         
         await waitFor(() => {
           expect(screen.getByText(/ชื่อต้องไม่เกิน 50 ตัวอักษร/)).toBeInTheDocument();
@@ -544,14 +528,13 @@ describe('GuestForm Component', () => {
       });
 
       it('enforces minimum length for name fields', async () => {
-        const user = userEvent.setup();
         render(<GuestForm {...defaultProps} />);
         
         // Enter single space (should be trimmed to empty)
-        await user.type(screen.getByLabelText(/ชื่อ/), ' ');
+        fireEvent.change(screen.getByLabelText(/ชื่อ/), { target: { value: ' ' } });
         
         const submitButton = screen.getByRole('button', { name: /ถัดไป/ });
-        await user.click(submitButton);
+        fireEvent.click(submitButton);
         
         await waitFor(() => {
           expect(screen.getByText(/กรุณากรอกชื่อ/)).toBeInTheDocument();
@@ -559,18 +542,17 @@ describe('GuestForm Component', () => {
       });
 
       it('enforces character limit for special requests', async () => {
-        const user = userEvent.setup();
         render(<GuestForm {...defaultProps} />);
         
         // Type exactly 500 characters
         const maxText = 'a'.repeat(500);
         const specialRequestsField = screen.getByLabelText(/ความต้องการพิเศษ/);
-        await user.type(specialRequestsField, maxText);
+        fireEvent.change(specialRequestsField, { target: { value: maxText } });
         
         expect(screen.getByText('500/500')).toBeInTheDocument();
         
         // Try to type more (should be limited by maxLength attribute)
-        await user.type(specialRequestsField, 'b');
+        fireEvent.change(specialRequestsField, { target: { value: maxText + 'b' } });
         
         // Should still be 500 characters
         expect(screen.getByText('500/500')).toBeInTheDocument();
@@ -579,36 +561,34 @@ describe('GuestForm Component', () => {
 
     describe('Guest Number Validation', () => {
       it('validates guest number range (1-10)', async () => {
-        const user = userEvent.setup();
         render(<GuestForm {...defaultProps} />);
         
         // Test selecting minimum and maximum valid values
         const guestsSelect = screen.getByLabelText(/จำนวนผู้เข้าพัก/);
         
         // Test minimum (1)
-        await user.selectOptions(guestsSelect, '1');
+        fireEvent.change(guestsSelect, { target: { value: '1' } });
         expect(screen.getByDisplayValue('1 คน')).toBeInTheDocument();
         
         // Test maximum (10)
-        await user.selectOptions(guestsSelect, '10');
+        fireEvent.change(guestsSelect, { target: { value: '10' } });
         expect(screen.getByDisplayValue('10 คน')).toBeInTheDocument();
       });
 
       it('includes guest count in form submission', async () => {
-        const user = userEvent.setup();
         render(<GuestForm {...defaultProps} />);
         
         // Fill required fields and select 7 guests
-        await user.type(screen.getByLabelText(/ชื่อ/), 'John');
-        await user.type(screen.getByLabelText(/นามสกุล/), 'Doe');
-        await user.type(screen.getByLabelText(/เบอร์โทรศัพท์/), '081-234-5678');
-        await user.type(screen.getByLabelText(/เลขบัตรประชาชน/), 'AB123456');
+        fireEvent.change(screen.getByLabelText(/ชื่อ/), { target: { value: 'John' } });
+        fireEvent.change(screen.getByLabelText(/นามสกุล/), { target: { value: 'Doe' } });
+        fireEvent.change(screen.getByLabelText(/เบอร์โทรศัพท์/), { target: { value: '081-234-5678' } });
+        fireEvent.change(screen.getByLabelText(/เลขบัตรประชาชน/), { target: { value: 'AB123456' } });
         
         const guestsSelect = screen.getByLabelText(/จำนวนผู้เข้าพัก/);
-        await user.selectOptions(guestsSelect, '7');
+        fireEvent.change(guestsSelect, { target: { value: '7' } });
         
         const submitButton = screen.getByRole('button', { name: /ถัดไป/ });
-        await user.click(submitButton);
+        fireEvent.click(submitButton);
         
         await waitFor(() => {
           expect(mockOnComplete).toHaveBeenCalledWith(
@@ -622,16 +602,15 @@ describe('GuestForm Component', () => {
 
     describe('Error State Management', () => {
       it('shows multiple validation errors simultaneously', async () => {
-        const user = userEvent.setup();
         render(<GuestForm {...defaultProps} />);
         
         // Fill invalid data for multiple fields
-        await user.type(screen.getByLabelText(/เบอร์โทรศัพท์/), 'invalid');
-        await user.type(screen.getByLabelText(/อีเมล/), 'invalid-email');
-        await user.type(screen.getByLabelText(/เลขบัตรประชาชน/), '123');
+        fireEvent.change(screen.getByLabelText(/เบอร์โทรศัพท์/), { target: { value: 'invalid' } });
+        fireEvent.change(screen.getByLabelText(/อีเมล/), { target: { value: 'invalid-email' } });
+        fireEvent.change(screen.getByLabelText(/เลขบัตรประชาชน/), { target: { value: '123' } });
         
         const submitButton = screen.getByRole('button', { name: /ถัดไป/ });
-        await user.click(submitButton);
+        fireEvent.click(submitButton);
         
         await waitFor(() => {
           expect(screen.getByText(/กรุณากรอกชื่อ/)).toBeInTheDocument();
@@ -645,12 +624,11 @@ describe('GuestForm Component', () => {
       });
 
       it('clears individual errors when fields are corrected', async () => {
-        const user = userEvent.setup();
         render(<GuestForm {...defaultProps} />);
         
         // Create validation errors
         const submitButton = screen.getByRole('button', { name: /ถัดไป/ });
-        await user.click(submitButton);
+        fireEvent.click(submitButton);
         
         await waitFor(() => {
           expect(screen.getByText(/กรุณากรอกชื่อ/)).toBeInTheDocument();
@@ -658,26 +636,25 @@ describe('GuestForm Component', () => {
         });
         
         // Fix first name error
-        await user.type(screen.getByLabelText(/ชื่อ/), 'John');
+        fireEvent.change(screen.getByLabelText(/ชื่อ/), { target: { value: 'John' } });
         expect(screen.queryByText(/กรุณากรอกชื่อ/)).not.toBeInTheDocument();
         
         // Last name error should still be present
         expect(screen.getByText(/กรุณากรอกนามสกุล/)).toBeInTheDocument();
         
         // Fix last name error
-        await user.type(screen.getByLabelText(/นามสกุล/), 'Doe');
+        fireEvent.change(screen.getByLabelText(/นามสกุล/), { target: { value: 'Doe' } });
         expect(screen.queryByText(/กรุณากรอกนามสกุล/)).not.toBeInTheDocument();
       });
     });
 
     describe('Accessibility Features', () => {
       it('associates error messages with form fields using aria-describedby', async () => {
-        const user = userEvent.setup();
         render(<GuestForm {...defaultProps} />);
         
         // Trigger validation errors
         const submitButton = screen.getByRole('button', { name: /ถัดไป/ });
-        await user.click(submitButton);
+        fireEvent.click(submitButton);
         
         await waitFor(() => {
           const firstNameInput = screen.getByLabelText(/ชื่อ/);

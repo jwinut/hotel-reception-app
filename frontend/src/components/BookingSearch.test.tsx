@@ -1,7 +1,6 @@
 // src/components/BookingSearch.test.tsx
 import React from 'react';
-import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { render, screen, fireEvent } from '@testing-library/react';
 import BookingSearch from './BookingSearch';
 
 // Mock validation utils
@@ -54,45 +53,41 @@ describe('BookingSearch Component', () => {
 
   describe('Search Input', () => {
     it('updates search term when typing', async () => {
-      const user = userEvent.setup();
-      render(<BookingSearch onSearchFilter={mockOnSearchFilter} />);
+            render(<BookingSearch onSearchFilter={mockOnSearchFilter} />);
       
       const searchInput = screen.getByLabelText('ค้นหาการจอง');
-      await user.type(searchInput, 'John Doe');
+      fireEvent.change(searchInput, { target: { value: 'John Doe' } });
       
       expect(searchInput).toHaveValue('John Doe');
     });
 
     it('calls onSearchFilter when search term changes', async () => {
-      const user = userEvent.setup();
-      render(<BookingSearch onSearchFilter={mockOnSearchFilter} />);
+            render(<BookingSearch onSearchFilter={mockOnSearchFilter} />);
       
       const searchInput = screen.getByLabelText('ค้นหาการจอง');
-      await user.type(searchInput, 'test');
+      fireEvent.change(searchInput, { target: { value: 'test' } });
       
       expect(mockOnSearchFilter).toHaveBeenCalledWith('test', 'all', '');
     });
 
     it('shows clear button when search has text', async () => {
-      const user = userEvent.setup();
-      render(<BookingSearch onSearchFilter={mockOnSearchFilter} />);
+            render(<BookingSearch onSearchFilter={mockOnSearchFilter} />);
       
       const searchInput = screen.getByLabelText('ค้นหาการจอง');
-      await user.type(searchInput, 'test');
+      fireEvent.change(searchInput, { target: { value: 'test' } });
       
       const clearButton = screen.getByRole('button', { name: 'ล้างคำค้นหา' });
       expect(clearButton).toBeInTheDocument();
     });
 
     it('clears search term when clear button is clicked', async () => {
-      const user = userEvent.setup();
-      render(<BookingSearch onSearchFilter={mockOnSearchFilter} />);
+            render(<BookingSearch onSearchFilter={mockOnSearchFilter} />);
       
       const searchInput = screen.getByLabelText('ค้นหาการจอง');
-      await user.type(searchInput, 'test');
+      fireEvent.change(searchInput, { target: { value: 'test' } });
       
       const clearButton = screen.getByRole('button', { name: 'ล้างคำค้นหา' });
-      await user.click(clearButton);
+      fireEvent.click(clearButton);
       
       expect(searchInput).toHaveValue('');
     });
@@ -100,11 +95,10 @@ describe('BookingSearch Component', () => {
 
   describe('Status Filter', () => {
     it('updates status filter when changed', async () => {
-      const user = userEvent.setup();
-      render(<BookingSearch onSearchFilter={mockOnSearchFilter} />);
+            render(<BookingSearch onSearchFilter={mockOnSearchFilter} />);
       
       const statusSelect = screen.getByLabelText('สถานะการจอง');
-      await user.selectOptions(statusSelect, 'confirmed');
+      fireEvent.change(statusSelect, { target: { value: 'confirmed' } });
       
       expect(statusSelect).toHaveValue('confirmed');
       expect(mockOnSearchFilter).toHaveBeenCalledWith('', 'confirmed', '');
@@ -113,11 +107,10 @@ describe('BookingSearch Component', () => {
 
   describe('Date Filter', () => {
     it('updates date filter when changed', async () => {
-      const user = userEvent.setup();
-      render(<BookingSearch onSearchFilter={mockOnSearchFilter} />);
+            render(<BookingSearch onSearchFilter={mockOnSearchFilter} />);
       
       const dateInput = screen.getByLabelText('วันที่เข้า/ออก');
-      await user.type(dateInput, '2024-12-15');
+      fireEvent.change(dateInput, { target: { value: '2024-12-15' } });
       
       expect(dateInput).toHaveValue('2024-12-15');
       expect(mockOnSearchFilter).toHaveBeenCalledWith('', 'all', '2024-12-15');
@@ -126,47 +119,43 @@ describe('BookingSearch Component', () => {
 
   describe('Quick Filters', () => {
     it('activates arriving today filter', async () => {
-      const user = userEvent.setup();
-      render(<BookingSearch onSearchFilter={mockOnSearchFilter} />);
+            render(<BookingSearch onSearchFilter={mockOnSearchFilter} />);
       
       const arrivingButton = screen.getByText('เข้าพักวันนี้');
-      await user.click(arrivingButton);
+      fireEvent.click(arrivingButton);
       
       expect(arrivingButton).toHaveClass('active');
       expect(mockOnSearchFilter).toHaveBeenCalledWith('', 'arriving_today', '');
     });
 
     it('activates departing today filter', async () => {
-      const user = userEvent.setup();
-      render(<BookingSearch onSearchFilter={mockOnSearchFilter} />);
+            render(<BookingSearch onSearchFilter={mockOnSearchFilter} />);
       
       const departingButton = screen.getByText('ออกวันนี้');
-      await user.click(departingButton);
+      fireEvent.click(departingButton);
       
       expect(departingButton).toHaveClass('active');
       expect(mockOnSearchFilter).toHaveBeenCalledWith('', 'departing_today', '');
     });
 
     it('activates checked in filter', async () => {
-      const user = userEvent.setup();
-      render(<BookingSearch onSearchFilter={mockOnSearchFilter} />);
+            render(<BookingSearch onSearchFilter={mockOnSearchFilter} />);
       
       const checkedInButton = screen.getByText('อยู่ในโรงแรม');
-      await user.click(checkedInButton);
+      fireEvent.click(checkedInButton);
       
       expect(checkedInButton).toHaveClass('active');
       expect(mockOnSearchFilter).toHaveBeenCalledWith('', 'checked_in', '');
     });
 
     it('activates today date filter', async () => {
-      const user = userEvent.setup();
-      const mockDate = '2024-12-15';
+            const mockDate = '2024-12-15';
       jest.spyOn(Date.prototype, 'toISOString').mockReturnValue(`${mockDate}T00:00:00.000Z`);
       
       render(<BookingSearch onSearchFilter={mockOnSearchFilter} />);
       
       const todayButton = screen.getByText('วันนี้');
-      await user.click(todayButton);
+      fireEvent.click(todayButton);
       
       expect(todayButton).toHaveClass('active');
       expect(mockOnSearchFilter).toHaveBeenCalledWith('', 'all', mockDate);
@@ -175,29 +164,27 @@ describe('BookingSearch Component', () => {
 
   describe('Clear Filters', () => {
     it('shows clear filters button when filters are active', async () => {
-      const user = userEvent.setup();
-      render(<BookingSearch onSearchFilter={mockOnSearchFilter} />);
+            render(<BookingSearch onSearchFilter={mockOnSearchFilter} />);
       
       const searchInput = screen.getByLabelText('ค้นหาการจอง');
-      await user.type(searchInput, 'test');
+      fireEvent.change(searchInput, { target: { value: 'test' } });
       
       const clearFiltersButton = screen.getByText('ล้างตัวกรอง');
       expect(clearFiltersButton).toBeInTheDocument();
     });
 
     it('clears all filters when clear button is clicked', async () => {
-      const user = userEvent.setup();
-      render(<BookingSearch onSearchFilter={mockOnSearchFilter} />);
+            render(<BookingSearch onSearchFilter={mockOnSearchFilter} />);
       
       // Set some filters
       const searchInput = screen.getByLabelText('ค้นหาการจอง');
-      await user.type(searchInput, 'test');
+      fireEvent.change(searchInput, { target: { value: 'test' } });
       
       const statusSelect = screen.getByLabelText('สถานะการจอง');
-      await user.selectOptions(statusSelect, 'confirmed');
+      fireEvent.change(statusSelect, { target: { value: 'confirmed' } });
       
       const clearFiltersButton = screen.getByText('ล้างตัวกรอง');
-      await user.click(clearFiltersButton);
+      fireEvent.click(clearFiltersButton);
       
       expect(searchInput).toHaveValue('');
       expect(statusSelect).toHaveValue('all');
@@ -228,11 +215,10 @@ describe('BookingSearch Component', () => {
     });
 
     it('has aria-label for clear search button', async () => {
-      const user = userEvent.setup();
-      render(<BookingSearch onSearchFilter={mockOnSearchFilter} />);
+            render(<BookingSearch onSearchFilter={mockOnSearchFilter} />);
       
       const searchInput = screen.getByLabelText('ค้นหาการจอง');
-      await user.type(searchInput, 'test');
+      fireEvent.change(searchInput, { target: { value: 'test' } });
       
       const clearButton = screen.getByRole('button', { name: 'ล้างคำค้นหา' });
       expect(clearButton).toHaveAttribute('aria-label', 'ล้างคำค้นหา');

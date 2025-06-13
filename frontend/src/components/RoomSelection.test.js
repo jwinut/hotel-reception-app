@@ -66,9 +66,18 @@ describe('RoomSelection Component', () => {
   const mockOnComplete = jest.fn();
   const mockOnBack = jest.fn();
   const mockOnCancel = jest.fn();
+  
+  // Setup alert mock before all tests
+  const originalAlert = window.alert;
+  let mockAlert;
 
   beforeEach(() => {
     jest.clearAllMocks();
+    jest.useFakeTimers();
+    
+    // Mock window.alert before component renders
+    mockAlert = jest.fn();
+    window.alert = mockAlert;
     
     // Setup fetch mock to return our mock data
     fetch.mockImplementation((url) => {
@@ -88,6 +97,8 @@ describe('RoomSelection Component', () => {
   });
 
   afterEach(() => {
+    jest.useRealTimers();
+    window.alert = originalAlert;
     fetch.mockRestore();
   });
 
@@ -118,9 +129,9 @@ describe('RoomSelection Component', () => {
         expect(screen.getByText('เลือกห้องพัก')).toBeInTheDocument();
       });
 
-      // Check that guest information is displayed (text might be split)
-      expect(screen.getByText('John')).toBeInTheDocument();
-      expect(screen.getByText('Doe')).toBeInTheDocument();
+      // Check that guest information is displayed (text might be split across elements)
+      expect(screen.getByText(/John/)).toBeInTheDocument();
+      expect(screen.getByText(/Doe/)).toBeInTheDocument();
       expect(screen.getByText('(2 คน)')).toBeInTheDocument();
       expect(screen.getByText('2 คืน • ไม่รวมอาหารเช้า')).toBeInTheDocument();
     });
@@ -132,12 +143,12 @@ describe('RoomSelection Component', () => {
         expect(screen.getByText('ประเภทห้องพัก')).toBeInTheDocument();
       });
 
-      // Check that all room types are displayed
-      expect(screen.getByText('All')).toBeInTheDocument();
-      expect(screen.getByText('Standard')).toBeInTheDocument();
-      expect(screen.getByText('Superior')).toBeInTheDocument();
-      expect(screen.getByText('Deluxe')).toBeInTheDocument();
-      expect(screen.getByText('Family')).toBeInTheDocument();
+      // Check that all room types are displayed in filter buttons using more specific selectors
+      expect(screen.getByRole('button', { name: 'All' })).toBeInTheDocument();
+      expect(screen.getAllByRole('button').find(btn => btn.textContent.includes('Standard') && btn.className.includes('filter-button'))).toBeInTheDocument();
+      expect(screen.getAllByRole('button').find(btn => btn.textContent.includes('Superior') && btn.className.includes('filter-button'))).toBeInTheDocument();
+      expect(screen.getAllByRole('button').find(btn => btn.textContent.includes('Deluxe') && btn.className.includes('filter-button'))).toBeInTheDocument();
+      expect(screen.getAllByRole('button').find(btn => btn.textContent.includes('Family') && btn.className.includes('filter-button'))).toBeInTheDocument();
     });
 
     it('displays room grid with correct floors', async () => {
@@ -186,14 +197,14 @@ describe('RoomSelection Component', () => {
       render(<RoomSelection {...defaultProps} />);
       
       await waitFor(() => {
-        expect(screen.getByText('Standard')).toBeInTheDocument();
+        expect(screen.getByText('ประเภทห้องพัก')).toBeInTheDocument();
       });
 
-      // Click on Standard filter
-      const standardButton = screen.getByRole('button', { name: 'Standard' });
+      // Click on Standard filter using more specific selector for filter button
+      const standardButton = screen.getAllByRole('button').find(btn => btn.textContent.includes('Standard') && btn.className.includes('filter-button'));
       fireEvent.click(standardButton);
 
-      // Standard button should be active
+      // Standard button should be active immediately - no delay needed
       expect(standardButton).toHaveClass('active');
     });
 
@@ -201,7 +212,7 @@ describe('RoomSelection Component', () => {
       render(<RoomSelection {...defaultProps} />);
       
       await waitFor(() => {
-        expect(screen.getByText('All')).toBeInTheDocument();
+        expect(screen.getByText('ประเภทห้องพัก')).toBeInTheDocument();
       });
 
       // Click on All filter (should be default)
@@ -295,23 +306,18 @@ describe('RoomSelection Component', () => {
 
   describe('Form Submission', () => {
     it('prevents submission when no room is selected', async () => {
-      // Mock alert
-      window.alert = jest.fn();
-      
       render(<RoomSelection {...defaultProps} />);
       
       await waitFor(() => {
         expect(screen.getByText('ถัดไป: ยืนยันการจอง')).toBeInTheDocument();
       });
 
-      // Try to submit without selecting room
+      // Submit button should be disabled when no room is selected
       const submitButton = screen.getByText('ถัดไป: ยืนยันการจอง');
-      fireEvent.click(submitButton);
+      expect(submitButton).toBeDisabled();
       
-      expect(window.alert).toHaveBeenCalledWith('กรุณาเลือกห้องพัก');
+      // onComplete should not be called since button is disabled
       expect(mockOnComplete).not.toHaveBeenCalled();
-      
-      window.alert.mockRestore();
     });
 
     it('submits correct data when room is selected', async () => {
@@ -429,11 +435,11 @@ describe('RoomSelection Component', () => {
       render(<RoomSelection {...propsWithInitialData} />);
       
       await waitFor(() => {
-        expect(screen.getByText('Standard')).toBeInTheDocument();
+        expect(screen.getByText('ประเภทห้องพัก')).toBeInTheDocument();
       });
 
-      // Standard filter should be active
-      const standardButton = screen.getByRole('button', { name: 'Standard' });
+      // Standard filter should be active - find the filter button specifically
+      const standardButton = screen.getAllByRole('button').find(btn => btn.textContent.includes('Standard') && btn.className.includes('filter-button'));
       expect(standardButton).toHaveClass('active');
     });
   });

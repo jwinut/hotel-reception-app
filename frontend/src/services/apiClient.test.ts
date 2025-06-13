@@ -33,6 +33,8 @@ describe('ApiClient', () => {
     mockSetTimeout = jest.spyOn(global, 'setTimeout');
     mockClearTimeout = jest.spyOn(global, 'clearTimeout');
     mockAbort.mockClear();
+    // Re-setup AbortController mock after clearAllMocks
+    global.AbortController = jest.fn(() => mockAbortController) as any;
   });
 
   afterEach(() => {

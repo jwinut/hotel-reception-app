@@ -25,6 +25,16 @@ const mockApiClient = apiClientModule.apiClient as jest.Mocked<typeof apiClientM
 // Mock console.error to avoid noise in tests
 const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
+// Helper function to simulate jest.runAllTimersAsync() for older Jest versions
+const runAllTimersAsync = async () => {
+  // Run all currently scheduled timers
+  jest.runAllTimers();
+  // Allow microtasks to process
+  await Promise.resolve();
+  // Run any newly scheduled timers from the microtasks
+  jest.runAllTimers();
+};
+
 describe('BookingService', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -44,8 +54,8 @@ describe('BookingService', () => {
     it('returns mock bookings in development mode', async () => {
       const promise = bookingService.getBookings();
       
-      // Fast-forward through the mock delay
-      jest.advanceTimersByTime(500);
+      // Fast-forward through all timers
+await runAllTimersAsync();
       
       const result = await promise;
       
@@ -84,7 +94,7 @@ describe('BookingService', () => {
       };
 
       const promise = bookingService.getBookings(params);
-      jest.advanceTimersByTime(500);
+await runAllTimersAsync();
       const result = await promise;
 
       expect(result.success).toBe(true);
@@ -105,7 +115,7 @@ describe('BookingService', () => {
       };
 
       const promise = bookingService.getBookings(params);
-      jest.advanceTimersByTime(500);
+await runAllTimersAsync();
       const result = await promise;
 
       expect(result.success).toBe(true);
@@ -134,7 +144,7 @@ describe('BookingService', () => {
   describe('getBooking', () => {
     it('returns specific booking by ID in development mode', async () => {
       const promise = bookingService.getBooking('BK001');
-      jest.advanceTimersByTime(500);
+await runAllTimersAsync();
       const result = await promise;
 
       expect(result.success).toBe(true);
@@ -144,7 +154,7 @@ describe('BookingService', () => {
 
     it('throws error for non-existent booking in development mode', async () => {
       const promise = bookingService.getBooking('NONEXISTENT');
-      jest.advanceTimersByTime(500);
+await runAllTimersAsync();
 
       await expect(promise).rejects.toThrow('ไม่พบการจองที่ระบุ');
     });
@@ -187,7 +197,7 @@ describe('BookingService', () => {
 
     it('creates booking successfully in development mode', async () => {
       const promise = bookingService.createBooking(mockBookingData);
-      jest.advanceTimersByTime(1000);
+await runAllTimersAsync();
       const result = await promise;
 
       expect(result.success).toBe(true);
@@ -217,7 +227,7 @@ describe('BookingService', () => {
       };
 
       const promise = bookingService.createBooking(suiteBooking);
-      jest.advanceTimersByTime(1000);
+await runAllTimersAsync();
       const result = await promise;
 
       expect(result.data.nights).toBe(1);
@@ -228,7 +238,7 @@ describe('BookingService', () => {
       const deluxeBooking = { ...mockBookingData, roomType: 'Deluxe' };
 
       const promise = bookingService.createBooking(deluxeBooking);
-      jest.advanceTimersByTime(1000);
+await runAllTimersAsync();
       const result = await promise;
 
       expect(result.data.roomNumber).toMatch(/^20[1-5]$/); // Deluxe room numbers
@@ -268,10 +278,8 @@ describe('BookingService', () => {
     it('updates booking successfully in development mode', async () => {
       const promise = bookingService.updateBooking('BK001', updateData);
       
-      // Advance timers in two steps to handle nested async
-      jest.advanceTimersByTime(500); // First setTimeout in updateBooking
-      await Promise.resolve(); // Allow microtasks to process
-      jest.advanceTimersByTime(500); // Second setTimeout in getMockBookings
+      // Fast-forward through all timers
+await runAllTimersAsync();
       
       const result = await promise;
 
@@ -291,10 +299,8 @@ describe('BookingService', () => {
 
       const promise = bookingService.updateBooking('BK001', updateWithDates);
       
-      // Advance timers in two steps to handle nested async
-      jest.advanceTimersByTime(500); // First setTimeout in updateBooking
-      await Promise.resolve(); // Allow microtasks to process
-      jest.advanceTimersByTime(500); // Second setTimeout in getMockBookings
+      // Fast-forward through all timers
+await runAllTimersAsync();
       const result = await promise;
 
       expect(result.data.nights).toBe(3);
@@ -308,10 +314,8 @@ describe('BookingService', () => {
 
       const promise = bookingService.updateBooking('BK001', partialUpdate);
       
-      // Advance timers in two steps to handle nested async
-      jest.advanceTimersByTime(500); // First setTimeout in updateBooking
-      await Promise.resolve(); // Allow microtasks to process
-      jest.advanceTimersByTime(500); // Second setTimeout in getMockBookings
+      // Fast-forward through all timers
+await runAllTimersAsync();
       const result = await promise;
 
       expect(result.data.guestName).toBe(partialUpdate.guestName);
@@ -321,10 +325,8 @@ describe('BookingService', () => {
     it('throws error for non-existent booking', async () => {
       const promise = bookingService.updateBooking('NONEXISTENT', updateData);
       
-      // Advance timers in two steps to handle nested async
-      jest.advanceTimersByTime(500); // First setTimeout in updateBooking
-      await Promise.resolve(); // Allow microtasks to process
-      jest.advanceTimersByTime(500); // Second setTimeout in getMockBookings
+      // Fast-forward through all timers
+await runAllTimersAsync();
 
       await expect(promise).rejects.toThrow('ไม่พบการจองที่ระบุ');
     });
@@ -357,10 +359,7 @@ describe('BookingService', () => {
     it('updates status successfully in development mode', async () => {
       const promise = bookingService.updateBookingStatus('BK001', 'checked_in');
       
-      // Advance timers in two steps to handle nested async
-      jest.advanceTimersByTime(300); // First setTimeout in updateBookingStatus
-      await Promise.resolve(); // Allow microtasks to process
-      jest.advanceTimersByTime(500); // Second setTimeout in getMockBookings
+await runAllTimersAsync();
       const result = await promise;
 
       expect(result.success).toBe(true);
@@ -372,10 +371,7 @@ describe('BookingService', () => {
     it('throws error for non-existent booking', async () => {
       const promise = bookingService.updateBookingStatus('NONEXISTENT', 'checked_in');
       
-      // Advance timers in two steps to handle nested async
-      jest.advanceTimersByTime(300); // First setTimeout in updateBookingStatus
-      await Promise.resolve(); // Allow microtasks to process
-      jest.advanceTimersByTime(500); // Second setTimeout in getMockBookings
+await runAllTimersAsync();
 
       await expect(promise).rejects.toThrow('ไม่พบการจองที่ระบุ');
     });
@@ -411,10 +407,7 @@ describe('BookingService', () => {
       const reason = 'เปลี่ยนแปลงแผนการเดินทาง';
       const promise = bookingService.cancelBooking('BK001', reason);
       
-      // Advance timers in two steps to handle nested async
-      jest.advanceTimersByTime(500); // First setTimeout in cancelBooking
-      await Promise.resolve(); // Allow microtasks to process
-      jest.advanceTimersByTime(500); // Second setTimeout in getMockBookings
+await runAllTimersAsync();
       const result = await promise;
 
       expect(result.success).toBe(true);
@@ -426,10 +419,7 @@ describe('BookingService', () => {
     it('cancels booking without reason', async () => {
       const promise = bookingService.cancelBooking('BK001');
       
-      // Advance timers in two steps to handle nested async
-      jest.advanceTimersByTime(500); // First setTimeout in cancelBooking
-      await Promise.resolve(); // Allow microtasks to process
-      jest.advanceTimersByTime(500); // Second setTimeout in getMockBookings
+await runAllTimersAsync();
       const result = await promise;
 
       expect(result.success).toBe(true);
@@ -442,10 +432,7 @@ describe('BookingService', () => {
       // BK001 already has special requests
       const promise = bookingService.cancelBooking('BK001', reason);
       
-      // Advance timers in two steps to handle nested async
-      jest.advanceTimersByTime(500); // First setTimeout in cancelBooking
-      await Promise.resolve(); // Allow microtasks to process
-      jest.advanceTimersByTime(500); // Second setTimeout in getMockBookings
+await runAllTimersAsync();
       const result = await promise;
 
       expect(result.data.specialRequests).toContain('ต้องการห้องชั้นล่าง'); // Original
@@ -457,10 +444,7 @@ describe('BookingService', () => {
       const reason = 'ยกเลิกทันที';
       const promise = bookingService.cancelBooking('BK002', reason);
       
-      // Advance timers in two steps to handle nested async
-      jest.advanceTimersByTime(500); // First setTimeout in cancelBooking
-      await Promise.resolve(); // Allow microtasks to process
-      jest.advanceTimersByTime(500); // Second setTimeout in getMockBookings
+await runAllTimersAsync();
       const result = await promise;
 
       expect(result.data.specialRequests).toBe(`ยกเลิกการจอง: ${reason}`);
@@ -469,10 +453,7 @@ describe('BookingService', () => {
     it('throws error for non-existent booking', async () => {
       const promise = bookingService.cancelBooking('NONEXISTENT', 'test reason');
       
-      // Advance timers in two steps to handle nested async
-      jest.advanceTimersByTime(500); // First setTimeout in cancelBooking
-      await Promise.resolve(); // Allow microtasks to process
-      jest.advanceTimersByTime(500); // Second setTimeout in getMockBookings
+await runAllTimersAsync();
 
       await expect(promise).rejects.toThrow('ไม่พบการจองที่ระบุ');
     });
@@ -507,7 +488,7 @@ describe('BookingService', () => {
   describe('deleteBooking', () => {
     it('deletes booking successfully in development mode', async () => {
       const promise = bookingService.deleteBooking('BK001');
-      jest.advanceTimersByTime(300);
+await runAllTimersAsync();
       const result = await promise;
 
       expect(result.success).toBe(true);
@@ -538,7 +519,7 @@ describe('BookingService', () => {
   describe('getBookingStats', () => {
     it('returns mock statistics in development mode', async () => {
       const promise = bookingService.getBookingStats();
-      jest.advanceTimersByTime(300);
+await runAllTimersAsync();
       const result = await promise;
 
       expect(result.success).toBe(true);
@@ -591,7 +572,7 @@ describe('BookingService', () => {
   describe('searchBookings', () => {
     it('searches bookings by guest name in development mode', async () => {
       const promise = bookingService.searchBookings('สมชาย');
-      jest.advanceTimersByTime(500);
+await runAllTimersAsync();
       const result = await promise;
 
       expect(result.success).toBe(true);
@@ -601,7 +582,7 @@ describe('BookingService', () => {
 
     it('searches bookings by phone number', async () => {
       const promise = bookingService.searchBookings('081-234-5678');
-      jest.advanceTimersByTime(500);
+await runAllTimersAsync();
       const result = await promise;
 
       expect(result.success).toBe(true);
@@ -611,7 +592,7 @@ describe('BookingService', () => {
 
     it('searches bookings by email', async () => {
       const promise = bookingService.searchBookings('niran@example.com');
-      jest.advanceTimersByTime(500);
+await runAllTimersAsync();
       const result = await promise;
 
       expect(result.success).toBe(true);
@@ -621,7 +602,7 @@ describe('BookingService', () => {
 
     it('searches bookings by booking ID', async () => {
       const promise = bookingService.searchBookings('BK003');
-      jest.advanceTimersByTime(500);
+await runAllTimersAsync();
       const result = await promise;
 
       expect(result.success).toBe(true);
@@ -631,7 +612,7 @@ describe('BookingService', () => {
 
     it('returns empty array for no matches', async () => {
       const promise = bookingService.searchBookings('nonexistent');
-      jest.advanceTimersByTime(500);
+await runAllTimersAsync();
       const result = await promise;
 
       expect(result.success).toBe(true);
@@ -641,8 +622,7 @@ describe('BookingService', () => {
     it('performs case-insensitive search', async () => {
       const promise = bookingService.searchBookings('วิชัย');
       
-      // Fast-forward through the mock delay
-      jest.advanceTimersByTime(500);
+await runAllTimersAsync();
       
       const result = await promise;
 
@@ -787,8 +767,8 @@ describe('BookingService', () => {
         return bookingService.cancelBooking(result.data.id, 'Test cancellation');
       });
 
-      // Advance all timers at once to handle all delays
-      jest.advanceTimersByTime(5000);
+      // Fast-forward through all timers
+await runAllTimersAsync();
       
       const createResult = await createPromise;
       const updateResult = await updatePromise;
@@ -820,7 +800,7 @@ describe('BookingService', () => {
         bookingService.getBookings({ limit: 5 }),
       ];
 
-      jest.advanceTimersByTime(500);
+await runAllTimersAsync();
       const results = await Promise.all(promises);
 
       expect(results).toHaveLength(3);

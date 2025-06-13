@@ -1,7 +1,6 @@
 // src/components/DateSelection.test.js
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import DateSelection from './DateSelection';
 
 // Mock data
@@ -20,6 +19,12 @@ describe('DateSelection Component', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    jest.useFakeTimers();
+  });
+
+  afterEach(() => {
+    jest.runOnlyPendingTimers();
+    jest.useRealTimers();
   });
 
   describe('Initial Rendering', () => {
@@ -94,13 +99,12 @@ describe('DateSelection Component', () => {
 
       const checkInInput = screen.getByLabelText(/วันที่เข้าพัก/);
 
-      await userEvent.clear(checkInInput);
-      await userEvent.type(checkInInput, '2024-12-15');
+      fireEvent.change(checkInInput, { target: { value: '2024-12-15' } });
 
       expect(checkInInput).toHaveValue('2024-12-15');
     });
 
-    it('updates check-out date', async () => {
+    it('updates check-out date', () => {
       render(
         <DateSelection
           initialData={{ checkInDate: '2024-12-15' }}
@@ -113,13 +117,12 @@ describe('DateSelection Component', () => {
 
       const checkOutInput = screen.getByLabelText(/วันที่ออก/);
 
-      await userEvent.clear(checkOutInput);
-      await userEvent.type(checkOutInput, '2024-12-18');
+      fireEvent.change(checkOutInput, { target: { value: '2024-12-18' } });
 
       expect(checkOutInput).toHaveValue('2024-12-18');
     });
 
-    it('updates breakfast checkbox', async () => {
+    it('updates breakfast checkbox', () => {
       render(
         <DateSelection
           initialData={{}}
@@ -134,7 +137,7 @@ describe('DateSelection Component', () => {
       
       expect(breakfastCheckbox).not.toBeChecked();
       
-      await userEvent.click(breakfastCheckbox);
+      fireEvent.click(breakfastCheckbox);
       
       expect(breakfastCheckbox).toBeChecked();
     });
@@ -162,7 +165,7 @@ describe('DateSelection Component', () => {
       expect(screen.getByText('2 คน')).toBeInTheDocument();
     });
 
-    it('updates breakfast status in summary', async () => {
+    it('updates breakfast status in summary', () => {
       render(
         <DateSelection
           initialData={{
@@ -181,7 +184,7 @@ describe('DateSelection Component', () => {
 
       // Uncheck breakfast
       const breakfastCheckbox = screen.getByRole('checkbox', { name: /รวมอาหารเช้า/ });
-      await userEvent.click(breakfastCheckbox);
+      fireEvent.click(breakfastCheckbox);
 
       expect(screen.getByText('ไม่รวมอาหารเช้า')).toBeInTheDocument();
     });
@@ -200,7 +203,7 @@ describe('DateSelection Component', () => {
       );
 
       const submitButton = screen.getByText('ถัดไป: เลือกห้องพัก');
-      await userEvent.click(submitButton);
+      fireEvent.click(submitButton);
 
       expect(screen.getByText('กรุณาเลือกวันที่เข้าพัก')).toBeInTheDocument();
       expect(mockOnComplete).not.toHaveBeenCalled();
@@ -218,7 +221,7 @@ describe('DateSelection Component', () => {
       );
 
       const submitButton = screen.getByText('ถัดไป: เลือกห้องพัก');
-      await userEvent.click(submitButton);
+      fireEvent.click(submitButton);
 
       expect(screen.getByText('กรุณาเลือกวันที่ออก')).toBeInTheDocument();
       expect(mockOnComplete).not.toHaveBeenCalled();
@@ -239,13 +242,13 @@ describe('DateSelection Component', () => {
       );
 
       const submitButton = screen.getByText('ถัดไป: เลือกห้องพัก');
-      await userEvent.click(submitButton);
+      fireEvent.click(submitButton);
 
       expect(screen.getByText('วันที่ออกต้องหลังวันที่เข้าพัก')).toBeInTheDocument();
       expect(mockOnComplete).not.toHaveBeenCalled();
     });
 
-    it('validates maximum stay duration (30 days)', async () => {
+    it('validates maximum stay duration (30 days)', () => {
       render(
         <DateSelection
           initialData={{
@@ -260,7 +263,7 @@ describe('DateSelection Component', () => {
       );
 
       const submitButton = screen.getByText('ถัดไป: เลือกห้องพัก');
-      await userEvent.click(submitButton);
+      fireEvent.click(submitButton);
 
       expect(screen.getByText('ระยะเวลาเข้าพักต้องไม่เกิน 30 วัน')).toBeInTheDocument();
       expect(mockOnComplete).not.toHaveBeenCalled();
@@ -293,7 +296,7 @@ describe('DateSelection Component', () => {
 
       // Then fix the error by typing a date
       const checkInInput = screen.getByLabelText(/วันที่เข้าพัก/);
-      await userEvent.type(checkInInput, '2024-12-15');
+      fireEvent.change(checkInInput, { target: { value: '2024-12-15' } });
 
       // Error should be cleared after typing
       await waitFor(() => {
@@ -352,7 +355,7 @@ describe('DateSelection Component', () => {
       );
 
       const submitButton = screen.getByText('ถัดไป: เลือกห้องพัก');
-      await userEvent.click(submitButton);
+      fireEvent.click(submitButton);
 
       await waitFor(() => {
         expect(mockOnComplete).toHaveBeenCalledWith({
@@ -380,14 +383,12 @@ describe('DateSelection Component', () => {
       );
 
       const submitButton = screen.getByText('ถัดไป: เลือกห้องพัก');
-      await userEvent.click(submitButton);
+      fireEvent.click(submitButton);
 
-      expect(screen.getByText('กำลังดำเนินการ...')).toBeInTheDocument();
-      
-      // Wait for submission to complete
       await waitFor(() => {
-        expect(mockOnComplete).toHaveBeenCalled();
+        expect(screen.getByText('กำลังดำเนินการ...')).toBeInTheDocument();
       });
+      expect(mockOnComplete).toHaveBeenCalled();
     });
 
     it('disables buttons during submission', async () => {
@@ -408,20 +409,18 @@ describe('DateSelection Component', () => {
       const backButton = screen.getByText('← ย้อนกลับ');
       const cancelButton = screen.getByText('ยกเลิก');
 
-      await userEvent.click(submitButton);
+      fireEvent.click(submitButton);
 
-      expect(backButton).toBeDisabled();
-      expect(cancelButton).toBeDisabled();
-      
-      // Wait for submission to complete
       await waitFor(() => {
-        expect(mockOnComplete).toHaveBeenCalled();
+        expect(backButton).toBeDisabled();
+        expect(cancelButton).toBeDisabled();
       });
+      expect(mockOnComplete).toHaveBeenCalled();
     });
   });
 
   describe('Navigation Actions', () => {
-    it('calls onBack when back button is clicked', async () => {
+    it('calls onBack when back button is clicked', () => {
       render(
         <DateSelection
           initialData={{}}
@@ -433,12 +432,12 @@ describe('DateSelection Component', () => {
       );
 
       const backButton = screen.getByText('← ย้อนกลับ');
-      await userEvent.click(backButton);
+      fireEvent.click(backButton);
 
       expect(mockOnBack).toHaveBeenCalled();
     });
 
-    it('calls onCancel when cancel button is clicked', async () => {
+    it('calls onCancel when cancel button is clicked', () => {
       render(
         <DateSelection
           initialData={{}}
@@ -450,7 +449,7 @@ describe('DateSelection Component', () => {
       );
 
       const cancelButton = screen.getByText('ยกเลิก');
-      await userEvent.click(cancelButton);
+      fireEvent.click(cancelButton);
 
       expect(mockOnCancel).toHaveBeenCalled();
     });
@@ -477,7 +476,7 @@ describe('DateSelection Component', () => {
       expect(screen.getAllByText('*')).toHaveLength(2); // Two required fields
     });
 
-    it('associates error messages with inputs', async () => {
+    it('associates error messages with inputs', () => {
       render(
         <DateSelection
           initialData={{}}
@@ -489,7 +488,7 @@ describe('DateSelection Component', () => {
       );
 
       const submitButton = screen.getByText('ถัดไป: เลือกห้องพัก');
-      await userEvent.click(submitButton);
+      fireEvent.click(submitButton);
 
       const checkInInput = screen.getByLabelText(/วันที่เข้าพัก/);
       expect(checkInInput).toHaveClass('error');
@@ -528,11 +527,8 @@ describe('DateSelection Component', () => {
       const checkOutInput = screen.getByLabelText(/วันที่ออก/);
 
       // Set dates with 3 nights
-      await userEvent.clear(checkInInput);
-      await userEvent.type(checkInInput, '2024-12-15');
-      
-      await userEvent.clear(checkOutInput);
-      await userEvent.type(checkOutInput, '2024-12-18');
+      fireEvent.change(checkInInput, { target: { value: '2024-12-15' } });
+      fireEvent.change(checkOutInput, { target: { value: '2024-12-18' } });
 
       // Should calculate and display 3 nights
       await waitFor(() => {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import BookingConfirmation from './BookingConfirmation';
 
@@ -358,23 +358,21 @@ describe('BookingConfirmation', () => {
       fireEvent.click(confirmButton);
 
       // Fast-forward through the 2-second delay
-      jest.advanceTimersByTime(2000);
+      await jest.runAllTimersAsync();
 
-      await waitFor(() => {
-        expect(mockHandlers.onComplete).toHaveBeenCalledWith(
-          expect.objectContaining({
-            guest: mockBookingData.guest,
-            dates: mockBookingData.dates,
-            room: mockBookingData.room,
-            bookingId: expect.stringMatching(/^BK\d{9}$/),
-            paymentMethod: 'cash',
-            notes: '',
-            status: 'confirmed',
-            createdAt: expect.any(String),
-            staff: 'ระบบ'
-          })
-        );
-      });
+      expect(mockHandlers.onComplete).toHaveBeenCalledWith(
+        expect.objectContaining({
+          guest: mockBookingData.guest,
+          dates: mockBookingData.dates,
+          room: mockBookingData.room,
+          bookingId: expect.stringMatching(/^BK\d{9}$/),
+          paymentMethod: 'cash',
+          notes: '',
+          status: 'confirmed',
+          createdAt: expect.any(String),
+          staff: 'ระบบ'
+        })
+      );
     });
 
     it('completes booking with custom payment method and notes', async () => {
@@ -390,16 +388,14 @@ describe('BookingConfirmation', () => {
       const confirmButton = screen.getByText('✓ ยืนยันการจอง');
       fireEvent.click(confirmButton);
 
-      jest.advanceTimersByTime(2000);
+      await jest.runAllTimersAsync();
 
-      await waitFor(() => {
-        expect(mockHandlers.onComplete).toHaveBeenCalledWith(
-          expect.objectContaining({
-            paymentMethod: 'card',
-            notes: 'VIP guest'
-          })
-        );
-      });
+      expect(mockHandlers.onComplete).toHaveBeenCalledWith(
+        expect.objectContaining({
+          paymentMethod: 'card',
+          notes: 'VIP guest'
+        })
+      );
     });
 
     it('logs final booking data to console', async () => {
@@ -408,18 +404,16 @@ describe('BookingConfirmation', () => {
       const confirmButton = screen.getByText('✓ ยืนยันการจอง');
       fireEvent.click(confirmButton);
 
-      jest.advanceTimersByTime(2000);
+      await jest.runAllTimersAsync();
 
-      await waitFor(() => {
-        expect(console.log).toHaveBeenCalledWith(
-          'Final booking data:',
-          expect.objectContaining({
-            bookingId: expect.stringMatching(/^BK\d{9}$/),
-            status: 'confirmed',
-            paymentMethod: 'cash'
-          })
-        );
-      });
+      expect(console.log).toHaveBeenCalledWith(
+        'Final booking data:',
+        expect.objectContaining({
+          bookingId: expect.stringMatching(/^BK\d{9}$/),
+          status: 'confirmed',
+          paymentMethod: 'cash'
+        })
+      );
     });
   });
 
@@ -457,11 +451,9 @@ describe('BookingConfirmation', () => {
       const confirmButton = screen.getByText('✓ ยืนยันการจอง');
       fireEvent.click(confirmButton);
 
-      jest.advanceTimersByTime(2000);
+      await jest.runAllTimersAsync();
 
-      await waitFor(() => {
-        expect(screen.queryByText('กรุณารอสักครู่...')).not.toBeInTheDocument();
-      });
+      expect(screen.queryByText('กรุณารอสักครู่...')).not.toBeInTheDocument();
     });
   });
 
@@ -644,16 +636,14 @@ describe('BookingConfirmation', () => {
       const confirmButton = screen.getByText('✓ ยืนยันการจอง');
       fireEvent.click(confirmButton);
 
-      jest.advanceTimersByTime(2000);
+      await jest.runAllTimersAsync();
 
-      await waitFor(() => {
-        expect(mockHandlers.onComplete).toHaveBeenCalledWith(
-          expect.objectContaining({
-            paymentMethod: 'transfer',
-            notes: 'Special instructions'
-          })
-        );
-      });
+      expect(mockHandlers.onComplete).toHaveBeenCalledWith(
+        expect.objectContaining({
+          paymentMethod: 'transfer',
+          notes: 'Special instructions'
+        })
+      );
     });
 
     it('preserves UI state during processing', () => {
