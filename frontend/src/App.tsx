@@ -17,6 +17,7 @@ import { useTranslation } from './hooks/useTranslation';
 // Lazy load page components for code splitting
 const MainPage = lazy(() => import('./MainPage'));
 const WalkInOptionsPage = lazy(() => import('./WalkInOptionsPage'));
+const WalkInDashboardPage = lazy(() => import('./pages/WalkInDashboardPage'));
 const NewBookingPage = lazy(() => import('./NewBookingPage'));
 const CurrentBookingsPage = lazy(() => import('./CurrentBookingsPage'));
 const ExistingGuestPage = lazy(() => import('./ExistingGuestPage'));
@@ -158,6 +159,7 @@ const App: React.FC<AppProps> = () => {
                   <Routes>
                     <Route path="/" element={<MainPage key="main" isAdminMode={isAdminMode} />} />
                     <Route path="/walk-in-options" element={<WalkInOptionsPage key="walk-in" />} />
+                    <Route path="/walk-in-dashboard" element={<WalkInDashboardPage key="walk-in-dashboard" />} />
                     <Route path="/new-booking" element={<NewBookingPage key="new-booking" />} />
                     <Route path="/current-bookings" element={<CurrentBookingsPage key="current-bookings" />} />
                     <Route path="/existing-guest" element={<ExistingGuestPage key="existing-guest" />} />

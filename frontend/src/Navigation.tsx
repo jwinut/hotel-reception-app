@@ -39,6 +39,7 @@ const Navigation: React.FC<NavigationProps> = memo(({
   // Memoized navigation buttons to prevent recreation on every render
   const navigationButtons = useMemo(() => ({
     walkInOptions: () => navigate('/walk-in-options'),
+    walkInDashboard: () => navigate('/walk-in-dashboard'),
     existingGuest: () => navigate('/existing-guest'),
     newBooking: () => navigate('/new-booking'),
     currentBookings: () => navigate('/current-bookings'),
@@ -52,6 +53,15 @@ const Navigation: React.FC<NavigationProps> = memo(({
         <div className="nav-section">
           <h3 className="nav-section-title" id="checkin-section">{t('navigation.checkin.title')}</h3>
           <div className="nav-buttons" role="group" aria-labelledby="checkin-section">
+            <button 
+              onClick={navigationButtons.walkInDashboard}
+              className={`nav-button primary ${isActive('/walk-in-dashboard') ? 'active' : ''}`}
+              type="button"
+              aria-describedby="checkin-section"
+              {...createBreadcrumbAriaProps(isActive('/walk-in-dashboard'))}
+            >
+              🏨 Walk-in Dashboard
+            </button>
             <button 
               onClick={navigationButtons.walkInOptions}
               className={`nav-button primary ${isActive('/walk-in-options') ? 'active' : ''}`}

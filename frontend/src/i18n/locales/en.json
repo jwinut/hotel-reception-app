@@ -29,6 +29,28 @@
       "new": "New Booking",
       "current": "Current Bookings"
     },
+    "walkin": {
+      "title": "Walk-in Guest Check-in",
+      "dashboard": {
+        "title": "Live Room Availability",
+        "subtitle": "Real-time room status for immediate check-in",
+        "lastUpdated": "Last updated",
+        "autoRefresh": "Auto-refresh (30s)",
+        "refresh": "Refresh",
+        "availableNow": "Available Now",
+        "fullyBooked": "Fully Booked",
+        "roomOnly": "Room Only",
+        "withBreakfast": "+ Breakfast",
+        "perNight": "per night",
+        "selectRoom": "Select Room",
+        "loading": "Loading room availability...",
+        "noRooms": "No Room Data Available",
+        "noRoomsMessage": "Unable to load room information. Please check your connection and try again.",
+        "tryAgain": "Try Again",
+        "retry": "Retry",
+        "errorPrefix": "Error"
+      }
+    },
     "admin": {
       "title": "User Management",
       "addUser": "Add User",
