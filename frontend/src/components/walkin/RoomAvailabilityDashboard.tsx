@@ -151,7 +151,7 @@ const RoomAvailabilityDashboard: React.FC = () => {
               
               <div className="availability-info">
                 <div className="availability-count">
-                  <span className="count">{room.available}</span>
+                  <span className="count">{room.total - room.available}</span>
                   <span className="total">/ {room.total}</span>
                 </div>
                 <div className="availability-label">

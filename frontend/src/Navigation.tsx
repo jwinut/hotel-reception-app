@@ -60,7 +60,7 @@ const Navigation: React.FC<NavigationProps> = memo(({
               aria-describedby="checkin-section"
               {...createBreadcrumbAriaProps(isActive('/walk-in-dashboard'))}
             >
-              🏨 Walk-in Dashboard
+              🏨 Walk-in
             </button>
             <button 
               onClick={navigationButtons.walkInOptions}
