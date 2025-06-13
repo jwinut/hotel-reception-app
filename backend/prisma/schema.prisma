@@ -80,4 +80,37 @@ enum BookingStatus {
   CHECKED_IN
   CHECKED_OUT
   CANCELLED
+  NO_SHOW
+}
+
+model RoomTypePricing {
+  id                  String      @id @default(uuid())
+  roomType            RoomType
+  basePrice           Decimal     @db.Decimal(10, 2)
+  breakfastPrice      Decimal     @db.Decimal(10, 2) @default(250.00)
+  seasonalMultiplier  Decimal     @db.Decimal(4, 2) @default(1.00)
+  isActive            Boolean     @default(true)
+  effectiveFrom       DateTime    @default(now())
+  effectiveUntil      DateTime?
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
+
+  @@index([roomType, isActive])
+  @@index([effectiveFrom, effectiveUntil])
+  @@map("room_type_pricing")
+}
+
+model PricingHistory {
+  id                  String      @id @default(uuid())
+  roomType            RoomType
+  oldBasePrice        Decimal     @db.Decimal(10, 2)
+  newBasePrice        Decimal     @db.Decimal(10, 2)
+  oldBreakfastPrice   Decimal     @db.Decimal(10, 2)
+  newBreakfastPrice   Decimal     @db.Decimal(10, 2)
+  reason              String?
+  changedBy           String      @default("system")
+  changedAt           DateTime    @default(now())
+
+  @@index([roomType, changedAt])
+  @@map("pricing_history")
 }

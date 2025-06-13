@@ -64,20 +64,20 @@ function syncFrontendLayout(masterConfig) {
   console.log(`✅ Synced frontend layout: ${FRONTEND_HOTEL_LAYOUT}`);
 }
 
-function syncFrontendPricing(masterConfig) {
-  // Generate pricing data with breakfast surcharge
-  const breakfastSurcharge = masterConfig.pricing.breakfastSurcharge;
-  const frontendPricing = {
-    prices: Object.entries(masterConfig.roomTypes).map(([typeKey, typeConfig]) => ({
-      roomType: typeConfig.name,
-      noBreakfast: typeConfig.basePrice,
-      withBreakfast: typeConfig.basePrice + breakfastSurcharge
-    }))
+function createPricingPlaceholder() {
+  // Create a placeholder file that instructs to use API
+  const placeholderPricing = {
+    // This file is deprecated - pricing now comes from API
+    // Frontend should use: GET /api/pricing for current prices
+    deprecated: true,
+    message: "Pricing data is now managed dynamically via API endpoints",
+    apiEndpoint: "/api/pricing",
+    prices: [] // Empty array for compatibility
   };
 
   ensureDirectoryExists(FRONTEND_PRICE_DATA);
-  fs.writeFileSync(FRONTEND_PRICE_DATA, JSON.stringify(frontendPricing, null, 2));
-  console.log(`✅ Synced frontend pricing: ${FRONTEND_PRICE_DATA}`);
+  fs.writeFileSync(FRONTEND_PRICE_DATA, JSON.stringify(placeholderPricing, null, 2));
+  console.log(`📝 Created pricing API placeholder: ${FRONTEND_PRICE_DATA}`);
 }
 
 function syncFrontendBookingOptions(masterConfig) {
@@ -184,7 +184,7 @@ function main() {
   console.log('\n🔄 Syncing configuration...');
   syncFrontendRoomData(masterConfig);
   syncFrontendLayout(masterConfig);
-  syncFrontendPricing(masterConfig);
+  createPricingPlaceholder();
   syncFrontendBookingOptions(masterConfig);
   syncBackendConfig(masterConfig);
 
@@ -206,7 +206,7 @@ module.exports = {
   loadMasterConfig,
   syncFrontendRoomData,
   syncFrontendLayout,
-  syncFrontendPricing,
+  createPricingPlaceholder,
   syncFrontendBookingOptions,
   syncBackendConfig,
   validateRoomNumbers

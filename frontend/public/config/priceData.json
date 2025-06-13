@@ -1,34 +1,6 @@
 {
-  "prices": [
-    {
-      "roomType": "Standard",
-      "noBreakfast": 1200,
-      "withBreakfast": 1450
-    },
-    {
-      "roomType": "Superior",
-      "noBreakfast": 1800,
-      "withBreakfast": 2050
-    },
-    {
-      "roomType": "Deluxe",
-      "noBreakfast": 2400,
-      "withBreakfast": 2650
-    },
-    {
-      "roomType": "Family",
-      "noBreakfast": 3200,
-      "withBreakfast": 3450
-    },
-    {
-      "roomType": "Hop in",
-      "noBreakfast": 800,
-      "withBreakfast": 1050
-    },
-    {
-      "roomType": "Zenith",
-      "noBreakfast": 5000,
-      "withBreakfast": 5250
-    }
-  ]
+  "deprecated": true,
+  "message": "Pricing data is now managed dynamically via API endpoints",
+  "apiEndpoint": "/api/pricing",
+  "prices": []
 }

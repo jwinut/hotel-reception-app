@@ -4,9 +4,6 @@
     "floors": [3, 4, 5],
     "totalRooms": 41
   },
-  "pricing": {
-    "breakfastSurcharge": 250
-  },
   "bookingOptions": {
     "walkInOptions": [
       { "id": "walkin_bf", "label": "ราคาปกติ รับอาหารเช้า" },
@@ -18,7 +15,6 @@
   "roomTypes": {
     "STANDARD": {
       "name": "Standard",
-      "basePrice": 1200,
       "maxOccupancy": 2,
       "features": {
         "wifi": true,
@@ -31,7 +27,6 @@
     },
     "SUPERIOR": {
       "name": "Superior", 
-      "basePrice": 1800,
       "maxOccupancy": 2,
       "features": {
         "wifi": true,
@@ -44,7 +39,6 @@
     },
     "DELUXE": {
       "name": "Deluxe",
-      "basePrice": 2400,
       "maxOccupancy": 3,
       "features": {
         "wifi": true,
@@ -57,7 +51,6 @@
     },
     "FAMILY": {
       "name": "Family",
-      "basePrice": 3200,
       "maxOccupancy": 4,
       "features": {
         "wifi": true,
@@ -70,7 +63,6 @@
     },
     "HOP_IN": {
       "name": "Hop in",
-      "basePrice": 800,
       "maxOccupancy": 1,
       "features": {
         "wifi": true,
@@ -83,7 +75,6 @@
     },
     "ZENITH": {
       "name": "Zenith",
-      "basePrice": 5000,
       "maxOccupancy": 2,
       "features": {
         "wifi": true,

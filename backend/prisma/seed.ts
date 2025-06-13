@@ -1,6 +1,7 @@
 import { PrismaClient, RoomType, RoomStatus } from '@prisma/client';
 import * as fs from 'fs';
 import * as path from 'path';
+import { pricingService } from '../src/services/pricingService';
 
 const prisma = new PrismaClient();
 
@@ -26,7 +27,7 @@ const rooms = roomConfig.rooms.map(room => {
     roomNumber: room.roomNumber,
     roomType: RoomType[room.roomType],
     floor: room.floor,
-    basePrice: roomTypeConfig.basePrice,
+    basePrice: 0, // Pricing now managed separately in RoomTypePricing table
     maxOccupancy: roomTypeConfig.maxOccupancy,
     features: {
       ...roomTypeConfig.features,
@@ -89,8 +90,14 @@ async function main() {
     console.log(`${roomType}: ${status} = ${_count}`);
   });
   
+  // Initialize pricing for all room types
+  console.log('\n💰 Initializing room type pricing...');
+  await pricingService.initializeDefaultPricing();
+  console.log('✅ Room type pricing initialized');
+  
   console.log('\n🎉 Database seeding completed successfully!');
   console.log('\n🔍 You can view the data with: npx prisma studio');
+  console.log('💰 Pricing API available at: /api/pricing');
 }
 
 main()
