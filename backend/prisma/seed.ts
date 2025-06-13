@@ -11,7 +11,7 @@ function loadRoomConfig() {
   try {
     const content = fs.readFileSync(configPath, 'utf8');
     return JSON.parse(content);
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Error loading room config:', error.message);
     console.log('💡 Run: node scripts/sync-room-config.js to generate config files');
     process.exit(1);
@@ -21,11 +21,11 @@ function loadRoomConfig() {
 const roomConfig = loadRoomConfig();
 
 // Convert master config to seed data
-const rooms = roomConfig.rooms.map(room => {
+const rooms = roomConfig.rooms.map((room: any) => {
   const roomTypeConfig = roomConfig.roomTypes[room.roomType];
   return {
     roomNumber: room.roomNumber,
-    roomType: RoomType[room.roomType],
+    roomType: RoomType[room.roomType as keyof typeof RoomType],
     floor: room.floor,
     basePrice: 0, // Pricing now managed separately in RoomTypePricing table
     maxOccupancy: roomTypeConfig.maxOccupancy,
@@ -57,7 +57,7 @@ async function main() {
   
   // Set some rooms as occupied for realistic testing (sampling from different types)
   const occupiedRooms = ['302', '308', '401', '409', 'A 3-1', '502'];
-  const availableRooms = rooms.map(r => r.roomNumber);
+  const availableRooms = rooms.map((r: any) => r.roomNumber);
   const validOccupiedRooms = occupiedRooms.filter(room => availableRooms.includes(room));
   
   if (validOccupiedRooms.length > 0) {
