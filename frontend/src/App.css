@@ -6,10 +6,11 @@
 
 /* Header Styles */
 .App-header {
-  background-color: #282c34;
-  color: white;
+  background-color: #ffffff;
+  color: #333333;
   padding: 1rem 2rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .header-content {
@@ -44,7 +45,7 @@
 
 .header-admin-button {
   background: none;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid #d1d5db;
   border-radius: 50%;
   padding: 8px;
   cursor: pointer;
@@ -54,10 +55,18 @@
   justify-content: center;
 }
 
+.header-admin-button svg {
+  fill: #6b7280;
+}
+
 .header-admin-button:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.5);
+  background: #f3f4f6;
+  border-color: #9ca3af;
   transform: scale(1.05);
+}
+
+.header-admin-button:hover svg {
+  fill: #374151;
 }
 
 /* Main Content */
@@ -81,11 +90,12 @@ main {
   position: absolute;
   top: -40px;
   left: 0;
-  background: #282c34;
+  background: #1f2937;
   color: white;
   padding: 8px;
   text-decoration: none;
   border-radius: 0 0 4px 0;
+  z-index: 1000;
 }
 
 .skip-link:focus {

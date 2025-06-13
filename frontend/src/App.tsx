@@ -139,7 +139,6 @@ const App: React.FC<AppProps> = () => {
                   height="28px" 
                   viewBox="0 0 24 24" 
                   width="28px" 
-                  fill="#FFFFFF"
                   aria-hidden="true"
                 >
                   <path d="M0 0h24v24H0V0z" fill="none"/>
