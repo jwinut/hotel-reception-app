@@ -99,7 +99,10 @@
 .building-room-types {
   display: flex;
   gap: 0.5rem;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  padding: 4px;
+  margin: -4px;
 }
 
 .room-type-button {
@@ -112,6 +115,19 @@
   transition: all 0.2s ease;
   font-size: 0.875rem;
   font-weight: 500;
+  white-space: nowrap;
+  flex-shrink: 0;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.room-type-button:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
 }
 
 .room-type-button:hover {
@@ -294,8 +310,8 @@
 }
 
 .floor-header {
-  background: #f9fafb;
-  color: #374151;
+  background: transparent;
+  color: #000000;
   padding: 1rem;
   display: flex;
   align-items: center;
@@ -310,6 +326,7 @@
   font-size: 1.2rem;
   font-weight: 600;
   transform: rotate(180deg);
+  color: #000000;
 }
 
 .floor-plan {
@@ -324,12 +341,12 @@
   top: 1rem;
   left: 50%;
   transform: translateX(-50%);
-  background: white;
+  background: transparent;
   padding: 0.5rem 1rem;
   border-radius: 20px;
   font-weight: 600;
-  color: #1f2937;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  color: #000000;
+  box-shadow: none;
   z-index: 10;
 }
 
@@ -454,6 +471,10 @@
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 100%;
+}
+
+.room-number.hop-in-room {
+  font-size: 1.4rem;
 }
 
 .room-type-indicator {

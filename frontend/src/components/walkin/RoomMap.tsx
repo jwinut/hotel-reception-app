@@ -435,7 +435,20 @@ const RoomMap: React.FC<Props> = ({
 
       <div className="hotel-layout">
         {allFloors.map(floor => {
-          const roomsOnFloor = rooms.filter(room => room.floor === floor);
+          let roomsOnFloor = rooms.filter(room => room.floor === floor);
+          
+          // Special filtering for Zenith - only show Zenith rooms on floor 2
+          if (selectedRoomType === 'ZENITH') {
+            if (floor !== 2) {
+              return null; // Skip floors other than 2 for Zenith
+            }
+            roomsOnFloor = roomsOnFloor.filter(room => room.roomType === 'ZENITH');
+          }
+          
+          // Skip empty floors
+          if (roomsOnFloor.length === 0) {
+            return null;
+          }
           
           return (
             <div key={floor} className="floor-section">
@@ -463,7 +476,7 @@ const RoomMap: React.FC<Props> = ({
                       onMouseLeave={handleRoomMouseLeave}
                       onClick={() => handleRoomClick(room)}
                     >
-                      <div className="room-number">{room.roomNumber}</div>
+                      <div className={`room-number ${room.roomType === 'HOP_IN' ? 'hop-in-room' : ''}`}>{room.roomNumber}</div>
                       <div className="room-type-indicator">{getRoomTypeEnglish(room.roomType)}</div>
                     </div>
                   );

@@ -39,6 +39,10 @@ const QuickGuestForm: React.FC<Props> = ({
     idNumber: ''
   });
   const [nights, setNights] = useState(1);
+  const [extraBed, setExtraBed] = useState(false);
+  const [lateCheckout, setLateCheckout] = useState(false);
+  const [earlyCheckIn, setEarlyCheckIn] = useState(false);
+  const [specialOccasion, setSpecialOccasion] = useState(false);
   const [errors, setErrors] = useState<Partial<GuestInfo & { nights: string }>>({});
 
   const validateForm = (): boolean => {
@@ -124,8 +128,21 @@ const QuickGuestForm: React.FC<Props> = ({
 
   const roomDisplay = getRoomTypeDisplay(selectedRoom.roomType);
   const breakfastPrice = calculateBreakfastPrice(selectedRoom.roomType);
-  const nightlyRate = selectedRoom.basePrice + (includeBreakfast ? breakfastPrice : 0);
-  const totalAmount = nightlyRate * nights;
+  const extraBedPrice = 500; // per night
+  const lateCheckoutPrice = 300; // one-time fee
+  const earlyCheckInPrice = 300; // one-time fee
+  const specialOccasionPrice = 200; // one-time fee
+  
+  const nightlyRate = selectedRoom.basePrice + 
+    (includeBreakfast ? breakfastPrice : 0) + 
+    (extraBed ? extraBedPrice : 0);
+  
+  const oneTimeFees = 
+    (lateCheckout ? lateCheckoutPrice : 0) + 
+    (earlyCheckIn ? earlyCheckInPrice : 0) + 
+    (specialOccasion ? specialOccasionPrice : 0);
+  
+  const totalAmount = (nightlyRate * nights) + oneTimeFees;
 
   return (
     <div className="quick-guest-form">
@@ -136,196 +153,280 @@ const QuickGuestForm: React.FC<Props> = ({
         </button>
       </div>
 
-      <div className="selected-room-summary">
-        <div className="room-summary-header">
-          <div className="room-icon">{roomDisplay.icon}</div>
-          <div className="room-details">
-            <h4>{translate('navigation.walkin.guestForm.roomDetails.room')} {selectedRoom.roomNumber}</h4>
-            <p>{roomDisplay.name} • {translate('navigation.walkin.guestForm.roomDetails.floor')} {selectedRoom.floor}</p>
-          </div>
-        </div>
-        
-        <div className="pricing-summary">
-          <div className="price-line">
-            <span>{translate('navigation.walkin.guestForm.roomDetails.roomRate')}:</span>
-            <span>฿{selectedRoom.basePrice.toLocaleString()}{translate('navigation.walkin.guestForm.roomDetails.perNight')}</span>
-          </div>
-          {includeBreakfast && (
-            <div className="price-line breakfast">
-              <span>{translate('navigation.walkin.guestForm.roomDetails.breakfast')}:</span>
-              <span>+฿{breakfastPrice.toLocaleString()}{translate('navigation.walkin.guestForm.roomDetails.perNight')}</span>
-            </div>
-          )}
-          <div className="price-line total">
-            <span>{translate('navigation.walkin.guestForm.roomDetails.nightlyRate')}:</span>
-            <span>฿{nightlyRate.toLocaleString()}</span>
-          </div>
-        </div>
-      </div>
-
-      <div className="breakfast-section">
-        <div className="breakfast-toggle">
-          <label>
-            <input
-              type="checkbox"
-              checked={includeBreakfast}
-              onChange={(e) => onBreakfastChange(e.target.checked)}
-              disabled={loading}
-            />
-            <span className="checkbox-custom"></span>
-            {translate('navigation.walkin.roomMap.includeBreakfast')}
-          </label>
-        </div>
-      </div>
-
       <form onSubmit={handleSubmit} className="guest-form">
-        <div className="form-section">
-          <h4>{translate('navigation.walkin.guestForm.personalInfo.title')}</h4>
-          
-          <div className="form-row">
-            <div className="form-group">
-              <label htmlFor="firstName">
-                {translate('navigation.walkin.guestForm.personalInfo.firstName')} <span className="required">*</span>
-              </label>
-              <input
-                id="firstName"
-                type="text"
-                value={guest.firstName}
-                onChange={(e) => handleInputChange('firstName', e.target.value)}
-                className={errors.firstName ? 'error' : ''}
-                disabled={loading}
-                placeholder={translate('navigation.walkin.guestForm.personalInfo.firstNamePlaceholder')}
-              />
-              {errors.firstName && <span className="error-text">{errors.firstName}</span>}
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="lastName">
-                {translate('navigation.walkin.guestForm.personalInfo.lastName')} <span className="required">*</span>
-              </label>
-              <input
-                id="lastName"
-                type="text"
-                value={guest.lastName}
-                onChange={(e) => handleInputChange('lastName', e.target.value)}
-                className={errors.lastName ? 'error' : ''}
-                disabled={loading}
-                placeholder={translate('navigation.walkin.guestForm.personalInfo.lastNamePlaceholder')}
-              />
-              {errors.lastName && <span className="error-text">{errors.lastName}</span>}
-            </div>
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="phone">
-              {translate('navigation.walkin.guestForm.personalInfo.phone')} <span className="required">*</span>
-            </label>
-            <input
-              id="phone"
-              type="tel"
-              value={guest.phone}
-              onChange={(e) => handleInputChange('phone', e.target.value)}
-              className={errors.phone ? 'error' : ''}
-              disabled={loading}
-              placeholder={translate('navigation.walkin.guestForm.personalInfo.phonePlaceholder')}
-            />
-            {errors.phone && <span className="error-text">{errors.phone}</span>}
-          </div>
-        </div>
-
-        <div className="form-section">
-          <h4>{translate('navigation.walkin.guestForm.identification.title')}</h4>
-          
-          <div className="form-row">
-            <div className="form-group">
-              <label htmlFor="idType">
-                {translate('navigation.walkin.guestForm.identification.idType')} <span className="required">*</span>
-              </label>
-              <select
-                id="idType"
-                value={guest.idType}
-                onChange={(e) => handleInputChange('idType', e.target.value as 'PASSPORT' | 'NATIONAL_ID')}
-                disabled={loading}
-              >
-                <option value="NATIONAL_ID">{translate('navigation.walkin.guestForm.identification.nationalId')}</option>
-                <option value="PASSPORT">{translate('navigation.walkin.guestForm.identification.passport')}</option>
-              </select>
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="idNumber">
-                {guest.idType === 'NATIONAL_ID' ? translate('navigation.walkin.guestForm.identification.nationalIdNumber') : translate('navigation.walkin.guestForm.identification.passportNumber')} <span className="required">*</span>
-              </label>
-              <input
-                id="idNumber"
-                type="text"
-                value={guest.idNumber}
-                onChange={(e) => handleInputChange('idNumber', e.target.value)}
-                className={errors.idNumber ? 'error' : ''}
-                disabled={loading}
-                placeholder={guest.idType === 'NATIONAL_ID' ? translate('navigation.walkin.guestForm.identification.nationalIdPlaceholder') : translate('navigation.walkin.guestForm.identification.passportPlaceholder')}
-              />
-              {errors.idNumber && <span className="error-text">{errors.idNumber}</span>}
-            </div>
-          </div>
-        </div>
-
-        <div className="form-section">
-          <h4>{translate('navigation.walkin.guestForm.stayDuration.title')}</h4>
-          
-          <div className="form-group">
-            <label htmlFor="nights">
-              {translate('navigation.walkin.guestForm.stayDuration.numberOfNights')} <span className="required">*</span>
-            </label>
-            <input
-              id="nights"
-              type="number"
-              min="1"
-              max="30"
-              value={nights}
-              onChange={(e) => setNights(parseInt(e.target.value) || 1)}
-              className={errors.nights ? 'error' : ''}
-              disabled={loading}
-            />
-            {errors.nights && <span className="error-text">{errors.nights}</span>}
-          </div>
-
-          <div className="stay-summary">
-            <div className="summary-line">
-              <span>{translate('navigation.walkin.guestForm.stayDuration.checkIn')}:</span>
-              <span>{formatDate(new Date(), { format: 'short' })}</span>
-            </div>
-            <div className="summary-line">
-              <span>{translate('navigation.walkin.guestForm.stayDuration.checkOut')}:</span>
-              <span>{formatDate(new Date(Date.now() + nights * 24 * 60 * 60 * 1000), { format: 'short' })}</span>
-            </div>
-            <div className="summary-line">
-              <span>{translate('navigation.walkin.guestForm.stayDuration.duration')}:</span>
-              <span>{nights} {nights !== 1 ? translate('navigation.walkin.guestForm.stayDuration.nights') : translate('navigation.walkin.guestForm.stayDuration.night')}</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="total-section">
-          <div className="total-breakdown">
-            <div className="breakdown-line">
-              <span>{translate('navigation.walkin.guestForm.pricing.room')} ({nights} {nights !== 1 ? translate('navigation.walkin.guestForm.stayDuration.nights') : translate('navigation.walkin.guestForm.stayDuration.night')}):</span>
-              <span>฿{(selectedRoom.basePrice * nights).toLocaleString()}</span>
-            </div>
-            {includeBreakfast && (
-              <div className="breakdown-line breakfast">
-                <span>{translate('navigation.walkin.guestForm.pricing.breakfast')} ({nights} {nights !== 1 ? translate('navigation.walkin.guestForm.stayDuration.nights') : translate('navigation.walkin.guestForm.stayDuration.night')}):</span>
-                <span>฿{(breakfastPrice * nights).toLocaleString()}</span>
+        <div className="guest-form-column">
+          <div className="form-section">
+            <h4>{translate('navigation.walkin.guestForm.personalInfo.title')}</h4>
+            
+            <div className="form-row">
+              <div className="form-group">
+                <label htmlFor="firstName">
+                  {translate('navigation.walkin.guestForm.personalInfo.firstName')} <span className="required">*</span>
+                </label>
+                <input
+                  id="firstName"
+                  type="text"
+                  value={guest.firstName}
+                  onChange={(e) => handleInputChange('firstName', e.target.value)}
+                  className={errors.firstName ? 'error' : ''}
+                  disabled={loading}
+                  placeholder={translate('navigation.walkin.guestForm.personalInfo.firstNamePlaceholder')}
+                />
+                {errors.firstName && <span className="error-text">{errors.firstName}</span>}
               </div>
-            )}
-            <div className="breakdown-line total">
-              <span>{translate('navigation.walkin.guestForm.pricing.totalAmount')}:</span>
-              <span>฿{totalAmount.toLocaleString()}</span>
+
+              <div className="form-group">
+                <label htmlFor="lastName">
+                  {translate('navigation.walkin.guestForm.personalInfo.lastName')} <span className="required">*</span>
+                </label>
+                <input
+                  id="lastName"
+                  type="text"
+                  value={guest.lastName}
+                  onChange={(e) => handleInputChange('lastName', e.target.value)}
+                  className={errors.lastName ? 'error' : ''}
+                  disabled={loading}
+                  placeholder={translate('navigation.walkin.guestForm.personalInfo.lastNamePlaceholder')}
+                />
+                {errors.lastName && <span className="error-text">{errors.lastName}</span>}
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="phone">
+                {translate('navigation.walkin.guestForm.personalInfo.phone')} <span className="required">*</span>
+              </label>
+              <input
+                id="phone"
+                type="tel"
+                value={guest.phone}
+                onChange={(e) => handleInputChange('phone', e.target.value)}
+                className={errors.phone ? 'error' : ''}
+                disabled={loading}
+                placeholder={translate('navigation.walkin.guestForm.personalInfo.phonePlaceholder')}
+              />
+              {errors.phone && <span className="error-text">{errors.phone}</span>}
+            </div>
+          </div>
+
+          <div className="form-section">
+            <h4>{translate('navigation.walkin.guestForm.identification.title')}</h4>
+            
+            <div className="form-row">
+              <div className="form-group">
+                <label htmlFor="idType">
+                  {translate('navigation.walkin.guestForm.identification.idType')} <span className="required">*</span>
+                </label>
+                <select
+                  id="idType"
+                  value={guest.idType}
+                  onChange={(e) => handleInputChange('idType', e.target.value as 'PASSPORT' | 'NATIONAL_ID')}
+                  disabled={loading}
+                >
+                  <option value="NATIONAL_ID">{translate('navigation.walkin.guestForm.identification.nationalId')}</option>
+                  <option value="PASSPORT">{translate('navigation.walkin.guestForm.identification.passport')}</option>
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="idNumber">
+                  {guest.idType === 'NATIONAL_ID' ? translate('navigation.walkin.guestForm.identification.nationalIdNumber') : translate('navigation.walkin.guestForm.identification.passportNumber')} <span className="required">*</span>
+                </label>
+                <input
+                  id="idNumber"
+                  type="text"
+                  value={guest.idNumber}
+                  onChange={(e) => handleInputChange('idNumber', e.target.value)}
+                  className={errors.idNumber ? 'error' : ''}
+                  disabled={loading}
+                  placeholder={guest.idType === 'NATIONAL_ID' ? translate('navigation.walkin.guestForm.identification.nationalIdPlaceholder') : translate('navigation.walkin.guestForm.identification.passportPlaceholder')}
+                />
+                {errors.idNumber && <span className="error-text">{errors.idNumber}</span>}
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="form-actions">
+        <div className="guest-form-column">
+          <div className="selected-room-summary">
+            <div className="room-summary-header">
+              <div className="room-icon">{roomDisplay.icon}</div>
+              <div className="room-details">
+                <h4>{translate('navigation.walkin.guestForm.roomDetails.room')} {selectedRoom.roomNumber}</h4>
+                <p>{roomDisplay.name} • {translate('navigation.walkin.guestForm.roomDetails.floor')} {selectedRoom.floor}</p>
+              </div>
+            </div>
+            
+            <div className="pricing-summary">
+              <div className="price-line">
+                <span>{translate('navigation.walkin.guestForm.roomDetails.roomRate')}:</span>
+                <span>฿{selectedRoom.basePrice.toLocaleString()}{translate('navigation.walkin.guestForm.roomDetails.perNight')}</span>
+              </div>
+              {includeBreakfast && (
+                <div className="price-line breakfast">
+                  <span>{translate('navigation.walkin.guestForm.roomDetails.breakfast')}:</span>
+                  <span>+฿{breakfastPrice.toLocaleString()}{translate('navigation.walkin.guestForm.roomDetails.perNight')}</span>
+                </div>
+              )}
+              <div className="price-line total">
+                <span>{translate('navigation.walkin.guestForm.roomDetails.nightlyRate')}:</span>
+                <span>฿{nightlyRate.toLocaleString()}</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="services-section">
+            <h4>บริการเสริม</h4>
+            
+            <div className="services-grid">
+              <label className={`service-card ${includeBreakfast ? 'selected' : ''}`}>
+                <input
+                  type="checkbox"
+                  checked={includeBreakfast}
+                  onChange={(e) => onBreakfastChange(e.target.checked)}
+                  disabled={loading}
+                />
+                <div className="service-content">
+                  <span className="service-name">{translate('navigation.walkin.roomMap.includeBreakfast')}</span>
+                  <span className="service-price">+฿{breakfastPrice.toLocaleString()}/คืน</span>
+                </div>
+              </label>
+
+              <label className={`service-card ${extraBed ? 'selected' : ''}`}>
+                <input
+                  type="checkbox"
+                  checked={extraBed}
+                  onChange={(e) => setExtraBed(e.target.checked)}
+                  disabled={loading}
+                />
+                <div className="service-content">
+                  <span className="service-name">{translate('navigation.walkin.roomMap.extraBed')}</span>
+                  <span className="service-price">{translate('navigation.walkin.roomMap.extraBedPrice')}</span>
+                </div>
+              </label>
+
+              <label className={`service-card ${lateCheckout ? 'selected' : ''}`}>
+                <input
+                  type="checkbox"
+                  checked={lateCheckout}
+                  onChange={(e) => setLateCheckout(e.target.checked)}
+                  disabled={loading}
+                />
+                <div className="service-content">
+                  <span className="service-name">{translate('navigation.walkin.roomMap.lateCheckout')}</span>
+                  <span className="service-price">{translate('navigation.walkin.roomMap.lateCheckoutPrice')}</span>
+                </div>
+              </label>
+
+              <label className={`service-card ${earlyCheckIn ? 'selected' : ''}`}>
+                <input
+                  type="checkbox"
+                  checked={earlyCheckIn}
+                  onChange={(e) => setEarlyCheckIn(e.target.checked)}
+                  disabled={loading}
+                />
+                <div className="service-content">
+                  <span className="service-name">{translate('navigation.walkin.roomMap.earlyCheckIn')}</span>
+                  <span className="service-price">{translate('navigation.walkin.roomMap.earlyCheckInPrice')}</span>
+                </div>
+              </label>
+
+              <label className={`service-card ${specialOccasion ? 'selected' : ''}`}>
+                <input
+                  type="checkbox"
+                  checked={specialOccasion}
+                  onChange={(e) => setSpecialOccasion(e.target.checked)}
+                  disabled={loading}
+                />
+                <div className="service-content">
+                  <span className="service-name">{translate('navigation.walkin.roomMap.specialOccasion')}</span>
+                  <span className="service-price">{translate('navigation.walkin.roomMap.specialOccasionPrice')}</span>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <div className="form-section">
+            <h4>{translate('navigation.walkin.guestForm.stayDuration.title')}</h4>
+            
+            <div className="form-group">
+              <label htmlFor="nights">
+                {translate('navigation.walkin.guestForm.stayDuration.numberOfNights')} <span className="required">*</span>
+              </label>
+              <input
+                id="nights"
+                type="number"
+                min="1"
+                max="30"
+                value={nights}
+                onChange={(e) => setNights(parseInt(e.target.value) || 1)}
+                className={errors.nights ? 'error' : ''}
+                disabled={loading}
+              />
+              {errors.nights && <span className="error-text">{errors.nights}</span>}
+            </div>
+
+            <div className="stay-summary">
+              <div className="summary-line">
+                <span>{translate('navigation.walkin.guestForm.stayDuration.checkIn')}:</span>
+                <span>{formatDate(new Date(), { format: 'short' })}</span>
+              </div>
+              <div className="summary-line">
+                <span>{translate('navigation.walkin.guestForm.stayDuration.checkOut')}:</span>
+                <span>{formatDate(new Date(Date.now() + nights * 24 * 60 * 60 * 1000), { format: 'short' })}</span>
+              </div>
+              <div className="summary-line">
+                <span>{translate('navigation.walkin.guestForm.stayDuration.duration')}:</span>
+                <span>{nights} {nights !== 1 ? translate('navigation.walkin.guestForm.stayDuration.nights') : translate('navigation.walkin.guestForm.stayDuration.night')}</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="total-section">
+            <div className="total-breakdown">
+              <div className="breakdown-line">
+                <span>{translate('navigation.walkin.guestForm.pricing.room')} ({nights} {nights !== 1 ? translate('navigation.walkin.guestForm.stayDuration.nights') : translate('navigation.walkin.guestForm.stayDuration.night')}):</span>
+                <span>฿{(selectedRoom.basePrice * nights).toLocaleString()}</span>
+              </div>
+              {includeBreakfast && (
+                <div className="breakdown-line breakfast">
+                  <span>{translate('navigation.walkin.guestForm.pricing.breakfast')} ({nights} {nights !== 1 ? translate('navigation.walkin.guestForm.stayDuration.nights') : translate('navigation.walkin.guestForm.stayDuration.night')}):</span>
+                  <span>฿{(breakfastPrice * nights).toLocaleString()}</span>
+                </div>
+              )}
+              {extraBed && (
+                <div className="breakdown-line extra-service">
+                  <span>{translate('navigation.walkin.roomMap.extraBed')} ({nights} {nights !== 1 ? translate('navigation.walkin.guestForm.stayDuration.nights') : translate('navigation.walkin.guestForm.stayDuration.night')}):</span>
+                  <span>฿{(extraBedPrice * nights).toLocaleString()}</span>
+                </div>
+              )}
+              {lateCheckout && (
+                <div className="breakdown-line extra-service">
+                  <span>{translate('navigation.walkin.roomMap.lateCheckout')}:</span>
+                  <span>฿{lateCheckoutPrice.toLocaleString()}</span>
+                </div>
+              )}
+              {earlyCheckIn && (
+                <div className="breakdown-line extra-service">
+                  <span>{translate('navigation.walkin.roomMap.earlyCheckIn')}:</span>
+                  <span>฿{earlyCheckInPrice.toLocaleString()}</span>
+                </div>
+              )}
+              {specialOccasion && (
+                <div className="breakdown-line extra-service">
+                  <span>{translate('navigation.walkin.roomMap.specialOccasion')}:</span>
+                  <span>฿{specialOccasionPrice.toLocaleString()}</span>
+                </div>
+              )}
+              <div className="breakdown-line total">
+                <span>{translate('navigation.walkin.guestForm.pricing.totalAmount')}:</span>
+                <span>฿{totalAmount.toLocaleString()}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="form-actions-wrapper">
           <button
             type="button"
             onClick={onCancel}

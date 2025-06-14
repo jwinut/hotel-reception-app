@@ -1,12 +1,12 @@
 /* QuickGuestForm.css - Light mode styling for guest information form */
 
 .quick-guest-form {
-  padding: 2rem;
-  max-width: 800px;
-  margin: 0 auto;
+  padding: 2rem 3rem;
+  width: 100%;
+  max-width: none;
+  margin: 0;
   background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  min-height: 100vh;
 }
 
 .form-header {
@@ -47,12 +47,78 @@
   transform: none;
 }
 
-.breakfast-section {
-  margin: 1.5rem 0;
-  padding: 1rem;
+.services-section {
   background: #f8fafc;
   border-radius: 8px;
   border: 1px solid #e2e8f0;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.services-section h4 {
+  margin: 0 0 1rem 0;
+  color: #1f2937;
+  font-size: 1.125rem;
+  font-weight: 600;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.services-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.service-card {
+  background: white;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  display: block;
+}
+
+.service-card:hover {
+  border-color: #3b82f6;
+  background: #f8fafc;
+}
+
+.service-card.selected {
+  border-color: #059669;
+  background: #ecfdf5;
+  box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.1);
+}
+
+.service-card input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.service-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.service-name {
+  font-weight: 500;
+  color: #374151;
+  font-size: 0.875rem;
+}
+
+.service-card.selected .service-name {
+  color: #047857;
+  font-weight: 600;
+}
+
+.service-price {
+  font-size: 0.75rem;
+  color: #059669;
+  font-weight: 600;
 }
 
 .breakfast-toggle {
@@ -179,9 +245,26 @@
 }
 
 .guest-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  margin-top: 2rem;
+}
+
+.guest-form-column {
   display: flex;
   flex-direction: column;
   gap: 2rem;
+}
+
+.guest-form-column:last-of-type {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.guest-form-column:last-of-type .total-section {
+  margin-top: auto;
 }
 
 .form-section {
@@ -307,6 +390,11 @@
   font-weight: 500;
 }
 
+.breakdown-line.extra-service {
+  color: #7c3aed;
+  font-weight: 500;
+}
+
 .breakdown-line.total {
   border-top: 2px solid #e5e7eb;
   padding-top: 0.75rem;
@@ -316,11 +404,13 @@
   color: #1f2937;
 }
 
-.form-actions {
+.form-actions-wrapper {
+  grid-column: 1 / -1;
   display: flex;
   gap: 1rem;
   justify-content: flex-end;
-  padding-top: 1rem;
+  padding-top: 2rem;
+  margin-top: 2rem;
   border-top: 2px solid #e5e7eb;
 }
 
@@ -366,11 +456,26 @@
 }
 
 /* Responsive Design */
+@media (max-width: 1200px) {
+  .guest-form {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  
+  .room-breakfast-wrapper {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .form-actions {
+    margin-top: 2rem;
+  }
+}
+
 @media (max-width: 768px) {
   .quick-guest-form {
-    padding: 1rem;
+    padding: 1.5rem;
     margin: 0;
-    border-radius: 0;
   }
   
   .form-header {
@@ -383,13 +488,17 @@
     grid-template-columns: 1fr;
   }
   
+  .services-grid {
+    grid-template-columns: 1fr;
+  }
+  
   .room-summary-header {
     flex-direction: column;
     text-align: center;
     gap: 0.5rem;
   }
   
-  .form-actions {
+  .form-actions-wrapper {
     flex-direction: column;
   }
   
