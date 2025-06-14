@@ -21,17 +21,14 @@ export interface RoomSummary {
 
 export class RoomService {
   /**
-   * Get all available rooms (status = CLEAN) with summary by type
+   * Get all rooms with their current status and summary by type
    */
   async getAvailableRooms(): Promise<{
     rooms: RoomAvailability[];
     summary: RoomSummary[];
   }> {
-    // Get all clean/available rooms
-    const availableRooms = await prisma.room.findMany({
-      where: {
-        status: RoomStatus.CLEAN,
-      },
+    // Get all rooms with their current status
+    const allRooms = await prisma.room.findMany({
       orderBy: [
         { roomType: 'asc' },
         { roomNumber: 'asc' },
@@ -76,7 +73,7 @@ export class RoomService {
     });
 
     return {
-      rooms: availableRooms.map(room => ({
+      rooms: allRooms.map(room => ({
         ...room,
         basePrice: Number(room.basePrice),
       })),

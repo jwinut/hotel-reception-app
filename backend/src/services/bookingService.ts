@@ -16,6 +16,12 @@ export interface CreateBookingData {
   };
   checkOutDate: Date;
   breakfastIncluded: boolean;
+  pricing?: {
+    roomTotal: number;
+    breakfastTotal: number;
+    totalAmount: number;
+    nights: number;
+  };
 }
 
 export class BookingService {
@@ -29,30 +35,52 @@ export class BookingService {
       throw new Error('Room not available');
     }
 
-    // Calculate price
-    const nights = Math.ceil(
-      (data.checkOutDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)
-    );
+    // Use frontend pricing if provided, otherwise calculate here
+    let nights, roomTotal, breakfastTotal, totalAmount;
     
-    if (nights <= 0) {
-      throw new Error('Check-out date must be in the future');
-    }
+    if (data.pricing) {
+      // Use pricing calculated by frontend
+      nights = data.pricing.nights;
+      roomTotal = data.pricing.roomTotal;
+      breakfastTotal = data.pricing.breakfastTotal;
+      totalAmount = data.pricing.totalAmount;
+    } else {
+      // Calculate price server-side (fallback)
+      nights = Math.ceil(
+        (data.checkOutDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)
+      );
+      
+      if (nights <= 0) {
+        throw new Error('Check-out date must be in the future');
+      }
 
-    const roomTotal = Number(room.basePrice) * nights;
-    
-    // Breakfast pricing based on room type
-    const breakfastPricing: Record<string, number> = {
-      'STANDARD': 250,
-      'SUPERIOR': 250,
-      'DELUXE': 250,
-      'FAMILY': 350,
-      'HOP_IN': 150,
-      'ZENITH': 350
-    };
-    
-    const breakfastPerNight = breakfastPricing[room.roomType] || 250;
-    const breakfastTotal = data.breakfastIncluded ? breakfastPerNight * nights : 0;
-    const totalAmount = roomTotal + breakfastTotal;
+      // Get correct base price from room configuration
+      const basePricing: Record<string, number> = {
+        'STANDARD': 1500,
+        'SUPERIOR': 1800,
+        'DELUXE': 2200,
+        'FAMILY': 2800,
+        'HOP_IN': 800,
+        'ZENITH': 3500
+      };
+      
+      const actualBasePrice = basePricing[room.roomType] || 1500;
+      roomTotal = actualBasePrice * nights;
+      
+      // Breakfast pricing based on room type
+      const breakfastPricing: Record<string, number> = {
+        'STANDARD': 250,
+        'SUPERIOR': 250,
+        'DELUXE': 250,
+        'FAMILY': 350,
+        'HOP_IN': 150,
+        'ZENITH': 350
+      };
+      
+      const breakfastPerNight = breakfastPricing[room.roomType] || 250;
+      breakfastTotal = data.breakfastIncluded ? breakfastPerNight * nights : 0;
+      totalAmount = roomTotal + breakfastTotal;
+    }
 
     // Create booking in transaction
     const booking = await prisma.$transaction(async (tx) => {

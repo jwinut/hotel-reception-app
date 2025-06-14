@@ -14,7 +14,7 @@ class BookingController {
 
   async createWalkInBooking(req: Request, res: Response): Promise<void> {
     try {
-      const { roomId, guest, checkOutDate, breakfastIncluded } = req.body;
+      const { roomId, guest, checkOutDate, breakfastIncluded, pricing } = req.body;
 
       // Validate required fields
       if (!roomId || !guest || !checkOutDate) {
@@ -58,7 +58,8 @@ class BookingController {
           idNumber: guest.idNumber.trim()
         },
         checkOutDate: parsedCheckOutDate,
-        breakfastIncluded: Boolean(breakfastIncluded)
+        breakfastIncluded: Boolean(breakfastIncluded),
+        pricing: pricing
       };
 
       const booking = await this.bookingService.createWalkInBooking(bookingData);
