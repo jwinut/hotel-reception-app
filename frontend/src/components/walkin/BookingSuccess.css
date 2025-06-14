@@ -86,24 +86,50 @@
   background: white;
   border-radius: 6px;
   border: 1px solid #e5e7eb;
+  min-width: 0;
+  gap: 1rem;
 }
 
 .detail-item .label {
   color: #6b7280;
   font-weight: 500;
   font-size: 0.875rem;
+  flex-shrink: 0;
 }
 
 .detail-item .value {
   color: #1f2937;
   font-weight: 600;
   text-align: right;
+  flex-shrink: 1;
+  min-width: 0;
 }
 
 .detail-item .value.reference {
   color: #3b82f6;
   font-family: monospace;
-  font-size: 1.125rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  word-break: break-all;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.detail-item .value.reference:hover {
+  background: #eff6ff;
+  border-radius: 4px;
+  padding: 0.25rem 0.5rem;
+  margin: -0.25rem -0.5rem;
+  white-space: normal;
+  word-break: break-all;
+  overflow: visible;
+  z-index: 10;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .status-checked-in {
@@ -333,6 +359,23 @@
   
   .detail-grid {
     grid-template-columns: 1fr;
+  }
+  
+  .detail-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .detail-item .value {
+    text-align: left;
+    width: 100%;
+  }
+  
+  .detail-item .value.reference {
+    font-size: 0.8rem;
+    white-space: normal;
+    word-break: break-all;
   }
   
   .room-details {

@@ -57,6 +57,12 @@ export interface CreateBookingRequest {
   };
   checkOutDate: string;
   breakfastIncluded: boolean;
+  pricing?: {
+    roomTotal: number;
+    breakfastTotal: number;
+    totalAmount: number;
+    nights: number;
+  };
 }
 
 export interface BookingResponse {

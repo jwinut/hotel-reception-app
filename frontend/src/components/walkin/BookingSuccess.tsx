@@ -1,5 +1,7 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { BookingResponse } from '../../services/walkinApi';
+import { useDateFormat } from '../../utils/dateFormat';
 import './BookingSuccess.css';
 
 interface Props {
@@ -9,16 +11,11 @@ interface Props {
 }
 
 const BookingSuccess: React.FC<Props> = ({ booking, onNewBooking, onBackToDashboard }) => {
+  const { t: translate } = useTranslation();
   const nightsText = booking.nights !== 1 ? 's' : '';
+  const nightsTranslationKey = booking.nights !== 1 ? 'navigation.walkin.bookingSuccess.stayDetails.nights' : 'navigation.walkin.bookingSuccess.stayDetails.night';
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-GB', {
-      weekday: 'short',
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric'
-    });
-  };
+  const formatDate = useDateFormat();
 
   const formatTime = (dateString: string) => {
     return new Date(dateString).toLocaleTimeString('en-GB', {
@@ -28,42 +25,43 @@ const BookingSuccess: React.FC<Props> = ({ booking, onNewBooking, onBackToDashbo
   };
 
   const handlePrintReceipt = () => {
+    const nightsThaiText = booking.nights !== 1 ? 'คืน' : 'คืน';
     const breakfastLine = booking.breakfastIncluded 
-      ? `Breakfast (${booking.nights} night${nightsText}): ฿${booking.pricing.breakfastTotal.toLocaleString()}\n`
+      ? `อาหารเช้า (${booking.nights} ${nightsThaiText}): ฿${booking.pricing.breakfastTotal.toLocaleString()}\n`
       : '';
     
     const printContent = `
-Hotel Reception - Booking Confirmation
+โรงแรม - ใบยืนยันการจอง
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Booking Reference: ${booking.reference}
-Date: ${new Date().toLocaleDateString('en-GB')}
-Time: ${new Date().toLocaleTimeString('en-GB')}
+หมายเลขอ้างอิง: ${booking.reference}
+วันที่: ${formatDate(new Date(), { format: 'short' })}
+เวลา: ${new Date().toLocaleTimeString('th-TH')}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-GUEST INFORMATION
-Guest: ${booking.guest}
-Room: ${booking.room.number} (${booking.room.type})
-Floor: ${booking.room.floor}
+ข้อมูลผู้เข้าพัก
+ชื่อผู้เข้าพัก: ${booking.guest}
+ห้อง: ${booking.room.number} (${booking.room.type})
+ชั้น: ${booking.room.floor}
 
-STAY DETAILS
-Check-in: ${formatDate(booking.checkIn)} at ${formatTime(booking.checkIn)}
-Check-out: ${formatDate(booking.checkOut)} at 12:00 PM
-Duration: ${booking.nights} night${nightsText}
+รายละเอียดการเข้าพัก
+วันเข้าพัก: ${formatDate(booking.checkIn, { format: 'short' })} เวลา ${formatTime(booking.checkIn)}
+วันเช็คเอาต์: ${formatDate(booking.checkOut, { format: 'short' })} เวลา 12:00 น.
+ระยะเวลา: ${booking.nights} ${nightsThaiText}
 
-CHARGES
-Room Rate (${booking.nights} night${nightsText}): ฿${booking.pricing.roomTotal.toLocaleString()}
+ค่าใช้จ่าย
+ค่าห้อง (${booking.nights} ${nightsThaiText}): ฿${booking.pricing.roomTotal.toLocaleString()}
 ${breakfastLine}────────────────────────────────────────
-TOTAL AMOUNT: ฿${booking.pricing.totalAmount.toLocaleString()}
+ยอดรวมทั้งหมด: ฿${booking.pricing.totalAmount.toLocaleString()}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-STATUS: ${booking.status}
+สถานะ: ${translate('booking.status.checkedIn')}
 
-Thank you for choosing our hotel!
-Safe travels and enjoy your stay.
+ขอบคุณที่เลือกใช้บริการโรงแรมของเรา!
+ขอให้เดินทางปลอดภัยและมีความสุขในการเข้าพัก
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     `.trim();
@@ -92,62 +90,62 @@ Safe travels and enjoy your stay.
     <div className="booking-success">
       <div className="success-header">
         <div className="success-icon">🎉</div>
-        <h2>Booking Created Successfully!</h2>
-        <p>The guest has been checked in and the room is now occupied.</p>
+        <h2>{translate('navigation.walkin.bookingSuccess.title')}</h2>
+        <p>{translate('navigation.walkin.bookingSuccess.subtitle')}</p>
       </div>
 
       <div className="booking-details">
         <div className="detail-section">
-          <h3>Booking Information</h3>
+          <h3>{translate('navigation.walkin.bookingSuccess.bookingInfo.title')}</h3>
           <div className="detail-grid">
             <div className="detail-item">
-              <span className="label">Reference:</span>
+              <span className="label">{translate('navigation.walkin.bookingSuccess.bookingInfo.reference')}:</span>
               <span className="value reference">{booking.reference}</span>
             </div>
             <div className="detail-item">
-              <span className="label">Guest:</span>
+              <span className="label">{translate('navigation.walkin.bookingSuccess.bookingInfo.guest')}:</span>
               <span className="value">{booking.guest}</span>
             </div>
             <div className="detail-item">
-              <span className="label">Status:</span>
+              <span className="label">{translate('navigation.walkin.bookingSuccess.bookingInfo.status')}:</span>
               <span className="value status-checked-in">{booking.status}</span>
             </div>
           </div>
         </div>
 
         <div className="detail-section">
-          <h3>Room Assignment</h3>
+          <h3>{translate('navigation.walkin.bookingSuccess.roomAssignment.title')}</h3>
           <div className="room-assignment">
-            <div className="room-number">Room {booking.room.number}</div>
+            <div className="room-number">{translate('navigation.walkin.bookingSuccess.roomAssignment.room')} {booking.room.number}</div>
             <div className="room-details">
               <span>{booking.room.type}</span>
-              <span>Floor {booking.room.floor}</span>
+              <span>{translate('navigation.walkin.bookingSuccess.roomAssignment.floor')} {booking.room.floor}</span>
             </div>
           </div>
         </div>
 
         <div className="detail-section">
-          <h3>Stay Details</h3>
+          <h3>{translate('navigation.walkin.bookingSuccess.stayDetails.title')}</h3>
           <div className="stay-details">
             <div className="stay-dates">
               <div className="date-item">
-                <span className="date-label">Check-in:</span>
+                <span className="date-label">{translate('navigation.walkin.bookingSuccess.stayDetails.checkIn')}:</span>
                 <span className="date-value">
-                  {formatDate(booking.checkIn)}
-                  <span className="time">at {formatTime(booking.checkIn)}</span>
+                  {formatDate(booking.checkIn, { format: 'short' })}
+                  <span className="time">{translate('navigation.walkin.bookingSuccess.stayDetails.at')} {formatTime(booking.checkIn)}</span>
                 </span>
               </div>
               <div className="date-item">
-                <span className="date-label">Check-out:</span>
+                <span className="date-label">{translate('navigation.walkin.bookingSuccess.stayDetails.checkOut')}:</span>
                 <span className="date-value">
-                  {formatDate(booking.checkOut)}
-                  <span className="time">at 12:00 PM</span>
+                  {formatDate(booking.checkOut, { format: 'short' })}
+                  <span className="time">{translate('navigation.walkin.bookingSuccess.stayDetails.at')} 12:00 PM</span>
                 </span>
               </div>
               <div className="date-item">
-                <span className="date-label">Duration:</span>
+                <span className="date-label">{translate('navigation.walkin.bookingSuccess.stayDetails.duration')}:</span>
                 <span className="date-value">
-                  {booking.nights} night{nightsText}
+                  {booking.nights} {translate(nightsTranslationKey)}
                 </span>
               </div>
             </div>
@@ -155,20 +153,20 @@ Safe travels and enjoy your stay.
         </div>
 
         <div className="detail-section">
-          <h3>Pricing Breakdown</h3>
+          <h3>{translate('navigation.walkin.bookingSuccess.pricing.title')}</h3>
           <div className="pricing-breakdown">
             <div className="pricing-line">
-              <span>Room Rate ({booking.nights} night{nightsText}):</span>
+              <span>{translate('navigation.walkin.bookingSuccess.pricing.roomRate')} ({booking.nights} {translate(nightsTranslationKey)}):</span>
               <span>฿{booking.pricing.roomTotal.toLocaleString()}</span>
             </div>
             {booking.breakfastIncluded && (
               <div className="pricing-line breakfast">
-                <span>Breakfast ({booking.nights} night{nightsText}):</span>
+                <span>{translate('navigation.walkin.bookingSuccess.pricing.breakfast')} ({booking.nights} {translate(nightsTranslationKey)}):</span>
                 <span>฿{booking.pricing.breakfastTotal.toLocaleString()}</span>
               </div>
             )}
             <div className="pricing-line total">
-              <span>Total Amount:</span>
+              <span>{translate('navigation.walkin.bookingSuccess.pricing.totalAmount')}:</span>
               <span>฿{booking.pricing.totalAmount.toLocaleString()}</span>
             </div>
           </div>
@@ -176,40 +174,40 @@ Safe travels and enjoy your stay.
       </div>
 
       <div className="next-steps">
-        <h3>Next Steps</h3>
+        <h3>{translate('navigation.walkin.bookingSuccess.nextSteps.title')}</h3>
         <div className="steps-list">
           <div className="step-item completed">
             <span className="step-icon">✅</span>
-            <span>Guest information recorded</span>
+            <span>{translate('navigation.walkin.bookingSuccess.nextSteps.guestInfoRecorded')}</span>
           </div>
           <div className="step-item completed">
             <span className="step-icon">✅</span>
-            <span>Room {booking.room.number} assigned and marked as occupied</span>
+            <span>{translate('navigation.walkin.bookingSuccess.nextSteps.roomAssigned', { roomNumber: booking.room.number })}</span>
           </div>
           <div className="step-item pending">
             <span className="step-icon">📋</span>
-            <span>Process payment (if required)</span>
+            <span>{translate('navigation.walkin.bookingSuccess.nextSteps.processPayment')}</span>
           </div>
           <div className="step-item pending">
             <span className="step-icon">🔑</span>
-            <span>Issue room key card</span>
+            <span>{translate('navigation.walkin.bookingSuccess.nextSteps.issueKeyCard')}</span>
           </div>
           <div className="step-item pending">
             <span className="step-icon">🎯</span>
-            <span>Welcome guest and provide hotel information</span>
+            <span>{translate('navigation.walkin.bookingSuccess.nextSteps.welcomeGuest')}</span>
           </div>
         </div>
       </div>
 
       <div className="action-buttons">
         <button onClick={handlePrintReceipt} className="print-button">
-          🖨️ Print Receipt
+          🖨️ {translate('navigation.walkin.bookingSuccess.actions.printReceipt')}
         </button>
         <button onClick={onNewBooking} className="new-booking-button">
-          ➕ New Booking
+          ➕ {translate('navigation.walkin.bookingSuccess.actions.newBooking')}
         </button>
         <button onClick={onBackToDashboard} className="dashboard-button">
-          🏠 Back to Dashboard
+          🏠 {translate('navigation.walkin.bookingSuccess.actions.backToDashboard')}
         </button>
       </div>
     </div>

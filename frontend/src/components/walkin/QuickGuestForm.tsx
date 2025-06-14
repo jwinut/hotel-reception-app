@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { RoomAvailability } from '../../services/walkinApi';
+import { useDateFormat } from '../../utils/dateFormat';
 import './QuickGuestForm.css';
 
 interface GuestInfo {
@@ -11,18 +13,24 @@ interface GuestInfo {
 }
 
 interface Props {
-  selectedRoom: RoomAvailability & { includeBreakfast: boolean };
+  selectedRoom: RoomAvailability;
   onSubmit: (guest: GuestInfo, checkOutDate: Date) => void;
   onCancel: () => void;
   loading?: boolean;
+  includeBreakfast: boolean;
+  onBreakfastChange: (include: boolean) => void;
 }
 
 const QuickGuestForm: React.FC<Props> = ({ 
   selectedRoom, 
   onSubmit, 
   onCancel,
-  loading = false
+  loading = false,
+  includeBreakfast,
+  onBreakfastChange
 }) => {
+  const { t: translate } = useTranslation();
+  const formatDate = useDateFormat();
   const [guest, setGuest] = useState<GuestInfo>({
     firstName: '',
     lastName: '',
@@ -54,14 +62,14 @@ const QuickGuestForm: React.FC<Props> = ({
       newErrors.idNumber = 'ID number is required';
     } else {
       if (guest.idType === 'NATIONAL_ID' && !/^\d{13}$/.test(guest.idNumber.replace(/\D/g, ''))) {
-        newErrors.idNumber = 'National ID must be 13 digits';
+        newErrors.idNumber = translate('navigation.walkin.guestForm.validation.idNumberInvalid');
       } else if (guest.idType === 'PASSPORT' && guest.idNumber.length < 6) {
-        newErrors.idNumber = 'Passport number too short';
+        newErrors.idNumber = translate('navigation.walkin.guestForm.validation.idNumberInvalid');
       }
     }
 
     if (nights < 1 || nights > 30) {
-      newErrors.nights = 'Nights must be between 1 and 30';
+      newErrors.nights = translate('navigation.walkin.guestForm.validation.nightsInvalid');
     }
 
     setErrors(newErrors);
@@ -92,12 +100,12 @@ const QuickGuestForm: React.FC<Props> = ({
 
   const getRoomTypeDisplay = (type: string) => {
     const displays = {
-      STANDARD: { name: 'Standard', icon: '🏨' },
-      SUPERIOR: { name: 'Superior', icon: '⭐' },
-      DELUXE: { name: 'Deluxe', icon: '💎' },
-      FAMILY: { name: 'Family', icon: '👨‍👩‍👧‍👦' },
-      HOP_IN: { name: 'Hop In', icon: '🎒' },
-      ZENITH: { name: 'Zenith', icon: '👑' }
+      STANDARD: { name: translate('navigation.walkin.roomMap.roomTypes.STANDARD'), icon: '🏨' },
+      SUPERIOR: { name: translate('navigation.walkin.roomMap.roomTypes.SUPERIOR'), icon: '⭐' },
+      DELUXE: { name: translate('navigation.walkin.roomMap.roomTypes.DELUXE'), icon: '💎' },
+      FAMILY: { name: translate('navigation.walkin.roomMap.roomTypes.FAMILY'), icon: '👨‍👩‍👧‍👦' },
+      HOP_IN: { name: translate('navigation.walkin.roomMap.roomTypes.HOP_IN'), icon: '🎒' },
+      ZENITH: { name: translate('navigation.walkin.roomMap.roomTypes.ZENITH'), icon: '👑' }
     };
     return displays[type as keyof typeof displays] || { name: type, icon: '🏨' };
   };
@@ -116,15 +124,15 @@ const QuickGuestForm: React.FC<Props> = ({
 
   const roomDisplay = getRoomTypeDisplay(selectedRoom.roomType);
   const breakfastPrice = calculateBreakfastPrice(selectedRoom.roomType);
-  const nightlyRate = selectedRoom.basePrice + (selectedRoom.includeBreakfast ? breakfastPrice : 0);
+  const nightlyRate = selectedRoom.basePrice + (includeBreakfast ? breakfastPrice : 0);
   const totalAmount = nightlyRate * nights;
 
   return (
     <div className="quick-guest-form">
       <div className="form-header">
-        <h3>Guest Information</h3>
+        <h3>{translate('navigation.walkin.guestForm.title')}</h3>
         <button onClick={onCancel} className="cancel-button" disabled={loading}>
-          ← Back to Room Selection
+          {translate('navigation.walkin.guestForm.backToRoom')}
         </button>
       </div>
 
@@ -132,37 +140,52 @@ const QuickGuestForm: React.FC<Props> = ({
         <div className="room-summary-header">
           <div className="room-icon">{roomDisplay.icon}</div>
           <div className="room-details">
-            <h4>Room {selectedRoom.roomNumber}</h4>
-            <p>{roomDisplay.name} • Floor {selectedRoom.floor}</p>
+            <h4>{translate('navigation.walkin.guestForm.roomDetails.room')} {selectedRoom.roomNumber}</h4>
+            <p>{roomDisplay.name} • {translate('navigation.walkin.guestForm.roomDetails.floor')} {selectedRoom.floor}</p>
           </div>
         </div>
         
         <div className="pricing-summary">
           <div className="price-line">
-            <span>Room Rate:</span>
-            <span>฿{selectedRoom.basePrice.toLocaleString()}/night</span>
+            <span>{translate('navigation.walkin.guestForm.roomDetails.roomRate')}:</span>
+            <span>฿{selectedRoom.basePrice.toLocaleString()}{translate('navigation.walkin.guestForm.roomDetails.perNight')}</span>
           </div>
-          {selectedRoom.includeBreakfast && (
+          {includeBreakfast && (
             <div className="price-line breakfast">
-              <span>Breakfast:</span>
-              <span>+฿{breakfastPrice.toLocaleString()}/night</span>
+              <span>{translate('navigation.walkin.guestForm.roomDetails.breakfast')}:</span>
+              <span>+฿{breakfastPrice.toLocaleString()}{translate('navigation.walkin.guestForm.roomDetails.perNight')}</span>
             </div>
           )}
           <div className="price-line total">
-            <span>Nightly Rate:</span>
+            <span>{translate('navigation.walkin.guestForm.roomDetails.nightlyRate')}:</span>
             <span>฿{nightlyRate.toLocaleString()}</span>
           </div>
         </div>
       </div>
 
+      <div className="breakfast-section">
+        <div className="breakfast-toggle">
+          <label>
+            <input
+              type="checkbox"
+              checked={includeBreakfast}
+              onChange={(e) => onBreakfastChange(e.target.checked)}
+              disabled={loading}
+            />
+            <span className="checkbox-custom"></span>
+            {translate('navigation.walkin.roomMap.includeBreakfast')}
+          </label>
+        </div>
+      </div>
+
       <form onSubmit={handleSubmit} className="guest-form">
         <div className="form-section">
-          <h4>Personal Information</h4>
+          <h4>{translate('navigation.walkin.guestForm.personalInfo.title')}</h4>
           
           <div className="form-row">
             <div className="form-group">
               <label htmlFor="firstName">
-                First Name <span className="required">*</span>
+                {translate('navigation.walkin.guestForm.personalInfo.firstName')} <span className="required">*</span>
               </label>
               <input
                 id="firstName"
@@ -171,14 +194,14 @@ const QuickGuestForm: React.FC<Props> = ({
                 onChange={(e) => handleInputChange('firstName', e.target.value)}
                 className={errors.firstName ? 'error' : ''}
                 disabled={loading}
-                placeholder="Enter first name"
+                placeholder={translate('navigation.walkin.guestForm.personalInfo.firstNamePlaceholder')}
               />
               {errors.firstName && <span className="error-text">{errors.firstName}</span>}
             </div>
 
             <div className="form-group">
               <label htmlFor="lastName">
-                Last Name <span className="required">*</span>
+                {translate('navigation.walkin.guestForm.personalInfo.lastName')} <span className="required">*</span>
               </label>
               <input
                 id="lastName"
@@ -187,7 +210,7 @@ const QuickGuestForm: React.FC<Props> = ({
                 onChange={(e) => handleInputChange('lastName', e.target.value)}
                 className={errors.lastName ? 'error' : ''}
                 disabled={loading}
-                placeholder="Enter last name"
+                placeholder={translate('navigation.walkin.guestForm.personalInfo.lastNamePlaceholder')}
               />
               {errors.lastName && <span className="error-text">{errors.lastName}</span>}
             </div>
@@ -195,7 +218,7 @@ const QuickGuestForm: React.FC<Props> = ({
 
           <div className="form-group">
             <label htmlFor="phone">
-              Phone Number <span className="required">*</span>
+              {translate('navigation.walkin.guestForm.personalInfo.phone')} <span className="required">*</span>
             </label>
             <input
               id="phone"
@@ -204,19 +227,19 @@ const QuickGuestForm: React.FC<Props> = ({
               onChange={(e) => handleInputChange('phone', e.target.value)}
               className={errors.phone ? 'error' : ''}
               disabled={loading}
-              placeholder="e.g., +66 2 123 4567 or 02-123-4567"
+              placeholder={translate('navigation.walkin.guestForm.personalInfo.phonePlaceholder')}
             />
             {errors.phone && <span className="error-text">{errors.phone}</span>}
           </div>
         </div>
 
         <div className="form-section">
-          <h4>Identification</h4>
+          <h4>{translate('navigation.walkin.guestForm.identification.title')}</h4>
           
           <div className="form-row">
             <div className="form-group">
               <label htmlFor="idType">
-                ID Type <span className="required">*</span>
+                {translate('navigation.walkin.guestForm.identification.idType')} <span className="required">*</span>
               </label>
               <select
                 id="idType"
@@ -224,14 +247,14 @@ const QuickGuestForm: React.FC<Props> = ({
                 onChange={(e) => handleInputChange('idType', e.target.value as 'PASSPORT' | 'NATIONAL_ID')}
                 disabled={loading}
               >
-                <option value="NATIONAL_ID">National ID Card</option>
-                <option value="PASSPORT">Passport</option>
+                <option value="NATIONAL_ID">{translate('navigation.walkin.guestForm.identification.nationalId')}</option>
+                <option value="PASSPORT">{translate('navigation.walkin.guestForm.identification.passport')}</option>
               </select>
             </div>
 
             <div className="form-group">
               <label htmlFor="idNumber">
-                {guest.idType === 'NATIONAL_ID' ? 'National ID Number' : 'Passport Number'} <span className="required">*</span>
+                {guest.idType === 'NATIONAL_ID' ? translate('navigation.walkin.guestForm.identification.nationalIdNumber') : translate('navigation.walkin.guestForm.identification.passportNumber')} <span className="required">*</span>
               </label>
               <input
                 id="idNumber"
@@ -240,7 +263,7 @@ const QuickGuestForm: React.FC<Props> = ({
                 onChange={(e) => handleInputChange('idNumber', e.target.value)}
                 className={errors.idNumber ? 'error' : ''}
                 disabled={loading}
-                placeholder={guest.idType === 'NATIONAL_ID' ? 'e.g., 1234567890123' : 'e.g., A1234567'}
+                placeholder={guest.idType === 'NATIONAL_ID' ? translate('navigation.walkin.guestForm.identification.nationalIdPlaceholder') : translate('navigation.walkin.guestForm.identification.passportPlaceholder')}
               />
               {errors.idNumber && <span className="error-text">{errors.idNumber}</span>}
             </div>
@@ -248,11 +271,11 @@ const QuickGuestForm: React.FC<Props> = ({
         </div>
 
         <div className="form-section">
-          <h4>Stay Duration</h4>
+          <h4>{translate('navigation.walkin.guestForm.stayDuration.title')}</h4>
           
           <div className="form-group">
             <label htmlFor="nights">
-              Number of Nights <span className="required">*</span>
+              {translate('navigation.walkin.guestForm.stayDuration.numberOfNights')} <span className="required">*</span>
             </label>
             <input
               id="nights"
@@ -269,16 +292,16 @@ const QuickGuestForm: React.FC<Props> = ({
 
           <div className="stay-summary">
             <div className="summary-line">
-              <span>Check-in:</span>
-              <span>{new Date().toLocaleDateString('en-GB')}</span>
+              <span>{translate('navigation.walkin.guestForm.stayDuration.checkIn')}:</span>
+              <span>{formatDate(new Date(), { format: 'short' })}</span>
             </div>
             <div className="summary-line">
-              <span>Check-out:</span>
-              <span>{new Date(Date.now() + nights * 24 * 60 * 60 * 1000).toLocaleDateString('en-GB')}</span>
+              <span>{translate('navigation.walkin.guestForm.stayDuration.checkOut')}:</span>
+              <span>{formatDate(new Date(Date.now() + nights * 24 * 60 * 60 * 1000), { format: 'short' })}</span>
             </div>
             <div className="summary-line">
-              <span>Duration:</span>
-              <span>{nights} night{nights !== 1 ? 's' : ''}</span>
+              <span>{translate('navigation.walkin.guestForm.stayDuration.duration')}:</span>
+              <span>{nights} {nights !== 1 ? translate('navigation.walkin.guestForm.stayDuration.nights') : translate('navigation.walkin.guestForm.stayDuration.night')}</span>
             </div>
           </div>
         </div>
@@ -286,17 +309,17 @@ const QuickGuestForm: React.FC<Props> = ({
         <div className="total-section">
           <div className="total-breakdown">
             <div className="breakdown-line">
-              <span>Room ({nights} night{nights !== 1 ? 's' : ''}):</span>
+              <span>{translate('navigation.walkin.guestForm.pricing.room')} ({nights} {nights !== 1 ? translate('navigation.walkin.guestForm.stayDuration.nights') : translate('navigation.walkin.guestForm.stayDuration.night')}):</span>
               <span>฿{(selectedRoom.basePrice * nights).toLocaleString()}</span>
             </div>
-            {selectedRoom.includeBreakfast && (
+            {includeBreakfast && (
               <div className="breakdown-line breakfast">
-                <span>Breakfast ({nights} night{nights !== 1 ? 's' : ''}):</span>
+                <span>{translate('navigation.walkin.guestForm.pricing.breakfast')} ({nights} {nights !== 1 ? translate('navigation.walkin.guestForm.stayDuration.nights') : translate('navigation.walkin.guestForm.stayDuration.night')}):</span>
                 <span>฿{(breakfastPrice * nights).toLocaleString()}</span>
               </div>
             )}
             <div className="breakdown-line total">
-              <span>Total Amount:</span>
+              <span>{translate('navigation.walkin.guestForm.pricing.totalAmount')}:</span>
               <span>฿{totalAmount.toLocaleString()}</span>
             </div>
           </div>
@@ -309,14 +332,14 @@ const QuickGuestForm: React.FC<Props> = ({
             className="secondary-button"
             disabled={loading}
           >
-            Cancel
+            {translate('navigation.walkin.guestForm.actions.cancel')}
           </button>
           <button
             type="submit"
             className="primary-button"
             disabled={loading}
           >
-            {loading ? 'Creating Booking...' : `Create Booking - ฿${totalAmount.toLocaleString()}`}
+            {loading ? translate('navigation.walkin.guestForm.actions.creatingBooking') : `${translate('navigation.walkin.guestForm.actions.createBooking')} - ฿${totalAmount.toLocaleString()}`}
           </button>
         </div>
       </form>

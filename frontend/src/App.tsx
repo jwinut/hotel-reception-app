@@ -101,7 +101,12 @@ const App: React.FC<AppProps> = () => {
   return (
     <Provider store={store}>
       <ErrorBoundary>
-        <Router>
+        <Router
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true
+          }}
+        >
           <div className="App">
             {/* Skip Links for Accessibility */}
             <a className="skip-link" href="#main-content">
@@ -158,6 +163,9 @@ const App: React.FC<AppProps> = () => {
                   <Routes>
                     <Route path="/" element={<WalkInDashboardPage key="walk-in-dashboard" />} />
                     <Route path="/walk-in-dashboard" element={<WalkInDashboardPage key="walk-in-dashboard" />} />
+                    <Route path="/walk-in/room-selection/:roomType" element={<WalkInDashboardPage key="walk-in-room-selection" />} />
+                    <Route path="/walk-in/guest-form" element={<WalkInDashboardPage key="walk-in-guest-form" />} />
+                    <Route path="/walk-in/booking-success" element={<WalkInDashboardPage key="walk-in-booking-success" />} />
                     <Route path="/new-booking" element={<NewBookingPage key="new-booking" />} />
                     <Route path="/current-bookings" element={<CurrentBookingsPage key="current-bookings" />} />
                     <Route path="/existing-guest" element={<ExistingGuestPage key="existing-guest" />} />

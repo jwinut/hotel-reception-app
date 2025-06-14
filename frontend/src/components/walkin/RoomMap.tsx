@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { walkinApi, RoomAvailability } from '../../services/walkinApi';
+import { getRoomTypeEnglish } from '../../utils/roomTypes';
 import './RoomMap.css';
 
 interface Props {
   selectedRoomType?: string;
-  onSelectRoom: (room: RoomAvailability & { includeBreakfast: boolean }) => void;
+  onSelectRoom: (room: RoomAvailability) => void;
   onBack: () => void;
-  includeBreakfast: boolean;
-  onBreakfastChange: (include: boolean) => void;
+  onRoomTypeChange?: (roomType: string) => void;
 }
 
 interface RoomMapData extends RoomAvailability {
@@ -20,19 +21,22 @@ const RoomMap: React.FC<Props> = ({
   selectedRoomType, 
   onSelectRoom, 
   onBack, 
-  includeBreakfast, 
-  onBreakfastChange 
+  onRoomTypeChange 
 }) => {
   const [rooms, setRooms] = useState<RoomMapData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [hoveredRoom, setHoveredRoom] = useState<string | null>(null);
+  const [mousePosition, setMousePosition] = useState({ x: -9999, y: -9999 }); // Initialize off-screen
+  const { t: translate } = useTranslation();
 
+  // Reset mouse position when rooms change or component remounts
   useEffect(() => {
-    fetchRooms();
-  }, []);
+    setMousePosition({ x: -9999, y: -9999 });
+    setHoveredRoom(null);
+  }, [selectedRoomType]);
 
-  const fetchRooms = async () => {
+  const fetchRooms = useCallback(async () => {
     try {
       setError(null);
       const data = await walkinApi.getAvailableRooms();
@@ -159,7 +163,6 @@ const RoomMap: React.FC<Props> = ({
       ];
 
       const allRooms: RoomMapData[] = [];
-      const availableRoomNumbers = new Set(data.rooms.map(r => r.roomNumber));
       
       // Process each floor layout
       currentLayout.layout.forEach(floorLayout => {
@@ -173,9 +176,9 @@ const RoomMap: React.FC<Props> = ({
             
             // No additional filtering needed since we're using the correct layout
             
-            // Find API room data or generate status
+            // Find API room data
             const apiRoom = data.rooms.find(r => r.roomNumber === roomNumber);
-            const isAvailable = availableRoomNumbers.has(roomNumber);
+            if (!apiRoom) return; // Skip rooms not in the database
             
             // Generate features based on room type
             const getFeaturesByType = (type: string, bedType: string) => {
@@ -224,15 +227,26 @@ const RoomMap: React.FC<Props> = ({
             const x = 3 + (colIndex * cellWidth);
             const y = (topMargin + rowIndex * (roomHeight + rowSpacing)) / floorHeight * 100; // convert to percentage
             
+            // Map database status to frontend status
+            const mapStatusToFrontend = (dbStatus: string): 'available' | 'occupied' | 'maintenance' | 'cleaning' => {
+              switch (dbStatus) {
+                case 'CLEAN': return 'available';
+                case 'OCCUPIED': return 'occupied';
+                case 'MAINTENANCE': return 'maintenance';
+                case 'DIRTY': return 'cleaning';
+                default: return 'cleaning';
+              }
+            };
+
             const roomData: RoomMapData = {
-              id: apiRoom?.id || `room-${roomNumber}`,
+              id: apiRoom.id,
               roomNumber,
               roomType: masterRoom.roomType as 'STANDARD' | 'SUPERIOR' | 'DELUXE' | 'FAMILY' | 'HOP_IN' | 'ZENITH',
               floor: masterRoom.floor,
-              basePrice: apiRoom?.basePrice || 1500,
+              basePrice: apiRoom.basePrice,
               maxOccupancy: getMaxOccupancy(masterRoom.roomType),
               features: getFeaturesByType(masterRoom.roomType, masterRoom.bedType),
-              status: isAvailable ? 'available' : (['occupied', 'maintenance', 'cleaning'][Math.floor(Math.random() * 3)] as 'occupied' | 'maintenance' | 'cleaning'),
+              status: mapStatusToFrontend(apiRoom.status),
               x,
               y
             };
@@ -249,35 +263,28 @@ const RoomMap: React.FC<Props> = ({
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedRoomType]);
+
+  useEffect(() => {
+    fetchRooms();
+  }, [selectedRoomType, fetchRooms]); // Re-fetch when room type changes
 
   const getRoomTypeDisplay = (type: string) => {
     const displays = {
-      STANDARD: { name: 'Standard', initial: 'ST', color: '#4f46e5' },
-      SUPERIOR: { name: 'Superior', initial: 'SU', color: '#059669' },
-      DELUXE: { name: 'Deluxe', initial: 'DX', color: '#dc2626' },
-      FAMILY: { name: 'Family', initial: 'FM', color: '#7c2d12' },
-      HOP_IN: { name: 'Hop In', initial: 'HI', color: '#ea580c' },
-      ZENITH: { name: 'Zenith', initial: 'ZN', color: '#7c3aed' }
+      STANDARD: { name: translate('navigation.walkin.roomMap.roomTypes.STANDARD'), initial: 'ST', color: '#4f46e5' },
+      SUPERIOR: { name: translate('navigation.walkin.roomMap.roomTypes.SUPERIOR'), initial: 'SU', color: '#059669' },
+      DELUXE: { name: translate('navigation.walkin.roomMap.roomTypes.DELUXE'), initial: 'DX', color: '#dc2626' },
+      FAMILY: { name: translate('navigation.walkin.roomMap.roomTypes.FAMILY'), initial: 'FM', color: '#7c2d12' },
+      HOP_IN: { name: translate('navigation.walkin.roomMap.roomTypes.HOP_IN'), initial: 'HI', color: '#ea580c' },
+      ZENITH: { name: translate('navigation.walkin.roomMap.roomTypes.ZENITH'), initial: 'ZN', color: '#7c3aed' }
     };
     return displays[type as keyof typeof displays] || { name: type, initial: 'RM', color: '#6b7280' };
   };
 
-  const calculateBreakfastPrice = (roomType: string) => {
-    const breakfastPricing: Record<string, number> = {
-      'STANDARD': 250,
-      'SUPERIOR': 250,
-      'DELUXE': 250,
-      'FAMILY': 350,
-      'HOP_IN': 150,
-      'ZENITH': 350
-    };
-    return breakfastPricing[roomType] || 250;
-  };
+
 
   const calculateTotalPrice = (room: RoomMapData) => {
-    const breakfastPrice = includeBreakfast ? calculateBreakfastPrice(room.roomType) : 0;
-    return room.basePrice + breakfastPrice;
+    return room.basePrice;
   };
 
   const handleRoomClick = (room: RoomMapData) => {
@@ -285,10 +292,52 @@ const RoomMap: React.FC<Props> = ({
     if (room.status !== 'available') return;
     if (selectedRoomType && selectedRoomType !== 'ALL' && room.roomType !== selectedRoomType) return;
     
-    onSelectRoom({
-      ...room,
-      includeBreakfast
-    });
+    onSelectRoom(room);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    // Ensure we have valid client coordinates
+    if (typeof e.clientX !== 'number' || typeof e.clientY !== 'number') {
+      return;
+    }
+
+    const offsetX = 15;
+    const offsetY = 15;
+    const tooltipWidth = 280; // Approximate tooltip width (matches max-width)
+    const tooltipHeight = 180; // Approximate tooltip height for typical content
+    
+    let x = e.clientX + offsetX;
+    let y = e.clientY - offsetY;
+    
+    // Prevent tooltip from going off the right edge
+    if (x + tooltipWidth > window.innerWidth) {
+      x = e.clientX - tooltipWidth - offsetX;
+    }
+    
+    // Prevent tooltip from going off the top edge
+    if (y < 0) {
+      y = e.clientY + offsetY;
+    }
+    
+    // Prevent tooltip from going off the bottom edge
+    if (y + tooltipHeight > window.innerHeight) {
+      y = e.clientY - tooltipHeight - offsetY;
+    }
+    
+    setMousePosition({ x, y });
+  };
+
+  const handleRoomMouseEnter = (roomId: string) => {
+    setHoveredRoom(roomId);
+  };
+
+  const handleRoomMouseLeave = () => {
+    setHoveredRoom(null);
+  };
+
+  const handleMapMouseLeave = () => {
+    setHoveredRoom(null);
+    setMousePosition({ x: -9999, y: -9999 });
   };
 
   // Show all rooms - floors arranged from top to bottom based on building type
@@ -301,7 +350,7 @@ const RoomMap: React.FC<Props> = ({
       <div className="room-map loading">
         <div className="loading-spinner">
           <div className="spinner"></div>
-          <p>Loading room layout...</p>
+          <p>{translate('navigation.walkin.roomMap.loading')}</p>
         </div>
       </div>
     );
@@ -314,7 +363,7 @@ const RoomMap: React.FC<Props> = ({
           <span className="error-icon">⚠️</span>
           {error}
           <button onClick={fetchRooms} className="retry-button">
-            Try Again
+            {translate('navigation.walkin.roomMap.tryAgain')}
           </button>
         </div>
       </div>
@@ -324,51 +373,63 @@ const RoomMap: React.FC<Props> = ({
   const hoveredRoomData = hoveredRoom ? rooms.find(r => r.id === hoveredRoom) : null;
 
   return (
-    <div className="room-map">
+    <div className="room-map" onMouseMove={handleMouseMove} onMouseLeave={handleMapMouseLeave}>
       <div className="map-header">
         <div className="map-title">
-          <h3>{(selectedRoomType === 'HOP_IN' || selectedRoomType === 'ZENITH') ? 'Hop In Building Map' : 'HF Building Map'}</h3>
-          {selectedRoomType && selectedRoomType !== 'ALL' && (
-            <span className="selected-type">
-              {getRoomTypeDisplay(selectedRoomType).initial} {getRoomTypeDisplay(selectedRoomType).name} Rooms
-            </span>
-          )}
+          <h3>{(selectedRoomType === 'HOP_IN' || selectedRoomType === 'ZENITH') ? translate('navigation.walkin.roomMap.hopInBuilding') : translate('navigation.walkin.roomMap.hfBuilding')}</h3>
+          <div className="room-type-selector">
+            <div className="building-section">
+              <div className="building-label">{translate('navigation.walkin.roomMap.hfBuilding')}</div>
+              <div className="building-room-types">
+                {['STANDARD', 'SUPERIOR', 'DELUXE', 'FAMILY'].map(type => (
+                  <button
+                    key={type}
+                    onClick={() => onRoomTypeChange?.(type)}
+                    className={`room-type-button ${selectedRoomType === type ? 'active' : ''}`}
+                  >
+                    {getRoomTypeEnglish(type)}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="building-section">
+              <div className="building-label">{translate('navigation.walkin.roomMap.hopInBuilding')}</div>
+              <div className="building-room-types">
+                {['HOP_IN', 'ZENITH'].map(type => (
+                  <button
+                    key={type}
+                    onClick={() => onRoomTypeChange?.(type)}
+                    className={`room-type-button ${selectedRoomType === type ? 'active' : ''}`}
+                  >
+                    {getRoomTypeEnglish(type)}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
         <button onClick={onBack} className="back-button">
-          ← Back to Room Types
+          {translate('navigation.walkin.roomMap.backToRoomTypes')}
         </button>
       </div>
 
-      <div className="map-controls">
-        <div className="breakfast-toggle">
-          <label>
-            <input
-              type="checkbox"
-              checked={includeBreakfast}
-              onChange={(e) => onBreakfastChange(e.target.checked)}
-            />
-            <span className="checkbox-custom"></span>
-            Include Breakfast
-          </label>
-        </div>
-      </div>
 
       <div className="map-legend">
         <div className="legend-item">
           <div className="legend-color available"></div>
-          <span>Available</span>
+          <span>{translate('navigation.walkin.roomMap.legend.available')}</span>
         </div>
         <div className="legend-item">
           <div className="legend-color reserved"></div>
-          <span>Reserved</span>
+          <span>{translate('navigation.walkin.roomMap.legend.reserved')}</span>
         </div>
         <div className="legend-item">
           <div className="legend-color occupied"></div>
-          <span>Occupied</span>
+          <span>{translate('navigation.walkin.roomMap.legend.occupied')}</span>
         </div>
         <div className="legend-item">
           <div className="legend-color maintenance"></div>
-          <span>Maintenance/Cleaning</span>
+          <span>{translate('navigation.walkin.roomMap.legend.maintenance')}</span>
         </div>
       </div>
 
@@ -379,7 +440,7 @@ const RoomMap: React.FC<Props> = ({
           return (
             <div key={floor} className="floor-section">
               <div className="floor-header">
-                <h4 className="floor-title">Floor {floor}</h4>
+                <h4 className="floor-title">{translate('navigation.walkin.roomMap.floor')} {floor}</h4>
               </div>
               
               <div className="floor-plan">
@@ -398,12 +459,12 @@ const RoomMap: React.FC<Props> = ({
                         top: `${room.y}%`,
                         '--room-color': display.color
                       } as React.CSSProperties}
-                      onMouseEnter={() => setHoveredRoom(room.id)}
-                      onMouseLeave={() => setHoveredRoom(null)}
+                      onMouseEnter={() => handleRoomMouseEnter(room.id)}
+                      onMouseLeave={handleRoomMouseLeave}
                       onClick={() => handleRoomClick(room)}
                     >
                       <div className="room-number">{room.roomNumber}</div>
-                      <div className="room-type-indicator">{display.name}</div>
+                      <div className="room-type-indicator">{getRoomTypeEnglish(room.roomType)}</div>
                     </div>
                   );
                 })}
@@ -414,30 +475,36 @@ const RoomMap: React.FC<Props> = ({
       </div>
 
       {/* Room details tooltip */}
-      {hoveredRoomData && (
-        <div className="room-tooltip">
+      {hoveredRoomData && mousePosition.x > 0 && mousePosition.y > 0 && (
+        <div 
+          className="room-tooltip"
+          style={{
+            position: 'fixed',
+            left: `${mousePosition.x}px`,
+            top: `${mousePosition.y}px`,
+            zIndex: 1000,
+            pointerEvents: 'none'
+          }}
+        >
           <div className="tooltip-header">
             <strong>Room {hoveredRoomData.roomNumber}</strong>
           </div>
           <div className="tooltip-details">
-            <div>Type: {getRoomTypeDisplay(hoveredRoomData.roomType).name}</div>
-            <div>Floor: {hoveredRoomData.floor}</div>
-            <div>Status: {hoveredRoomData.status}</div>
+            <div>{translate('navigation.walkin.roomMap.tooltip.type')}: {getRoomTypeEnglish(hoveredRoomData.roomType)}</div>
+            <div>{translate('navigation.walkin.roomMap.tooltip.floor')}: {hoveredRoomData.floor}</div>
+            <div>{translate('navigation.walkin.roomMap.tooltip.status')}: {hoveredRoomData.status}</div>
             {hoveredRoomData.status === 'available' && (
               <>
-                <div>Base Price: ฿{hoveredRoomData.basePrice.toLocaleString()}</div>
-                {includeBreakfast && (
-                  <div>Breakfast: +฿{calculateBreakfastPrice(hoveredRoomData.roomType).toLocaleString()}</div>
-                )}
+                <div>{translate('navigation.walkin.roomMap.tooltip.basePrice')}: ฿{hoveredRoomData.basePrice.toLocaleString()}</div>
                 <div className="total-price">
-                  Total: ฿{calculateTotalPrice(hoveredRoomData).toLocaleString()}
+                  {translate('navigation.walkin.roomMap.tooltip.total')}: ฿{calculateTotalPrice(hoveredRoomData).toLocaleString()}
                 </div>
               </>
             )}
           </div>
           {hoveredRoomData.status === 'available' && 
            (!selectedRoomType || selectedRoomType === 'ALL' || hoveredRoomData.roomType === selectedRoomType) && (
-            <div className="tooltip-action">Click to select this room</div>
+            <div className="tooltip-action">{translate('navigation.walkin.roomMap.tooltip.clickToSelect')}</div>
           )}
         </div>
       )}

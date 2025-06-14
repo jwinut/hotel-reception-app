@@ -74,14 +74,58 @@
   font-size: 1.5rem;
 }
 
-.selected-type {
-  display: inline-block;
-  margin-top: 0.25rem;
-  padding: 0.25rem 0.75rem;
-  background: #f3f4f6;
-  border-radius: 20px;
+.room-type-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 0.75rem;
+}
+
+.building-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.building-label {
   font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.25rem;
+}
+
+.building-room-types {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.room-type-button {
+  padding: 0.5rem 1rem;
+  background: #f3f4f6;
   color: #6b7280;
+  border: 2px solid #e5e7eb;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.room-type-button:hover {
+  background: #e5e7eb;
+  border-color: #d1d5db;
+}
+
+.room-type-button.active {
+  background: #3b82f6;
+  color: white;
+  border-color: #3b82f6;
+}
+
+.room-type-button.active:hover {
+  background: #2563eb;
+  border-color: #2563eb;
 }
 
 .back-button {
@@ -439,16 +483,25 @@
 /* Tooltip */
 .room-tooltip {
   position: fixed;
-  bottom: 2rem;
-  right: 2rem;
   background: white;
   border: 1px solid #e5e7eb;
   border-radius: 12px;
   padding: 1rem;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-  z-index: 50;
+  z-index: 1000;
   min-width: 200px;
   max-width: 280px;
+  width: max-content;
+  height: auto;
+  pointer-events: none;
+  /* Remove fixed positioning constraints */
+  bottom: auto;
+  right: auto;
+  left: auto;
+  top: auto;
+  /* Ensure compact card appearance */
+  display: block;
+  box-sizing: border-box;
 }
 
 .tooltip-header {
@@ -525,10 +578,11 @@
   }
 
   .room-tooltip {
-    bottom: 1rem;
-    right: 1rem;
-    left: 1rem;
-    max-width: none;
+    /* Keep cursor following behavior on mobile too */
+    bottom: auto;
+    right: auto;
+    left: auto;
+    max-width: 280px;
   }
 }
 

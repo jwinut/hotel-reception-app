@@ -30,6 +30,10 @@
   font-weight: 600 !important;
   border-radius: 4px !important;
   transition: all 0.2s ease;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
 }
 
 .language-button:not([aria-pressed="true"]) {

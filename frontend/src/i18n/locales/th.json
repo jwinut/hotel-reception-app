@@ -49,6 +49,144 @@
         "tryAgain": "ลองใหม่อีกครั้ง",
         "retry": "ลองใหม่",
         "errorPrefix": "ข้อผิดพลาด"
+      },
+      "roomMap": {
+        "hfBuilding": "แผนที่อาคาร HF",
+        "hopInBuilding": "แผนที่อาคาร Hop In",
+        "backToRoomTypes": "← กลับไปเลือกประเภทห้อง",
+        "includeBreakfast": "รวมอาหารเช้า",
+        "loading": "กำลังโหลดแผนผังห้อง...",
+        "tryAgain": "ลองใหม่อีกครั้ง",
+        "errorLoading": "ไม่สามารถโหลดแผนผังห้องได้",
+        "legend": {
+          "available": "ว่าง",
+          "reserved": "จอง",
+          "occupied": "เข้าพัก",
+          "maintenance": "ซ่อมบำรุง/ทำความสะอาด"
+        },
+        "floor": "ชั้น",
+        "roomTypes": {
+          "STANDARD": "ห้องมาตรฐาน",
+          "SUPERIOR": "ห้องซูพีเรียร์",
+          "DELUXE": "ห้องดีลักซ์",
+          "FAMILY": "ห้องครอบครัว",
+          "HOP_IN": "ห้อง Hop In",
+          "ZENITH": "ห้อง Zenith"
+        },
+        "tooltip": {
+          "type": "ประเภท",
+          "floor": "ชั้น",
+          "status": "สถานะ",
+          "basePrice": "ราคาห้อง",
+          "breakfast": "อาหารเช้า",
+          "total": "รวม",
+          "clickToSelect": "คลิกเพื่อเลือกห้องนี้"
+        }
+      },
+      "guestForm": {
+        "title": "ข้อมูลผู้เข้าพัก",
+        "backToRoom": "← กลับไปเลือกห้อง",
+        "roomDetails": {
+          "room": "ห้อง",
+          "floor": "ชั้น",
+          "roomRate": "ค่าห้อง",
+          "breakfast": "อาหารเช้า",
+          "nightlyRate": "ราคาต่อคืน",
+          "perNight": "/คืน"
+        },
+        "personalInfo": {
+          "title": "ข้อมูลส่วนตัว",
+          "firstName": "ชื่อ",
+          "lastName": "นามสกุล",
+          "phone": "หมายเลขโทรศัพท์",
+          "firstNamePlaceholder": "กรอกชื่อ",
+          "lastNamePlaceholder": "กรอกนามสกุล",
+          "phonePlaceholder": "เช่น +66 2 123 4567 หรือ 02-123-4567"
+        },
+        "identification": {
+          "title": "ข้อมูลบัตรประจำตัว",
+          "idType": "ประเภทบัตร",
+          "nationalId": "บัตรประชาชน",
+          "passport": "หนังสือเดินทาง",
+          "nationalIdNumber": "หมายเลขบัตรประชาชน",
+          "passportNumber": "หมายเลขหนังสือเดินทาง",
+          "nationalIdPlaceholder": "เช่น 1234567890123",
+          "passportPlaceholder": "เช่น A1234567"
+        },
+        "stayDuration": {
+          "title": "ระยะเวลาเข้าพัก",
+          "numberOfNights": "จำนวนคืน",
+          "checkIn": "วันเข้าพัก",
+          "checkOut": "วันเช็คเอาต์",
+          "duration": "ระยะเวลา",
+          "night": "คืน",
+          "nights": "คืน"
+        },
+        "pricing": {
+          "room": "ค่าห้อง",
+          "breakfast": "อาหารเช้า",
+          "totalAmount": "ยอดรวมทั้งหมด"
+        },
+        "actions": {
+          "cancel": "ยกเลิก",
+          "createBooking": "สร้างการจอง",
+          "creatingBooking": "กำลังสร้างการจอง..."
+        },
+        "validation": {
+          "firstNameRequired": "กรุณากรอกชื่อ",
+          "lastNameRequired": "กรุณากรอกนามสกุล",
+          "phoneRequired": "กรุณากรอกหมายเลขโทรศัพท์",
+          "phoneInvalid": "รูปแบบหมายเลขโทรศัพท์ไม่ถูกต้อง",
+          "idNumberRequired": "กรุณากรอกหมายเลขบัตร",
+          "idNumberInvalid": "รูปแบบหมายเลขบัตรไม่ถูกต้อง",
+          "nightsInvalid": "จำนวนคืนต้องอยู่ระหว่าง 1-30 คืน"
+        },
+        "required": "จำเป็น"
+      },
+      "bookingSuccess": {
+        "title": "จองสำเร็จแล้ว!",
+        "subtitle": "ผู้เข้าพักได้เช็คอินแล้วและห้องพักถูกจัดให้เรียบร้อย",
+        "bookingInfo": {
+          "title": "ข้อมูลการจอง",
+          "reference": "หมายเลขอ้างอิง",
+          "guest": "ผู้เข้าพัก",
+          "status": "สถานะ"
+        },
+        "roomAssignment": {
+          "title": "ห้องที่จัดให้",
+          "room": "ห้อง",
+          "floor": "ชั้น"
+        },
+        "stayDetails": {
+          "title": "รายละเอียดการเข้าพัก",
+          "checkIn": "วันเข้าพัก",
+          "checkOut": "วันเช็คเอาต์",
+          "duration": "ระยะเวลา",
+          "at": "เวลา",
+          "night": "คืน",
+          "nights": "คืน"
+        },
+        "pricing": {
+          "title": "รายละเอียดค่าใช้จ่าย",
+          "roomRate": "ค่าห้อง",
+          "breakfast": "อาหารเช้า",
+          "totalAmount": "ยอดรวมทั้งหมด",
+          "night": "คืน",
+          "nights": "คืน"
+        },
+        "nextSteps": {
+          "title": "ขั้นตอนถัดไป",
+          "guestInfoRecorded": "บันทึกข้อมูลผู้เข้าพักแล้ว",
+          "roomAssigned": "จัดห้อง {roomNumber} และทำเครื่องหมายว่าเข้าพักแล้ว",
+          "processPayment": "ดำเนินการชำระเงิน (หากจำเป็น)",
+          "issueKeyCard": "ออกบัตรกุญแจห้อง",
+          "welcomeGuest": "ต้อนรับผู้เข้าพักและให้ข้อมูลโรงแรม"
+        },
+        "actions": {
+          "printReceipt": "พิมพ์ใบเสร็จ",
+          "newBooking": "จองใหม่",
+          "backToDashboard": "กลับสู่แดชบอร์ด"
+        }
       }
     },
     "admin": {
@@ -179,6 +317,27 @@
       "checkedIn": "เช็คอินแล้ว",
       "checkedOut": "เช็คเอาต์แล้ว",
       "cancelled": "ยกเลิกแล้ว"
+    }
+  },
+  "date": {
+    "months": {
+      "short": [
+        "ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.",
+        "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."
+      ],
+      "long": [
+        "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน",
+        "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"
+      ]
+    },
+    "buddhistEra": {
+      "prefix": "พ.ศ.",
+      "suffix": ""
+    },
+    "format": {
+      "short": "d MMM yyyy",
+      "long": "d MMMM yyyy",
+      "full": "วันdddd ที่ d MMMM พ.ศ. yyyy"
     }
   }
 }

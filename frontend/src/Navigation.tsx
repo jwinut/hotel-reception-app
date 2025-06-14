@@ -25,7 +25,15 @@ const Navigation: React.FC<NavigationProps> = memo(({
   const { t } = useTranslation();
 
   // Memoized active path checker
-  const isActive = useCallback((path: string): boolean => location.pathname === path, [location.pathname]);
+  const isActive = useCallback((path: string): boolean => {
+    if (path === '/walk-in-dashboard') {
+      // Walk-in is active for all walk-in related paths
+      return location.pathname === '/walk-in-dashboard' || 
+             location.pathname === '/' || 
+             location.pathname.startsWith('/walk-in/');
+    }
+    return location.pathname === path;
+  }, [location.pathname]);
 
   // Memoized navigation buttons to prevent recreation on every render
   const navigationButtons = useMemo(() => ({

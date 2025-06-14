@@ -49,6 +49,144 @@
         "tryAgain": "Try Again",
         "retry": "Retry",
         "errorPrefix": "Error"
+      },
+      "roomMap": {
+        "hfBuilding": "HF Building Map",
+        "hopInBuilding": "Hop In Building Map",
+        "backToRoomTypes": "← Back to Room Types",
+        "includeBreakfast": "Include Breakfast",
+        "loading": "Loading room layout...",
+        "tryAgain": "Try Again",
+        "errorLoading": "Failed to fetch room layout",
+        "legend": {
+          "available": "Available",
+          "reserved": "Reserved",
+          "occupied": "Occupied",
+          "maintenance": "Maintenance/Cleaning"
+        },
+        "floor": "Floor",
+        "roomTypes": {
+          "STANDARD": "Standard",
+          "SUPERIOR": "Superior",
+          "DELUXE": "Deluxe",
+          "FAMILY": "Family",
+          "HOP_IN": "Hop In",
+          "ZENITH": "Zenith"
+        },
+        "tooltip": {
+          "type": "Type",
+          "floor": "Floor",
+          "status": "Status",
+          "basePrice": "Base Price",
+          "breakfast": "Breakfast",
+          "total": "Total",
+          "clickToSelect": "Click to select this room"
+        }
+      },
+      "guestForm": {
+        "title": "Guest Information",
+        "backToRoom": "← Back to Room Selection",
+        "roomDetails": {
+          "room": "Room",
+          "floor": "Floor",
+          "roomRate": "Room Rate",
+          "breakfast": "Breakfast",
+          "nightlyRate": "Nightly Rate",
+          "perNight": "/night"
+        },
+        "personalInfo": {
+          "title": "Personal Information",
+          "firstName": "First Name",
+          "lastName": "Last Name",
+          "phone": "Phone Number",
+          "firstNamePlaceholder": "Enter first name",
+          "lastNamePlaceholder": "Enter last name",
+          "phonePlaceholder": "e.g., +66 2 123 4567 or 02-123-4567"
+        },
+        "identification": {
+          "title": "Identification",
+          "idType": "ID Type",
+          "nationalId": "National ID Card",
+          "passport": "Passport",
+          "nationalIdNumber": "National ID Number",
+          "passportNumber": "Passport Number",
+          "nationalIdPlaceholder": "e.g., 1234567890123",
+          "passportPlaceholder": "e.g., A1234567"
+        },
+        "stayDuration": {
+          "title": "Stay Duration",
+          "numberOfNights": "Number of Nights",
+          "checkIn": "Check-in",
+          "checkOut": "Check-out",
+          "duration": "Duration",
+          "night": "night",
+          "nights": "nights"
+        },
+        "pricing": {
+          "room": "Room",
+          "breakfast": "Breakfast",
+          "totalAmount": "Total Amount"
+        },
+        "actions": {
+          "cancel": "Cancel",
+          "createBooking": "Create Booking",
+          "creatingBooking": "Creating Booking..."
+        },
+        "validation": {
+          "firstNameRequired": "First name is required",
+          "lastNameRequired": "Last name is required",
+          "phoneRequired": "Phone number is required",
+          "phoneInvalid": "Invalid phone number format",
+          "idNumberRequired": "ID number is required",
+          "idNumberInvalid": "Invalid ID number format",
+          "nightsInvalid": "Number of nights must be between 1 and 30"
+        },
+        "required": "required"
+      },
+      "bookingSuccess": {
+        "title": "Booking Created Successfully!",
+        "subtitle": "The guest has been checked in and the room is now occupied.",
+        "bookingInfo": {
+          "title": "Booking Information",
+          "reference": "Reference",
+          "guest": "Guest",
+          "status": "Status"
+        },
+        "roomAssignment": {
+          "title": "Room Assignment",
+          "room": "Room",
+          "floor": "Floor"
+        },
+        "stayDetails": {
+          "title": "Stay Details",
+          "checkIn": "Check-in",
+          "checkOut": "Check-out",
+          "duration": "Duration",
+          "at": "at",
+          "night": "night",
+          "nights": "nights"
+        },
+        "pricing": {
+          "title": "Pricing Breakdown",
+          "roomRate": "Room Rate",
+          "breakfast": "Breakfast",
+          "totalAmount": "Total Amount",
+          "night": "night",
+          "nights": "nights"
+        },
+        "nextSteps": {
+          "title": "Next Steps",
+          "guestInfoRecorded": "Guest information recorded",
+          "roomAssigned": "Room {roomNumber} assigned and marked as occupied",
+          "processPayment": "Process payment (if required)",
+          "issueKeyCard": "Issue room key card",
+          "welcomeGuest": "Welcome guest and provide hotel information"
+        },
+        "actions": {
+          "printReceipt": "Print Receipt",
+          "newBooking": "New Booking",
+          "backToDashboard": "Back to Dashboard"
+        }
       }
     },
     "admin": {
@@ -179,6 +317,23 @@
       "checkedIn": "Checked In",
       "checkedOut": "Checked Out",
       "cancelled": "Cancelled"
+    }
+  },
+  "date": {
+    "months": {
+      "short": [
+        "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+      ],
+      "long": [
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+      ]
+    },
+    "format": {
+      "short": "MMM d, yyyy",
+      "long": "MMMM d, yyyy",
+      "full": "dddd, MMMM d, yyyy"
     }
   }
 }
